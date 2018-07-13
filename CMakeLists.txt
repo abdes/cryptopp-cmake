@@ -21,8 +21,14 @@ https://github.com/noloader/cryptopp-cmake.\n\
 endif()
 
 cmake_minimum_required(VERSION 2.8.12)
-
-project(cryptopp)
+if (${CMAKE_VERSION} VERSION_LESS "3.0.0")
+  set(cryptopp_VERSION_MAJOR 7)
+  set(cryptopp_VERSION_MINOR 0)
+  set(cryptopp_VERSION_PATCH 0)
+else ()
+  cmake_policy(SET CMP0048 NEW)
+  project(cryptopp VERSION 7.0.0)
+endif ()
 
 # Make RelWithDebInfo the default (it does e.g. add '-O2 -g -DNDEBUG' for GNU)
 #   If not in multi-configuration environments, no explicit build type or CXX
@@ -69,10 +75,6 @@ You could try to:
 If you already downloaded the source, you could try to re-configure this project passing -DSRC_DIR:PATH=/path/to/Python-{PY_VERSION} using cmake or adding an PATH entry named SRC_DIR from cmake-gui.")
 endif()
 message(STATUS "SRC_DIR: ${SRC_DIR}")
-
-set(cryptopp_VERSION_MAJOR 7)
-set(cryptopp_VERSION_MINOR 0)
-set(cryptopp_VERSION_PATCH 0)
 
 include(GNUInstallDirs)
 include(CheckCXXCompilerFlag)
@@ -536,6 +538,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
         endif ()
         if (CRYPTOPP_IA32_AES AND NOT DISABLE_AES)
           set_source_files_properties(${SRC_DIR}/rijndael-simd.cpp PROPERTIES COMPILE_FLAGS "-msse4.1 -maes")
+          set_source_files_properties(${SRC_DIR}/sm4-simd.cpp PROPERTIES COMPILE_FLAGS "-mssse3 -maes")
         endif ()
         if (CRYPTOPP_IA32_SHA AND NOT DISABLE_SHA)
           set_source_files_properties(${SRC_DIR}/sha-simd.cpp PROPERTIES COMPILE_FLAGS "-msse4.2 -msha")
@@ -664,6 +667,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
         endif ()
         if (CRYPTOPP_IA32_AES AND NOT DISABLE_AES)
           set_source_files_properties(${SRC_DIR}/rijndael-simd.cpp PROPERTIES COMPILE_FLAGS "-xarch=aes")
+          set_source_files_properties(${SRC_DIR}/sm4-simd.cpp PROPERTIES COMPILE_FLAGS "-xarch=aes")
         endif ()
         if (CRYPTOPP_IA32_SHA AND NOT DISABLE_SHA)
           set_source_files_properties(${SRC_DIR}/sha-simd.cpp PROPERTIES COMPILE_FLAGS "-xarch=sha")
