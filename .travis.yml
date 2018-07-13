@@ -136,3 +136,34 @@ matrix:
       - cmake -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" ..
       - make
       - ctest --output-on-failure
+  include:
+
+  #
+  # G++ with latest cmake
+  #
+  - os: linux
+    env:
+      - TEST="G++ Default, cmake latest"
+
+    before_script:
+      #
+      # Update / Install CMake
+      #
+      - |
+        if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+          mkdir -p external/cmake
+          pushd external/cmake
+          wget https://cmake.org/files/v3.11/cmake-3.11.4-Linux-x86_64.sh
+          chmod +x cmake-*-Linux-x86_64.sh
+          ./cmake-*-Linux-x86_64.sh --exclude-subdir --skip-license
+          export PATH="${PWD}/bin:$PATH"
+          popd
+        else
+          brew update
+          brew outdated cmake || brew upgrade cmake
+        fi
+
+    script:
+      - cmake -Wno-dev -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" ..
+      - make
+      - ctest --output-on-failure
