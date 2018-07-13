@@ -167,7 +167,7 @@ matrix:
       # Workflow as per the README.md to setup the cryptopp sources
       #
       - |
-        git clone https://github.com/weidai11/cryptopp.git
+        git clone --branch CRYPTOPP_7_0_0 https://github.com/weidai11/cryptopp.git
         cd cryptopp
         git submodule add https://github.com/noloader/cryptopp-cmake.git cmake
         git submodule update --remote
