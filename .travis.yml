@@ -146,6 +146,23 @@ matrix:
       - TEST="G++ Default, cmake latest"
 
     before_script:
+      # Test the workflow as per the README.md
+      #
+      # git clone https://github.com/weidai11/cryptopp.git
+      # cd cryptopp
+      # git submodule add https://github.com/noloader/cryptopp-cmake.git cmake
+      # git submodule update --remote
+      #
+      # cp "$PWD/cmake/cryptopp-config.cmake" "$PWD"
+      # cp "$PWD/cmake/CMakeLists.txt" "$PWD"
+      - |
+        git clone https://github.com/weidai11/cryptopp.git
+        cd cryptopp
+        git submodule add https://github.com/noloader/cryptopp-cmake.git cmake
+        git submodule update --remote
+        cp cmake/cryptopp-config.cmake .
+        cp cmake/CMakeLists.txt .
+
       #
       # Update / Install CMake
       #
@@ -163,7 +180,13 @@ matrix:
           brew outdated cmake || brew upgrade cmake
         fi
 
+      #
+      # Build Folder
+      #
+      - mkdir _build
+      - cd _build
+
     script:
-      - cmake -Wno-dev -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" ..
+      - cmake -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" ..
       - make
       - ctest --output-on-failure
