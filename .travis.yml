@@ -146,23 +146,6 @@ matrix:
       - TEST="G++ Default, cmake latest"
 
     before_script:
-      # Test the workflow as per the README.md
-      #
-      # git clone https://github.com/weidai11/cryptopp.git
-      # cd cryptopp
-      # git submodule add https://github.com/noloader/cryptopp-cmake.git cmake
-      # git submodule update --remote
-      #
-      # cp "$PWD/cmake/cryptopp-config.cmake" "$PWD"
-      # cp "$PWD/cmake/CMakeLists.txt" "$PWD"
-      - |
-        git clone https://github.com/weidai11/cryptopp.git
-        cd cryptopp
-        git submodule add https://github.com/noloader/cryptopp-cmake.git cmake
-        git submodule update --remote
-        cp cmake/cryptopp-config.cmake .
-        cp cmake/CMakeLists.txt .
-
       #
       # Update / Install CMake
       #
@@ -179,6 +162,25 @@ matrix:
           brew update
           brew outdated cmake || brew upgrade cmake
         fi
+
+      #
+      # Workflow as per the README.md to setup the cryptopp sources
+      #
+      - |
+        git clone https://github.com/weidai11/cryptopp.git
+        cd cryptopp
+        git submodule add https://github.com/noloader/cryptopp-cmake.git cmake
+        git submodule update --remote
+        cp cmake/cryptopp-config.cmake .
+        cp cmake/CMakeLists.txt .
+
+      #
+      # Call it from a project that requires recent version of cmake
+      #
+      - |
+        cd ..
+        echo "cmake_minimum_required(VERSION 3.10)" > CMakeLists.txt
+        echo "add_subdirectory(cryptopp)" >> CMakeLists.txt
 
       #
       # Build Folder
