@@ -180,6 +180,8 @@ matrix:
       - |
         cd ..
         echo "cmake_minimum_required(VERSION 3.10)" > CMakeLists.txt
+        echo "# This next line is the one that will trigger CMP0048 new behavior" >> CMakeLists.txt
+        echo "project(abc VERSION 1.0.0)" >> CMakeLists.txt
         echo "add_subdirectory(cryptopp)" >> CMakeLists.txt
 
       #
