@@ -161,7 +161,7 @@ endif ()
 
 function(CheckCompilerOption opt var)
 
-  if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  if (MSVC)
 
     # CMake does not provide a generic shell/terminal mechanism
     #  and Microsoft environments don't know what 'sh' is.
@@ -198,7 +198,7 @@ endfunction(CheckCompilerOption)
 
 function(DumpMachine output pattern)
 
-  if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  if (MSVC)
 
     # CMake does not provide a generic shell/terminal mechanism
     #  and Microsoft environments don't know what 'sh' is.
@@ -365,7 +365,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif ()
 
 # TODO: what about ICC and LLVM on Windows?
-if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+if (MSVC)
   if (CMAKE_SYSTEM_VERSION MATCHES "10\\.0.*")
     list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "_WIN32_WINNT=0x0A00")
   endif ()
