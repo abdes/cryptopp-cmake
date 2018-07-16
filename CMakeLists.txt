@@ -484,11 +484,8 @@ if (MSVC AND NOT DISABLE_ASM)
     else ()
       set_source_files_properties(${cryptopp_SOURCES_ASM} PROPERTIES COMPILE_DEFINITIONS "_M_X86" COMPILE_FLAGS "/safeseh")
     endif ()
+    set_source_files_properties(${cryptopp_SOURCES_ASM} PROPERTIES LANGUAGE ASM_MASM)
   endif ()
-endif ()
-
-if (cryptopp_SOURCES_ASM)
-  set_source_files_properties(${cryptopp_SOURCES_ASM} PROPERTIES LANGUAGE ASM)
 endif ()
 
 #============================================================================
