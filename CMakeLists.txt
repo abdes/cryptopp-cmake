@@ -11,23 +11,27 @@ if(NOT DEFINED cryptocpp_DISPLAY_CMAKE_SUPPORT_WARNING)
 endif()
 if(cryptocpp_DISPLAY_CMAKE_SUPPORT_WARNING)
   message( STATUS
-"*************************************************************************\n\
-The Crypto++ library does not officially support CMake. CMake support is a\n\
-community effort, and the library works with the folks using CMake to help\n\
-improve it. If you find an issue then please fix it or report it at\n\
-https://github.com/noloader/cryptopp-cmake.\n\
--- *************************************************************************"
+"*************************************************************************\n"
+"The Crypto++ library does not officially support CMake. CMake support is a\n"
+"community effort, and the library works with the folks using CMake to help\n"
+"improve it. If you find an issue then please fix it or report it at\n"
+"https://github.com/noloader/cryptopp-cmake.\n"
+"-- *************************************************************************"
 )
 endif()
 
 cmake_minimum_required(VERSION 2.8.12)
 if (${CMAKE_VERSION} VERSION_LESS "3.0.0")
+  project(cryptopp)
   set(cryptopp_VERSION_MAJOR 7)
   set(cryptopp_VERSION_MINOR 0)
   set(cryptopp_VERSION_PATCH 0)
 else ()
   cmake_policy(SET CMP0048 NEW)
   project(cryptopp VERSION 7.0.0)
+  if (NOT ${CMAKE_VERSION} VERSION_LESS "3.1.0")
+    cmake_policy(SET CMP0054 NEW)
+  endif ()
 endif ()
 
 # Make RelWithDebInfo the default (it does e.g. add '-O2 -g -DNDEBUG' for GNU)
