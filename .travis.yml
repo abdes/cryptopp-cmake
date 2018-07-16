@@ -167,18 +167,17 @@ matrix:
       # Workflow as per the README.md to setup the cryptopp sources
       #
       - |
+        cd ..
+        mkdir test
+        cd test
         git clone --branch CRYPTOPP_7_0_0 https://github.com/weidai11/cryptopp.git
-        cd cryptopp
-        git submodule add https://github.com/noloader/cryptopp-cmake.git cmake
-        git submodule update --remote
-        cp cmake/cryptopp-config.cmake .
-        cp cmake/CMakeLists.txt .
+        cp ../cryptopp-cmake/cryptopp-config.cmake cryptopp
+        cp ../crypto-cmake/CMakeLists.txt cryptopp
 
       #
       # Call it from a project that requires recent version of cmake
       #
       - |
-        cd ..
         echo "cmake_minimum_required(VERSION 3.10)" > CMakeLists.txt
         echo "# This next line is the one that will trigger CMP0048 new behavior" >> CMakeLists.txt
         echo "project(abc VERSION 1.0.0)" >> CMakeLists.txt
