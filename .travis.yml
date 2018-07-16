@@ -7,20 +7,18 @@ git:
 # Build Dependencies
 #
 before_script:
-  # Test the workflow as per the README.md
+  # Test the build workflow slightly differenly from the README.md
   #
-  # git clone https://github.com/weidai11/cryptopp.git
-  # cd cryptopp
-  # git submodule add https://github.com/noloader/cryptopp-cmake.git cmake
-  # git submodule update --remote
+  # Let travis clone cryptopp-cmake
+  # cd ..
+  # git clone --branch CRYPTOPP_7_0_0 https://github.com/weidai11/cryptopp.git
   #
-  # cp "$PWD/cmake/cryptopp-config.cmake" "$PWD"
-  # cp "$PWD/cmake/CMakeLists.txt" "$PWD"
+  # Copy cmake files to cryptopp then build
   - |
     cd ..
     git clone --branch CRYPTOPP_7_0_0 https://github.com/weidai11/cryptopp.git
     cp cryptopp-cmake/cryptopp-config.cmake cryptopp
-    cp crypto-cmake/CMakeLists.txt cryptopp
+    cp cryptopp-cmake/CMakeLists.txt cryptopp
     cd cryptopp
 
   #
@@ -101,7 +99,15 @@ matrix:
         fi
 
       #
-      # Workflow as per the README.md to setup the cryptopp sources
+      # Test the build workflow slightly differenly from the README.md
+      #
+      # Let travis clone cryptopp-cmake
+      # cd ..
+      # Create a parent test project
+      # git clone --branch CRYPTOPP_7_0_0 https://github.com/weidai11/cryptopp.git
+      # Copy cmake files to cryptopp then build
+      # Create cmake file for the test project on the fly
+      # Build test project and cryptopp as a subdirectory
       #
       - |
         cd ..
@@ -109,7 +115,7 @@ matrix:
         cd test
         git clone --branch CRYPTOPP_7_0_0 https://github.com/weidai11/cryptopp.git
         cp ../cryptopp-cmake/cryptopp-config.cmake cryptopp
-        cp ../crypto-cmake/CMakeLists.txt cryptopp
+        cp ../cryptopp-cmake/CMakeLists.txt cryptopp
 
       #
       # Call it from a project that requires recent version of cmake
