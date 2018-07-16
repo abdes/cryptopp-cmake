@@ -1,6 +1,7 @@
 # Crypto++ CMake
 
 [![Build Status](https://travis-ci.org/abdes/cryptopp-cmake.svg?branch=master)](https://travis-ci.org/abdes/cryptopp-cmake)
+[![Build status](https://ci.appveyor.com/api/projects/status/n8tj64o2e8rkwwpi/branch/master?svg=true)](https://ci.appveyor.com/project/abdes/cryptopp-cmake/branch/master)
 
 This repository contains CMake files for Wei Dai's Crypto++ (https://github.com/weidai11/cryptopp). It supplies `CMakeLists.txt` and `cryptopp-config.cmake` for Crypto++ for those who want to use CMake. CMake is officialy unsupported, so use it at your own risk.
 

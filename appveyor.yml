@@ -1,0 +1,50 @@
+version: '{build}'
+#branches:
+#  only:
+#  - master
+clone_folder: c:\projects\cryptopp-cmake
+image:
+- Visual Studio 2013
+- Visual Studio 2015
+- Visual Studio 2017
+configuration:
+- Release
+- Debug
+platform:
+- x64
+environment:
+  matrix:
+  - arch: Win64
+  # - arch: #does not work, Release|x64 not a valid target
+matrix:
+  fast_finish: true
+
+# skip unsupported combinations
+init:
+- set arch=
+- if "%arch%"=="Win64" ( set arch= Win64)
+- echo %arch%
+- echo %APPVEYOR_BUILD_WORKER_IMAGE%
+- if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set generator="Visual Studio 15 2017%arch%" )
+- if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" ( set generator="Visual Studio 14 2015%arch%" )
+- if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2013" ( set generator="Visual Studio 12 2013%arch%" )
+- echo %generator%
+
+before_build:
+- cmd: |-
+    c:
+    cd \projects
+    git clone --branch CRYPTOPP_7_0_0 https://github.com/weidai11/cryptopp.git
+    cp cryptopp-cmake/cryptopp-config.cmake cryptopp
+    cp cryptopp-cmake/CMakeLists.txt cryptopp
+    cd cryptopp
+    mkdir _build
+    cmake --version
+build:
+  parallel: true
+build_script:
+  - cd _build
+  - cmake .. -G %generator%
+  - cmake --build . --config "%CONFIGURATION%"
+test_script:
+  - ctest -V -C "%CONFIGURATION%"
