@@ -23,6 +23,10 @@ This repository contains CMake files for Wei Dai's Crypto++
 (<https://github.com/weidai11/cryptopp>) for those who use the library in
 [**Modern CMake**](https://cliutils.gitlab.io/modern-cmake/) projects.
 
+See this
+[announcement](https://groups.google.com/g/cryptopp-users/c/9oDbTm8qWps) from
+crypto++ maintainers.
+
 The emphasis on *Modern* here is very important. In 2022, we have some really
 good solutions to many of the build problems developers used to waste a lot of
 time on. CMake in particular has made so much progress to become one of the most
