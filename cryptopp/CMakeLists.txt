@@ -21,7 +21,7 @@ message(STATUS "[cryptopp] Processor ${CMAKE_SYSTEM_PROCESSOR}")
 
 # Set the location where crypto++ has been setup if not passed to this script
 # from the parent. Assume we are doing the manual build.
-if(NOT DEFINED CRYPTOPP_INSTALL)
+if(NOT DEFINED CRYPTOPP_PROJECT_DIR)
   set(CRYPTOPP_PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
