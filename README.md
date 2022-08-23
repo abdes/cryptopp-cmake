@@ -17,49 +17,73 @@
 
 </div>
 
+## Introduction
+
 This repository contains CMake files for Wei Dai's Crypto++
-(<https://github.com/weidai11/cryptopp>)for those who want to use CMake. CMake
-is officialy unsupported by the crypto++ maintainers, so use it at your own
-risk.
+(<https://github.com/weidai11/cryptopp>) for those who use the library in
+[**Modern CMake**](https://cliutils.gitlab.io/modern-cmake/) projects.
 
-The purpose of Crypto++ CMake is three-fold:
+The emphasis on *Modern* here is very important. In 2022, we have some really
+good solutions to many of the build problems developers used to waste a lot of
+time on. CMake in particular has made so much progress to become one of the most
+widely used build systems for C++. But, we're not talking about CMake 2.x here.
+We're talking about CMake 3.11+ and maybe even CMake 3.24+.
 
-1. better support Linux distributions, like Gentoo
-2. provide users with centrally maintained CMake project files to easily
-   integrate crypto++ in projects that use cmake as their build system
-3. beter support package maintainers for depency management tools such as conan,
-   etc.
+For more details on this topic, see down below...
+
+## Table of Contents
+
+- [Versioning principles](#versioning-principles)
+- [Standard usage](#standard-usage)
+- [Using a local copy of crypto++](#using-a-local-copy-of-crypto)
+- [Requesting the master branch of cryptopp](#requesting-the-master-branch-of-cryptopp)
+- [Other ways](#other-ways)
+- [Why Modern CMake?](#why-modern-cmake)
+
+## Versioning principles
 
 This project releases track the [crypto++](https://github.com/weidai11/cryptopp)
-releases. In other words, everytime a new release of *crypto++* happens, this
+releases. In other words, every time a new release of *crypto++* happens, this
 project gets updated to take into account changes in source files, compiler
-options etc, and will see a new release with the same number than *cryupto++*.
+options etc, and will see a new release with the same number than *crypto++*.
 
 At times, bug fixes in this project will happen before a new *crypto++* release
-is published. If you want to get the latest and greatest, always track the
+is published. When a certain number of fixes have been added, and depending on
+the criticality of the defects, an additional release tag may be made. These
+*patch tags* will never introduce any additional changes in `crypto++` itself.
+
+Main release tags will have the format: `CRYPTOPP_M_m_p`, while *patch tags*
+will have the format `CRYPTOPP_M_m_p_l`, where `M.m.p` represents the `crypto++`
+version and `l` is a suffix letter incremented each time a *patch tag* is
+created.
+
+> As always, if you want to get the latest and greatest, always track the
 master branch.
 
-## Standard Usage
+## Standard usage
 
-* Get this project using your favorite method (clone as submodule, get with
+- Get this project using your favorite method (clone as submodule, get with
   [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html),
   get with [CPM](https://github.com/cpm-cmake/CPM.cmake)...)
 
-* In your master CMakeLists.txt, add the following:
+- In your master CMakeLists.txt, add the following:
 
   ```cmake
-  add_subdirectory(xxxx) # where xxx is the location where you put the cryptopp-cmake files
+  add_subdirectory(xxxx)
+  # where xxx is the location where you put the cryptopp-cmake files
   ```
 
-  That's it pretty much it. You'll be able to link against `cryptopp-shared` or
+  That's pretty much it. You'll be able to link against `cryptopp-shared` or
   `cryptopp-static` and have cmake handle everything else for you.
 
-An example is located in the test/standard-cpm directory.
+An example is located in the
+[test/standard-cpm](https://github.com/abdes/cryptopp-cmake/tree/master/test)
+directory.
 
 ## Using a local copy of crypto++
 
 Certain users would prefer to have a fully disconnected project, and in such
-scenario both the cypto++ source package and the cryptopp-cmake source package
+scenario both the crypto++ source package and the cryptopp-cmake source package
 would be pre-downloaded and then unpacked somewhere.
 
 You would still need to add cryptopp-cmake as a subdirectory in your master
@@ -68,7 +92,7 @@ crypto++ via the option `CRYPTOPP_SOURCES`. Just set that option in the cmake
 command line or in your CMakeLists.txt to point to the crypto++ source
 directory. The rest will be taken care of for you.
 
-## Using the latest crypto++ from the master branch
+## Requesting the master branch of cryptopp
 
 If you want to test the bleeding edge of crypto++ with cmake, simply set the
 option `CRYPTOPP_USE_MASTER_BRANCH` in your CMakeLists.txt or the cmake command
@@ -81,96 +105,35 @@ files you need and adding them to your own project, by getting the package via
 conan, etc... Take some time to read the source code, and make suggestions if
 you need a new usage scenario via a new issue.
 
-## Documentation
+## Why Modern CMake?
 
-Additional (historical) documenation is located on the [Crypto++ wiki |
-CMake](https://www.cryptopp.com/wiki/CMake). If there is an error or ommission
-in the wiki article, then please fix it or open a bug report.
+Have a look at [Installing
+CMake](https://cliutils.gitlab.io/modern-cmake/chapters/intro/installing.html)
+from the online 'Modern CMake' book, to see a recent snapshot of which version
+of CMake is being installed by default on Linux distributions.
 
-## Testing
+![Packaging Status](https://repology.org/badge/vertical-allrepos/cmake.svg?columns=3&minversion=3.10.0)
 
-Testing is integrated into the project and is automated via `ctest`.
+And more than that, it's so easy to install a modern version of CMake on
+Linux/MacOS/Windows, and many other OSes.
 
-## Collaboration
+Looking at the release notes of CMake versions from 3.0 till now, a minimum
+version requirement of
+[3.21](https://cmake.org/cmake/help/latest/release/3.21.html) is a good starting
+point. That release brings in particular presets and some nice quality of life
+features that will make the maintenance and the use of this project much simpler
+and pleasant. After all, there is no justification for doing free Open Source
+without pleasure :smiley:
 
-We would like all distro maintainers to be collaborators on this repo. If you
-are a distro maintainer then please contact us so we can send you an invite.
-
-If you are a collaborator then make changes as you see fit. You don't need to
-ask for permission to make a change. Noloader is not an CMake expert so there
-are probably lots of opportunities for improvement.
-
-Keep in mind other distros may be using the files, so try not to break things
-for the other guy. We have to be mindful of lesser-used platforms and compilers,
-like AIX, Solaris, IBM xlC and Oracle's SunCC.
-
-## Conventional commits/changelog
-
-The project is setup for husky and [conventional
-commits](https://www.conventionalcommits.org/en/v1.0.0/) to keep some standard
-for the commit messages and [conventional
-changelog](https://github.com/conventional-changelog/standard-version) to
-automatically generate change logs.
-
- In order to be able to use that, have `nodejs` and `npm` installed in your
-environment and run the following just one time after you clone this project:
-
-```shell
-npx husky install
-npm install -g @commitlint/cli @commitlint/config-conventional standard-version
-```
-
-Commit message are linted automatically.
-
-## New release process
-
-For changelog generation, when the project is ready for a new release, run the
-following command in the project root, where M.m.p is version number to be
-released:
-
-```shell
-npx standard-version --skip.commit --skip.tag -r M.m.p
-```
-
-The version number will be automatically bumped in the `CMakeLists.txt` and the
-`CHANGELOG.md` file will be automatically updated. Open both of them, check the
-changes, lint and format the `CHANGELOG.md` and write any additional notes, then
-commit.
-
-Create a new tag for the release by using the following command:
-
-```shell
-git tag -a CRYPTOPP_M_m_p -m "Blah blah blah..."
-```
-
-> :warning: **Pay attention to the format of the tag**: the version uses `_` and
-> not `.`!
-
-Push with the following command:
-
-```shell
-git push --follow-tags
-```
-
-The automatic GitHub actions will take care of the rest, including the
-multi-platform builds, the testings, and when everything is successful, the
-creation of a release and its associated artifacts.
-
-Check the page at [GitHub
-Actions](https://github.com/noloader/cryptopp-cmake/actions) for the details,
-and the page at [GitHub
-Releases](https://github.com/noloader/cryptopp-cmake/releases) for the newly
-created release.
-
-[build-matrix]: https://github.com/noloader/cryptopp-cmake/actions/workflows/cmake-build.yml?branch=develop
-[build-status-develop-badge]: https://github.com/noloader/cryptopp-cmake/actions/workflows/cmake-build.yml/badge.svg?branch=develop
-[build-status-master-badge]: https://github.com/noloader/cryptopp-cmake/actions/workflows/cmake-build.yml/badge.svg?branch=master
-[commits]: https://github.com/noloader/cryptopp-cmake/commits
-[last-commit-badge]: https://img.shields.io/github/last-commit/noloader/cryptopp-cmake
-[latest-release]: https://github.com/noloader/cryptopp-cmake/releases/latest
-[license-badge]: https://img.shields.io/github/license/noloader/cryptopp-cmake
+[build-matrix]: https://github.com/abdes/cryptopp-cmake/actions/workflows/cmake-build.yml?branch=develop
+[build-status-develop-badge]: https://github.com/abdes/cryptopp-cmake/actions/workflows/cmake-build.yml/badge.svg?branch=develop
+[build-status-master-badge]: https://github.com/abdes/cryptopp-cmake/actions/workflows/cmake-build.yml/badge.svg?branch=master
+[commits]: https://github.com/abdes/cryptopp-cmake/commits
+[last-commit-badge]: https://img.shields.io/github/last-commit/abdes/cryptopp-cmake
+[latest-release]: https://github.com/abdes/cryptopp-cmake/releases/latest
+[license-badge]: https://img.shields.io/github/license/abdes/cryptopp-cmake
 [license]: https://opensource.org/licenses/BSD-3-Clause
 [linux-badge]: https://img.shields.io/badge/OS-linux-blue
 [macos-badge]: https://img.shields.io/badge/OS-macOS-blue
-[release-badge]: https://img.shields.io/github/v/release/noloader/cryptopp-cmake
+[release-badge]: https://img.shields.io/github/v/release/abdes/cryptopp-cmake
 [windows-badge]: https://img.shields.io/badge/OS-windows-blue
