@@ -1,0 +1,7 @@
+set(cryptopp_VERSION @CRYPTOPP_VERSION@)
+
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/@TARGETS_EXPORT_NAME@.cmake")
+
+check_required_components(cryptopp)

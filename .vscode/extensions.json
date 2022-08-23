@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "stkb.rewrap",
+        "donjayamanne.githistory",
+        "ms-vscode.cmake-tools",
+        "cheshirekow.cmake-format",
+        "editorconfig.editorconfig",
+        "redhat.vscode-yaml"
+    ]
+}

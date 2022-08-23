@@ -1,0 +1,12 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+libdir=@CMAKE_INSTALL_LIBDIR@
+includedir=@CMAKE_INSTALL_INCLUDEDIR@
+
+Name: cryptopp
+URL: https://github.com/weidai11/cryptopp
+Description: Free C++ class library of cryptographic schemes
+Version: @CRYPTOPP_VERSION@
+Requires.private: 
+Requires: 
+Cflags: -I${includedir}
+Libs: -L${libdir} @MODULE_LINK_LIBS@
