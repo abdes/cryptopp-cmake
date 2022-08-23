@@ -1,10 +1,11 @@
 {
     "recommendations": [
-        "stkb.rewrap",
-        "donjayamanne.githistory",
-        "ms-vscode.cmake-tools",
         "cheshirekow.cmake-format",
+        "donjayamanne.githistory",
         "editorconfig.editorconfig",
-        "redhat.vscode-yaml"
+        "ms-vscode.cmake-tools",
+        "redhat.vscode-yaml",
+        "stkb.rewrap",
+        "streetsidesoftware.code-spell-checker",
     ]
 }

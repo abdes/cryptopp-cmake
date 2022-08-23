@@ -30,4 +30,7 @@
         "**/.idea": true,
         "**/out": true
     },
+    "cSpell.words": [
+        "cmake"
+    ],
 }
