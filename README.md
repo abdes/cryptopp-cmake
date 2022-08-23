@@ -116,8 +116,8 @@ master branch.
   # where xxx is the location where you put the cryptopp-cmake files
   ```
 
-  That's pretty much it. You'll be able to link against `cryptopp-shared` or
-  `cryptopp-static` and have cmake handle everything else for you.
+  That's pretty much it. You'll be able to link against `cryptopp` or the scoped
+  alias `cryptopp::cryptopp` and have cmake handle everything else for you.
 
 An example is located in the
 [test/standard-cpm](https://github.com/abdes/cryptopp-cmake/tree/master/test)
