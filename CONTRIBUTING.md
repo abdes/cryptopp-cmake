@@ -67,9 +67,8 @@ git tag -a CRYPTOPP_M_m_p -m "Blah blah blah..."
 
 > :warning: **Pay attention to the format of the tag**: the version uses `_` and
 > not `.`!
-
 > Also note that *patch tags* will also have a letter suffix (e.g.
-CRYPTOPP_8_7_0_a).
+> CRYPTOPP_8_7_0_a).
 
 Push with the following command:
 
