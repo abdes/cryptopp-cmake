@@ -51,54 +51,13 @@ if(CMAKE_GENERATOR STREQUAL Xcode)
 endif()
 
 # ============================================================================
-# Settable options
+# Compiler options
 # ============================================================================
-
-option(
-  CRYPTOPP_USE_INTERMEDIATE_OBJECTS_TARGET
-  "Use a common intermediate objects target for the static and shared library targets"
-  ON)
-
-if(${CMAKE_VERSION} VERSION_GREATER "3.1")
-  option(
-    USE_OPENMP
-    "Enable OpenMP to parallelize some of the algorithms. Note that this isn't always faster, see https://www.cryptopp.com/wiki/OpenMP"
-    OFF)
-endif()
-
-# These are IA-32 options.
-option(DISABLE_ASM "Disable ASM" OFF)
-option(DISABLE_SSSE3 "Disable SSSE3" OFF)
-option(DISABLE_SSE4 "Disable SSE4" OFF)
-option(DISABLE_AESNI "Disable AES-NI" OFF)
-option(DISABLE_CLMUL "Disable CLMUL" OFF)
-option(DISABLE_SHA "Disable SHA" OFF)
-option(DISABLE_AVX "Disable AVX" OFF)
-option(DISABLE_AVX2 "Disable AVX2" OFF)
-
-# These are ARM A-32 options
-option(DISABLE_ARM_NEON "Disable NEON" OFF)
-
-# These are Aarch64 options
-option(DISABLE_ARM_AES "Disable ASIMD" OFF)
-option(DISABLE_ARM_AES "Disable AES" OFF)
-option(DISABLE_ARM_PMULL "Disable PMULL" OFF)
-option(DISABLE_ARM_SHA "Disable SHA" OFF)
-
-# These are PowerPC options
-option(DISABLE_ALTIVEC "Disable Altivec" OFF)
-option(DISABLE_POWER7 "Disable POWER7" OFF)
-option(DISABLE_POWER8 "Disable POWER8" OFF)
-option(DISABLE_POWER9 "Disable POWER9" OFF)
 
 if(NOT DEFINED CRYPTOPP_DATA_DIR)
   set(CRYPTOPP_DATA_DIR "\"${CRYPTOPP_PROJECT_DIR}\"")
 endif()
 message(STATUS "Crypto++ data dir at: ${CRYPTOPP_DATA_DIR}")
-
-# ============================================================================
-# Compiler options
-# ============================================================================
 
 set(CRYPTOPP_COMPILE_DEFINITIONS)
 set(CRYPTOPP_COMPILE_OPTIONS)

@@ -43,7 +43,53 @@ set(META_NAME_VERSION        "${META_PROJECT_NAME} v${META_VERSION} (${META_VERS
 string(MAKE_C_IDENTIFIER ${META_PROJECT_NAME} META_PROJECT_ID)
 string(TOUPPER ${META_PROJECT_ID} META_PROJECT_ID)
 
-# Customization options
+# Set the CRYPTOPP_VERSION to be the same as what was downloaded with CPM,
+# FetchContent, git clone, etc...
+set(CRYPTOPP_VERSION ${META_VERSION})
+
+message("=> Project : ${META_NAME_VERSION}")
+
+# ============================================================================
+# Settable options
+# ============================================================================
+
+option(
+  CRYPTOPP_USE_INTERMEDIATE_OBJECTS_TARGET
+  "Use a common intermediate objects target for the static and shared library targets"
+  ON)
+
+if(${CMAKE_VERSION} VERSION_GREATER "3.1")
+  option(
+    USE_OPENMP
+    "Enable OpenMP to parallelize some of the algorithms. Note that this isn't always faster, see https://www.cryptopp.com/wiki/OpenMP"
+    OFF)
+endif()
+
+# These are IA-32 options.
+option(DISABLE_ASM "Disable ASM" OFF)
+option(DISABLE_SSSE3 "Disable SSSE3" OFF)
+option(DISABLE_SSE4 "Disable SSE4" OFF)
+option(DISABLE_AESNI "Disable AES-NI" OFF)
+option(DISABLE_CLMUL "Disable CLMUL" OFF)
+option(DISABLE_SHA "Disable SHA" OFF)
+option(DISABLE_AVX "Disable AVX" OFF)
+option(DISABLE_AVX2 "Disable AVX2" OFF)
+
+# These are ARM A-32 options
+option(DISABLE_ARM_NEON "Disable NEON" OFF)
+
+# These are Aarch64 options
+option(DISABLE_ARM_AES "Disable ASIMD" OFF)
+option(DISABLE_ARM_AES "Disable AES" OFF)
+option(DISABLE_ARM_PMULL "Disable PMULL" OFF)
+option(DISABLE_ARM_SHA "Disable SHA" OFF)
+
+# These are PowerPC options
+option(DISABLE_ALTIVEC "Disable Altivec" OFF)
+option(DISABLE_POWER7 "Disable POWER7" OFF)
+option(DISABLE_POWER8 "Disable POWER8" OFF)
+option(DISABLE_POWER9 "Disable POWER9" OFF)
+
 option(CRYPTOPP_USE_MASTER_BRANCH
        "Get crypto++ from the master branch, not from a release tag" FALSE)
 option(CRYPTOPP_SOURCES
@@ -60,15 +106,9 @@ option(CRYPTOPP_BUILD_DOCUMENTATION
 # depends on it and wants to have a self-contained install.
 option(CRYPTOPP_INSTALL "Generate the install target for this project." ON)
 
-message("=> Project : ${META_NAME_VERSION}")
-
 # ------------------------------------------------------------------------------
 # Project Declaration
 # ------------------------------------------------------------------------------
-
-# Generate folders for IDE targets (e.g., VisualStudio solutions)
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(IDE_FOLDER "${META_PROJECT_NAME}")
 
 # Declare project
 if(CMAKE_VERSION VERSION_LESS 3.12)
@@ -146,14 +186,5 @@ endif()
 # Add cryptopp cmake subdirectory
 # ------------------------------------------------------------------------------
 
-function(add_cryptopp_subdir)
-  # Set the CRYPTOPP_VERSION to be the same as what was downloaded with CPM,
-  # FetchContent, git clone, etc...
-  set(CRYPTOPP_VERSION ${META_VERSION})
-
-  message("=> Module : cryptopp")
-  add_subdirectory(cryptopp)
-endfunction()
-
-# Let cmake do the rest using the cryptopp-cmake CMakeLists.txt
-add_cryptopp_subdir()
+message("=> Module : cryptopp")
+add_subdirectory(cryptopp)
