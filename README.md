@@ -37,12 +37,51 @@ For more details on this topic, see down below...
 
 ## Table of Contents
 
+- [Before you ask](#before-you-ask)
 - [Versioning principles](#versioning-principles)
 - [Standard usage](#standard-usage)
 - [Using a local copy of crypto++](#using-a-local-copy-of-crypto)
 - [Requesting the master branch of cryptopp](#requesting-the-master-branch-of-cryptopp)
 - [Other ways](#other-ways)
 - [Why Modern CMake?](#why-modern-cmake)
+
+## Before you ask
+
+- **Can you support an older version of CMake? You really don't need 3.21...**
+
+  No.
+  
+  This is an opinionated fork with the main purpose being to stay always on a
+  recent version of CMake. We believe that the build system should be the latest
+  unlike compilers and Operating Systems. If you want to stay on old versions,
+  please take a look at the old repo.
+
+- **Can you fix the shared library build? I really like DLLs...**
+  
+  Me too, but No.
+  
+  Crypto++ does not properly export symbols and manage visibility. You can
+  request this feature from the crypto++ project maintainers. The old DLL build
+  was only for FIPS version, with limited symbol exports. That version is going
+  end-of-life and there is no point from supporting it here.
+
+  If you love DLLs, you can make a [*Wrapper
+  DLL*](https://cryptopp.com/wiki/Wrapper_DLL) as explained on crypto++ wiki.
+
+  The CMakeLists.txt in this project are already built for shared and static
+  builds, but the shared build is locked until crypto++ is ready for it.
+
+- **Why did you change XXX? It used to work like YYY before...**
+
+  I don't know.
+  
+  I use crypto++ in my project, and I use it in a way that I learnt and
+  improved over time through experience, extensive reading of other peoples'
+  experiences, and sticking as close as possible to modern cmake practices. I'm
+  open to new ways and suggestions, especially if they come via a tracked issue,
+  a rationale and a pull request. If you have a valid use case, please document
+  it in an issue and let's find someone to help make it happen for you. It's
+  Open Source :smiley:
 
 ## Versioning principles
 
