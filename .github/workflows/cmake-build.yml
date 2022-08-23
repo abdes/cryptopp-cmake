@@ -63,7 +63,7 @@ jobs:
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v1.12
         with:
-          version: 3.21.x
+          cmake-version: 3.21.x
 
       - name: Configure
         shell: cmake -P {0}
