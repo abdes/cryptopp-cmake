@@ -94,8 +94,6 @@ option(CRYPTOPP_USE_MASTER_BRANCH
        "Get crypto++ from the master branch, not from a release tag" FALSE)
 option(CRYPTOPP_SOURCES
        "Use the provided location for crypto++ sources; do not fetch")
-option(CRYPTOPP_BUILD_STATIC "Build static library" ON)
-option(CRYPTOPP_BUILD_SHARED "Build shared library" ON)
 option(CRYPTOPP_BUILD_TESTING "Build library tests" ON)
 option(CRYPTOPP_BUILD_DOCUMENTATION
        "Use Doxygen to create the HTML based API documentation" OFF)
@@ -105,6 +103,23 @@ option(CRYPTOPP_BUILD_DOCUMENTATION
 # when `cryptopp` is used as a sub-project wit cmake and the user publicly
 # depends on it and wants to have a self-contained install.
 option(CRYPTOPP_INSTALL "Generate the install target for this project." ON)
+
+# Crypto++ DOES NOT properly support DLL builds. The old DLL was the FIPS one,
+# which is being abandoned. Therefore, we only allow static builds until that
+# situation is solved.
+#
+# See https://cryptopp.com/wiki/Wrapper_DLL for a workaround.
+option(CRYPTOPP_BUILD_SHARED "Build shared library" OFF)
+if(${CRYPTOPP_BUILD_SHARED})
+  message(
+    FATAL_ERROR
+      "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+      "Crypto++ DOES NOT properly support DLL builds. The old DLL was the FIPS"
+      "one, which is being abandoned.\nTherefore, we only allow static builds"
+      "until that situation changes.\n"
+      "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+  )
+endif()
 
 # ------------------------------------------------------------------------------
 # Project Declaration

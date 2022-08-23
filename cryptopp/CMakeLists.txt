@@ -4,16 +4,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # ===-----------------------------------------------------------------------===#
 
-# Please ensure your changes or patch meets minimum requirements.
-#
-# The current minimum requirements are cmake v3.1 and is the first cmake version
-# with which this CMakeLists.txt works.
-#
-# Please do not check in something for 3.5.0 or higher because it will break LTS
-# operating systems and a number of developer boards used for testing. To test
-# your changes, please the dev container provided in this project with vscode,
-# which explicitly downloads cmake v3.1.0.
-
 # Print useful information
 message(STATUS "[cryptopp] CMake version ${CMAKE_VERSION}")
 message(STATUS "[cryptopp] System ${CMAKE_SYSTEM_NAME}")
@@ -36,7 +26,6 @@ if(NOT CMAKE_CONFIGURATION_TYPES
   set(CMAKE_BUILD_TYPE RelWithDebInfo)
 endif()
 
-include(GNUInstallDirs)
 include(CheckCXXCompilerFlag)
 
 # We now carry around test programs. test_cxx.cpp is the default C++ one. Also
@@ -53,11 +42,6 @@ endif()
 # ============================================================================
 # Compiler options
 # ============================================================================
-
-if(NOT DEFINED CRYPTOPP_DATA_DIR)
-  set(CRYPTOPP_DATA_DIR "\"${CRYPTOPP_PROJECT_DIR}\"")
-endif()
-message(STATUS "Crypto++ data dir at: ${CRYPTOPP_DATA_DIR}")
 
 set(CRYPTOPP_COMPILE_DEFINITIONS)
 set(CRYPTOPP_COMPILE_OPTIONS)
@@ -136,10 +120,10 @@ endif()
 if(DISABLE_POWER9)
   list(APPEND CRYPTOPP_COMPILE_DEFINITIONS CRYPTOPP_DISABLE_POWER9)
 endif()
-if(NOT CRYPTOPP_DATA_DIR STREQUAL "")
-  list(APPEND CRYPTOPP_COMPILE_DEFINITIONS
-       "CRYPTOPP_DATA_DIR=${CRYPTOPP_DATA_DIR}")
-endif()
+
+# TODO(abdes) check where this define is used in crypto++ sources
+list(APPEND CRYPTOPP_COMPILE_DEFINITIONS
+     "CRYPTOPP_DATA_DIR=\"${CRYPTOPP_PROJECT_DIR}\"")
 
 # ##############################################################################
 
@@ -1160,77 +1144,53 @@ endfunction()
 # Set compiler options and compiler definitions for each CXX source file.
 cryptopp_set_compile_properties()
 
+# FIXME For now crypto++ is not written to properly export symbols. This is a
+# library problem, and the old DLL was a FIPS only DLL that does not contain
+# everything.
+#
+# The recommended way to use a DLL is to make a wrapper DLL that links
+# statically to crypto++.
+#
+# see https://cryptopp.com/wiki/Wrapper_DLL
+#
+# This CMakeLists is howeber written to support both shared and static builds.
+# We block the shared build at the parent scope.
+
+# The lib we are building should respect and honor the cmake BUILD_SHARED_LIB
+# and the rule that requires the build interface to be consistent with the
+# install interface. We implement that by having our own CRYPTOPP_BUILD_SHARED
+# options that we use to override the BUILD_SHARED_LIBS in our package scope.
+if(DEFINED CRYPTOPP_BUILD_SHARED)
+  set(BUILD_SHARED_LIBS ${CRYPTOPP_BUILD_SHARED})
+endif()
+
+if(NOT DEFINED CMAKE_CXX_VISIBILITY_PRESET AND NOT DEFINED
+                                               CMAKE_VISIBILITY_INLINES_HIDDEN)
+  set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+  set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
+endif()
+
+# From now on, we only build one type of library per invocation of cmake, shared
+# or static, but never both. Which one we build depends on whether
+# CRYPTOPP_BUILD_SHARED was ON or OFF.
+
 # Build the complete list of library sources, including CXX, ASM and
 # intermediary object files.
 set(cryptopp_LIBRARY_SOURCES ${cryptopp_SOURCES_ASM})
-if(CRYPTOPP_USE_INTERMEDIATE_OBJECTS_TARGET AND NOT ${CMAKE_VERSION}
-                                                VERSION_LESS "2.8.8")
-  add_library(cryptopp-object OBJECT ${cryptopp_SOURCES})
-  set_target_properties(cryptopp-object PROPERTIES LINKER_LANGUAGE CXX)
+list(APPEND cryptopp_LIBRARY_SOURCES ${cryptopp_SOURCES})
 
-  list(APPEND cryptopp_LIBRARY_SOURCES $<TARGET_OBJECTS:cryptopp-object>)
-else()
-  list(APPEND cryptopp_LIBRARY_SOURCES ${cryptopp_SOURCES})
+add_library(cryptopp ${cryptopp_LIBRARY_SOURCES})
+add_library(cryptopp::cryptopp ALIAS cryptopp)
+set_target_properties(cryptopp PROPERTIES VERSION ${META_VERSION}
+                                          SOVERSION ${META_VERSION_MAJOR})
+set_target_properties(cryptopp PROPERTIES LINKER_LANGUAGE CXX)
+if(${CRYPTOPP_BUILD_SHARED})
+  target_compile_definitions(cryptopp PRIVATE "CRYPTOPP_EXPORTS")
 endif()
 
-if(CRYPTOPP_BUILD_STATIC)
-  add_library(cryptopp-static STATIC ${cryptopp_LIBRARY_SOURCES})
-  set_target_properties(cryptopp-static PROPERTIES LINKER_LANGUAGE CXX)
-  # CMake >= 2.8.11
-  if(NOT ${CMAKE_VERSION} VERSION_LESS "2.8.11")
-    target_include_directories(
-      cryptopp-static PUBLIC $<BUILD_INTERFACE:${CRYPTOPP_PROJECT_DIR}>
-                             $<INSTALL_INTERFACE:include>)
-  else()
-    set_target_properties(
-      cryptopp-static
-      PROPERTIES
-        INCLUDE_DIRECTORIES
-        "$<BUILD_INTERFACE:${CRYPTOPP_PROJECT_DIR}> $<INSTALL_INTERFACE:include>"
-    )
-  endif()
-endif()
-
-if(CRYPTOPP_BUILD_SHARED)
-  add_library(cryptopp-shared SHARED ${cryptopp_LIBRARY_SOURCES})
-  set_target_properties(cryptopp-shared PROPERTIES LINKER_LANGUAGE CXX)
-  if(NOT ${CMAKE_VERSION} VERSION_LESS "2.8.11")
-    target_include_directories(
-      cryptopp-shared PUBLIC $<BUILD_INTERFACE:${CRYPTOPP_PROJECT_DIR}>
-                             $<INSTALL_INTERFACE:include>)
-  else()
-    set_target_properties(
-      cryptopp-shared
-      PROPERTIES
-        INCLUDE_DIRECTORIES
-        "$<BUILD_INTERFACE:${CRYPTOPP_PROJECT_DIR}> $<INSTALL_INTERFACE:include>"
-    )
-  endif()
-endif()
-
-# Set filenames for targets to be "cryptopp"
-if(NOT MSVC)
-  set(COMPAT_VERSION ${cryptopp_VERSION_MAJOR}.${cryptopp_VERSION_MINOR})
-
-  if(CRYPTOPP_BUILD_STATIC)
-    set_target_properties(cryptopp-static PROPERTIES OUTPUT_NAME cryptopp)
-  endif()
-  if(CRYPTOPP_BUILD_SHARED)
-    set_target_properties(cryptopp-shared PROPERTIES SOVERSION ${COMPAT_VERSION}
-                                                     OUTPUT_NAME cryptopp)
-  endif()
-endif()
-
-# Add alternate ways to invoke the build for the shared library that are similar
-# to how the crypto++ 'make' tool works. see
-# https://github.com/noloader/cryptopp-cmake/issues/32
-if(CRYPTOPP_BUILD_STATIC)
-  add_custom_target(static DEPENDS cryptopp-static)
-endif()
-if(CRYPTOPP_BUILD_SHARED)
-  add_custom_target(shared DEPENDS cryptopp-shared)
-  add_custom_target(dynamic DEPENDS cryptopp-shared)
-endif()
+target_include_directories(
+  cryptopp PUBLIC $<BUILD_INTERFACE:${CRYPTOPP_PROJECT_DIR}>
+                  $<INSTALL_INTERFACE:include>)
 
 # ============================================================================
 # Third-party libraries
@@ -1240,21 +1200,11 @@ endif()
 # gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib
 # comdlg32.lib
 if(WIN32)
-  if(CRYPTOPP_BUILD_STATIC)
-    target_link_libraries(cryptopp-static kernel32)
-  endif()
-  if(CRYPTOPP_BUILD_SHARED)
-    target_link_libraries(cryptopp-shared kernel32)
-  endif()
+  target_link_libraries(cryptopp kernel32)
 endif()
 
 find_package(Threads)
-if(CRYPTOPP_BUILD_STATIC)
-  target_link_libraries(cryptopp-static ${CMAKE_THREAD_LIBS_INIT})
-endif()
-if(CRYPTOPP_BUILD_SHARED)
-  target_link_libraries(cryptopp-shared ${CMAKE_THREAD_LIBS_INIT})
-endif()
+target_link_libraries(cryptopp ${CMAKE_THREAD_LIBS_INIT})
 
 # ============================================================================
 # Setup OpenMP
@@ -1353,21 +1303,9 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.1" AND USE_OPENMP)
       OpenMP_TARGET INTERFACE ${OpenMP_CXX_FLAGS}
                               ${Additional_OpenMP_Libraries_Workaround})
   endif()
-
-  if(CRYPTOPP_BUILD_STATIC)
-    target_link_libraries(
-      cryptopp-static ${OpenMP_CXX_FLAGS}) # Workaround for Ubuntu 18.04 that
-                                           # otherwise doesn't set -fopenmp for
-                                           # linking
-    target_link_libraries(cryptopp-static OpenMP::OpenMP_CXX)
-  endif()
-  if(CRYPTOPP_BUILD_SHARED)
-    target_link_libraries(
-      cryptopp-shared ${OpenMP_CXX_FLAGS}) # Workaround for Ubuntu 18.04 that
-                                           # otherwise doesn't set -fopenmp for
-                                           # linking
-    target_link_libraries(cryptopp-shared OpenMP::OpenMP_CXX)
-  endif()
+  # Workaround for Ubuntu 18.04 that otherwise doesn't set -fopenmp for linking
+  target_link_libraries(cryptopp ${OpenMP_CXX_FLAGS})
+  target_link_libraries(cryptopp OpenMP::OpenMP_CXX)
 endif()
 
 # ============================================================================
@@ -1376,7 +1314,7 @@ endif()
 
 if(CRYPTOPP_BUILD_TESTING)
   add_executable(cryptest ${cryptopp_SOURCES_TEST})
-  target_link_libraries(cryptest cryptopp-static)
+  target_link_libraries(cryptest PRIVATE cryptopp::cryptopp)
 
   file(COPY ${CRYPTOPP_PROJECT_DIR}/TestData DESTINATION ${PROJECT_BINARY_DIR})
   file(COPY ${CRYPTOPP_PROJECT_DIR}/TestVectors
@@ -1421,6 +1359,8 @@ endif()
 # Deployment instructions
 # ==============================================================================
 
+include(GNUInstallDirs)
+
 if(CRYPTOPP_INSTALL)
   set(TARGETS_EXPORT_NAME "cryptopp_Targets")
   set(runtime "cryptopp_runtime")
@@ -1429,45 +1369,44 @@ if(CRYPTOPP_INSTALL)
   include(ConfigFiles)
   create_module_config_files()
 
-  # Runtime package
-  if(CRYPTOPP_BUILD_SHARED)
-    install(
-      TARGETS cryptopp-shared
-      EXPORT ${TARGETS_EXPORT_NAME}
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${runtime}
-      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT ${runtime}
-      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT ${dev})
-  endif()
-
-  # Development package
-  if(CRYPTOPP_BUILD_STATIC)
-    install(
-      TARGETS cryptopp-static
-      EXPORT ${TARGETS_EXPORT_NAME}
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      COMPONENT ${dev})
-  endif()
+  install(
+    TARGETS cryptopp
+    EXPORT ${TARGETS_EXPORT_NAME}
+    RUNTIME COMPONENT ${runtime}
+    LIBRARY COMPONENT ${runtime}
+    ARCHIVE COMPONENT ${dev}
+    INCLUDES
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
   # Header files
   install(
     FILES ${cryptopp_HEADERS}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/cryptopp
+    TYPE INCLUDE
     COMPONENT ${dev})
 
-  # Target config
+  if(CRYPTOPP_BUILD_SHARED)
+    set(type shared)
+  else()
+    set(type static)
+  endif()
+
   install(
     EXPORT ${TARGETS_EXPORT_NAME}
+    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/cmake/cryptopp"
     NAMESPACE cryptopp::
-    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/cryptopp
+    FILE cryptopp-${type}-targets.cmake
     COMPONENT ${dev})
 
   # Package configuration files
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cryptoppConfig.cmake
-                ${CMAKE_CURRENT_BINARY_DIR}/cryptoppConfigVersion.cmake
-          DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/cryptopp)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cryptopp.pc
-          DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
+  install(
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/cryptoppConfig.cmake
+          ${CMAKE_CURRENT_BINARY_DIR}/cryptoppConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/cryptopp
+    COMPONENT ${dev})
+  install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/cryptopp.pc
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig
+    COMPONENT ${dev})
 
   # Tests
   if(CRYPTOPP_BUILD_TESTING)

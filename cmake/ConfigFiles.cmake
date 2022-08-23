@@ -11,18 +11,9 @@ include(CMakePackageConfigHelpers)
 # ------------------------------------------------------------------------------
 function(_module_cmake_config_files)
   message(STATUS "[cryptopp] Generating cmake package config files")
-  # generate the config file that includes the exports
-  configure_package_config_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/cryptoppConfig.cmake
-    INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/cryptopp
-    PATH_VARS CRYPTOPP_VERSION)
-
-  # generate the version file for the config file
   write_basic_package_version_file(
     ${CMAKE_CURRENT_BINARY_DIR}/cryptoppConfigVersion.cmake
-    VERSION ${CRYPTOPP_VERSION}
-    COMPATIBILITY AnyNewerVersion)
+    COMPATIBILITY SameMajorVersion)
 endfunction()
 
 function(_module_pkgconfig_files)
@@ -31,15 +22,15 @@ function(_module_pkgconfig_files)
 
   set(MODULE_LINK_LIBS "-lcryptopp")
   if(CMAKE_BUILD_TYPE EQUAL "Debug")
-    if(BUILD_SHARED)
-      get_target_property(target_debug_postfix cryptopp-shared DEBUG_POSTFIX)
-    elseif(BUILD_STATIC)
-      get_target_property(target_debug_postfix cryptopp-static DEBUG_POSTFIX)
-    endif()
+    get_target_property(target_debug_postfix cryptopp DEBUG_POSTFIX)
     if(${target_debug_postfix} MATCHES "-NOTFOUND$")
       set(target_debug_postfix "")
     endif()
-    set(MODULE_LINK_LIBS "-lcryptopp${target_debug_postfix}")
+    if(${CRYPTOPP_BUILD_SHARED})
+      set(MODULE_LINK_LIBS "-lcryptopp${target_debug_postfix}")
+    else()
+      set(MODULE_LINK_LIBS "cryptopp${target_debug_postfix}.lib")
+    endif()
   endif()
 
   configure_file(config.pc.in
