@@ -62,13 +62,6 @@ message(STATUS "Crypto++ data dir at: ${CRYPTOPP_DATA_DIR}")
 set(CRYPTOPP_COMPILE_DEFINITIONS)
 set(CRYPTOPP_COMPILE_OPTIONS)
 
-# Stop hiding the damn output... set(CMAKE_VERBOSE_MAKEFILE ON)
-
-# Stop CMake complaining...
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  set(MACOSX_RPATH FALSE)
-endif()
-
 # Always 1 ahead in Master. Also see
 # http://groups.google.com/forum/#!topic/cryptopp-users/SFhqLDTQPG4
 set(LIB_VER
@@ -86,7 +79,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
     -wd3180)
 endif()
 
-# Also see http://github.com/weidai11/cryptopp/issues/395
 if(DISABLE_ASM)
   list(APPEND CRYPTOPP_COMPILE_DEFINITIONS CRYPTOPP_DISABLE_ASM)
 endif()
