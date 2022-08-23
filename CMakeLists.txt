@@ -124,9 +124,7 @@ else()
   if(EXISTS ${CRYPTOPP_SOURCES})
     message(
       STATUS "Crypto++ from user specified location at: ${CRYPTOPP_SOURCES}")
-    set(CRYPTOPP_PROJECT_DIR
-        ${CRYPTOPP_SOURCES}
-        CACHE PATH "Crypto++ project directory" FORCE)
+    set(CRYPTOPP_PROJECT_DIR ${CRYPTOPP_SOURCES})
   else()
     message(
       FATAL_ERROR

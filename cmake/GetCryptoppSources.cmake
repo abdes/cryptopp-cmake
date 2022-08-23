@@ -25,7 +25,7 @@ function(use_gitclone)
     QUIET)
   set(CRYPTOPP_PROJECT_DIR
       ${ext_cryptopp_SOURCE_DIR}
-      CACHE PATH "Crypto++ project directory" FORCE)
+      PARENT_SCOPE)
 endfunction()
 
 function(use_fetch_content)
@@ -55,5 +55,5 @@ function(use_fetch_content)
   FetchContent_GetProperties(ext_cryptopp SOURCE_DIR)
   set(CRYPTOPP_PROJECT_DIR
       ${ext_cryptopp_SOURCE_DIR}
-      CACHE PATH "Crypto++ project directory" FORCE)
+      PARENT_SCOPE)
 endfunction()
