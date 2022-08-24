@@ -6,6 +6,7 @@
 build/
 _build/
 cmake-build*/
+out
 
 # Mac garbage
 .DS_Store
