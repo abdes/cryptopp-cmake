@@ -12,9 +12,9 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
   && apt-get -y install lsb-release wget software-properties-common \
   && apt-get -y install build-essential ninja-build valgrind gdb lcov doxygen graphviz
 
-# Install minimum cmake 2.8.12 so we can test with the worst version possible
+# Install minimum cmake 3.21.7 so we can test with the worst version possible
 RUN apt-get -y install libidn11
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.1.0/cmake-3.1.0-Linux-x86_64.sh \
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.21.7/cmake-3.21.7-Linux-x86_64.sh \
   -q -O /tmp/cmake-install.sh \
   && chmod u+x /tmp/cmake-install.sh \
   && /tmp/cmake-install.sh --skip-license --prefix=/usr \
