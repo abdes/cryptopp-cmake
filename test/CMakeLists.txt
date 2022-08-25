@@ -37,6 +37,8 @@ foreach(test ${tests})
                                                      ${test_name}-configure)
 endforeach()
 
+add_subdirectory(integration)
+
 add_custom_target(
   test-verbose
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/.."
