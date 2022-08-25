@@ -1067,9 +1067,11 @@ if(${CRYPTOPP_BUILD_SHARED})
   target_compile_definitions(cryptopp PRIVATE "CRYPTOPP_EXPORTS")
 endif()
 
+# FIXME: for now, we use crypto++ files as #include"xxxx.h" Should it rather be
+# #include "cryptopp/xxxx.h"?
 target_include_directories(
   cryptopp PUBLIC $<BUILD_INTERFACE:${CRYPTOPP_PROJECT_DIR}>
-                  $<INSTALL_INTERFACE:include>)
+                  $<INSTALL_INTERFACE:include/cryptopp>)
 
 # ============================================================================
 # Third-party libraries
