@@ -39,7 +39,6 @@ add_test(
 add_test(NAME ${test_name}-build
          COMMAND ${CMAKE_COMMAND} --build
                  "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test")
-# Run build test case after the configure test case
 set_tests_properties(${test_name}-build PROPERTIES DEPENDS
                                                    ${test_name}-configure)
 
@@ -48,16 +47,13 @@ add_test(
   NAME ${test_name}-install
   COMMAND ${CMAKE_COMMAND} --build
           "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test" --target install)
-# Run build test case after the configure test case
 set_tests_properties(${test_name}-install PROPERTIES DEPENDS ${test_name}-build)
 
+# Check installed files
 add_test(
   NAME ${test_name}-checks
-  COMMAND
-    ${CMAKE_COMMAND} -D
-    "CRYPTOPP_CMAKE_INSTALL_ROOT=${CRYPTOPP_CMAKE_INSTALL_ROOT}" -P
-    "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}/checks.cmake")
-# Run build test case after the configure test case
+  COMMAND ${CMAKE_COMMAND} --build
+          "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test" --target do-checks)
 set_tests_properties(${test_name}-checks PROPERTIES DEPENDS
                                                     ${test_name}-install)
 
@@ -95,6 +91,5 @@ set_tests_properties(${test_name}-configure PROPERTIES DEPENDS
 add_test(NAME ${test_name}-build
          COMMAND ${CMAKE_COMMAND} --build
                  "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test")
-# Run build test case after the configure test case
 set_tests_properties(${test_name}-build PROPERTIES DEPENDS
                                                    ${test_name}-configure)
