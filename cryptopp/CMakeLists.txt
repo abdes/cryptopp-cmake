@@ -46,11 +46,6 @@ endif()
 set(CRYPTOPP_COMPILE_DEFINITIONS)
 set(CRYPTOPP_COMPILE_OPTIONS)
 
-# Always 1 ahead in Master. Also see
-# http://groups.google.com/forum/#!topic/cryptopp-users/SFhqLDTQPG4
-set(LIB_VER
-    ${cryptopp_VERSION_MAJOR}${cryptopp_VERSION_MINOR}${cryptopp_VERSION_PATCH})
-
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
   list(
     APPEND
