@@ -21,7 +21,7 @@ function(use_gitclone)
     ${META_GITHUB_REPO}
     ${source_location}
     DIRECTORY
-    ${CMAKE_BINARY_DIR}/external
+    ${CMAKE_CURRENT_BINARY_DIR}/external
     QUIET)
   set(CRYPTOPP_PROJECT_DIR
       ${ext_cryptopp_SOURCE_DIR}
@@ -49,7 +49,7 @@ function(use_fetch_content)
   endif()
   # Use FetchContent
   include(FetchContent)
-  set(FETCHCONTENT_BASE_DIR ${CMAKE_BINARY_DIR}/external)
+  set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/external)
   FetchContent_Declare(ext_cryptopp ${source_location})
   FetchContent_Populate(ext_cryptopp)
   FetchContent_GetProperties(ext_cryptopp SOURCE_DIR)
