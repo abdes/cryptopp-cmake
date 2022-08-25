@@ -6,7 +6,8 @@
 
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
-project(CryptoppCmakeStandardTest)
+# Test project for cryptopp-cmake installation
+project(CryptoppCmakeFindPackageTest)
 
 find_package(cryptopp REQUIRED PATHS ${CRYPTOPP_CMAKE_INSTALL_ROOT})
 

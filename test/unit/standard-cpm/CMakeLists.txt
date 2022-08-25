@@ -4,10 +4,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # ===-----------------------------------------------------------------------===#
 
-# Test project for the standard way of using cryptopp-cmake
-
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
+# Test project for the standard way of using cryptopp-cmake
 project(CryptoppCmakeStandardTest)
 
 # ---- Add dependencies via CPM ----
