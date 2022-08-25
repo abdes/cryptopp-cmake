@@ -99,8 +99,7 @@
             "inherits": [
                 "base",
                 "debug",
-                "compiler-clang",
-                "code-coverage"
+                "compiler-clang"
             ]
         },
         {
@@ -109,8 +108,7 @@
             "inherits": [
                 "base",
                 "debug",
-                "compiler-clang",
-                "code-coverage"
+                "compiler-clang"
             ],
             "condition": {
                 "type": "equals",
@@ -134,8 +132,7 @@
             "inherits": [
                 "base",
                 "debug",
-                "compiler-gcc",
-                "code-coverage"
+                "compiler-gcc"
             ]
         },
         {
