@@ -217,7 +217,6 @@
             "name": "rel-base",
             "hidden": true,
             "jobs": 4,
-            "cleanFirst": true,
             "verbose": true
         },
         {
