@@ -153,7 +153,6 @@ endif()
 if(NOT CRYPTOPP_SOURCES)
   include(GetCryptoppSources)
 
-  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/external)
   find_package(Git QUIET)
   if(${CMAKE_VERSION} VERSION_LESS "3.11.0")
     if(GIT_FOUND)

@@ -13,6 +13,7 @@ function(use_gitclone)
         "CRYPTOPP_${META_VERSION_MAJOR}_${META_VERSION_MINOR}_${META_VERSION_PATCH}"
     )
   endif()
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/external)
   include(GitClone)
   git_clone(
     PROJECT_NAME
@@ -50,6 +51,7 @@ function(use_fetch_content)
   # Use FetchContent
   include(FetchContent)
   set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/external)
+  file(MAKE_DIRECTORY ${FETCHCONTENT_BASE_DIR})
   FetchContent_Declare(ext_cryptopp ${source_location})
   FetchContent_Populate(ext_cryptopp)
   FetchContent_GetProperties(ext_cryptopp SOURCE_DIR)
