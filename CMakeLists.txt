@@ -11,8 +11,8 @@
 cmake_minimum_required(VERSION 3.21)
 
 # List of directories specifying a search path for CMake modules to be loaded by
-# the the include() or find_package() commands before checking the default
-# modules that come with CMake.
+# the include() or find_package() commands before checking the default modules
+# that come with CMake.
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # ------------------------------------------------------------------------------
@@ -96,11 +96,11 @@ option(CRYPTOPP_SOURCES
        "Use the provided location for crypto++ sources; do not fetch")
 option(CRYPTOPP_BUILD_TESTING "Build library tests" ON)
 option(CRYPTOPP_BUILD_DOCUMENTATION
-       "Use Doxygen to create the HTML based API documentation" OFF)
+       "Use Doxygen to create the HTML-based API documentation" OFF)
 
 # Override the CRYPTOPP_INSTALL option to ON/OFF to respectively force
 # install/no-install behavior for cryptopp module. This is particularly useful
-# when `cryptopp` is used as a sub-project wit cmake and the user publicly
+# when `cryptopp` is used as a sub-project with CMake and the user publicly
 # depends on it and wants to have a self-contained install.
 option(CRYPTOPP_INSTALL "Generate the install target for this project." ON)
 
@@ -115,7 +115,7 @@ if(${CRYPTOPP_BUILD_SHARED})
     FATAL_ERROR
       "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
       "Crypto++ DOES NOT properly support DLL builds. The old DLL was the FIPS"
-      "one, which is being abandoned.\nTherefore, we only allow static builds"
+      "one which is being abandoned.\nTherefore, we only allow static builds"
       "until that situation changes.\n"
       "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
   )
@@ -146,8 +146,8 @@ endif()
 # Fetch / Find crypto++
 # ------------------------------------------------------------------------------
 
-# If the cmake is invoked with an explicit option (CRYPTOPP_PROJECT_DIR) setting
-# the location for user-provides sources of crypto++, or if the automatic
+# If CMake is invoked with an explicit option (CRYPTOPP_PROJECT_DIR), setting
+# the location for user-provided sources of crypto++, or if the automatic
 # download fails, we use that option value to find the sources.
 
 if(NOT CRYPTOPP_SOURCES)
@@ -158,12 +158,12 @@ if(NOT CRYPTOPP_SOURCES)
     if(GIT_FOUND)
       use_gitclone()
     else()
-      message("-> Detected cmake version ${CMAKE_VERSION} is too old and does")
+      message("-> Detected CMake version ${CMAKE_VERSION} is too old and does")
       message("   not support `FetchContent`,")
       message("-> Could not find `git` to attempt to automatically clone the")
       message("   crypto++ repo,")
       message("")
-      message("=> Use can still use the `CRYPTOPP_SOURCES` option to provide")
+      message("=> You can still use the `CRYPTOPP_SOURCES` option to provide")
       message("   a local copy of the crypto++ sources.")
     endif()
   else()
@@ -177,12 +177,12 @@ if(NOT CRYPTOPP_SOURCES)
 else()
   if(EXISTS ${CRYPTOPP_SOURCES})
     message(
-      STATUS "Crypto++ from user specified location at: ${CRYPTOPP_SOURCES}")
+      STATUS "Crypto++ from user-specified location at: ${CRYPTOPP_SOURCES}")
     set(CRYPTOPP_PROJECT_DIR ${CRYPTOPP_SOURCES})
   else()
     message(
       FATAL_ERROR
-        "User provided location (${CRYPTOPP_SOURCES}) for crypto++ sources does not exit!"
+        "User-provided location (${CRYPTOPP_SOURCES}) for crypto++ sources does not exit!"
     )
   endif()
 endif()
@@ -197,7 +197,7 @@ if(CRYPTOPP_BUILD_TESTING)
 endif()
 
 # ------------------------------------------------------------------------------
-# Add cryptopp cmake subdirectory
+# Add cryptopp CMake subdirectory
 # ------------------------------------------------------------------------------
 
 message("=> Module : cryptopp")
