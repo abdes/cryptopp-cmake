@@ -14,6 +14,7 @@ project(CryptoppCmakeStandardTest)
 # see https://github.com/TheLartians/CPM.cmake for more info
 
 include(${TEST_CMAKE_FILES_DIR}/CPM.cmake)
+set(FETCHCONTENT_BASE_DIR ${CMAKE_BINARY_DIR}/../third_party_deps)
 
 cpmaddpackage(
   NAME
