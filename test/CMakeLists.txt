@@ -4,18 +4,38 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # ===-----------------------------------------------------------------------===#
 
-if(NOT ${CMAKE_VERSION} VERSION_LESS "3.14")
-  message(
-    STATUS
-      "adding test: standard-cpm (${CMAKE_CURRENT_BINARY_DIR}/test_standard-cpm)"
-  )
+set(TEST_CMAKE_FILES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+set(TEST_EXAMPLE_SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/example-src)
+
+file(GLOB tests "${CMAKE_CURRENT_SOURCE_DIR}/unit/*")
+foreach(test ${tests})
+  cmake_path(GET test FILENAME test_name)
+  message(STATUS "Adding unit test: ${test_name}")
+  # Configure
   add_test(
-    NAME standard-cpm
+    NAME ${test_name}-configure
     COMMAND
-      ${CMAKE_COMMAND} -S "${CMAKE_CURRENT_SOURCE_DIR}/standard-cpm" -B
-      "${CMAKE_CURRENT_BINARY_DIR}/test_standard-cpm" -D
-      "CPM_cryptopp-cmake_SOURCE=${CMAKE_CURRENT_SOURCE_DIR}/..")
-endif()
+      ${CMAKE_COMMAND}
+      # Always use ninja, never the visual studio generator (bugged)
+      -GNinja
+      # Pass the locations for common cmake test files
+      -D TEST_CMAKE_FILES_DIR=${TEST_CMAKE_FILES_DIR}
+      # Pass the locations for common test source files
+      -D TEST_EXAMPLE_SOURCES_DIR=${TEST_EXAMPLE_SOURCES_DIR}
+      # Setup cmake source/build dirs
+      -S "${test}" -B "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
+      # Use local source code for cryptopp-cmake
+      -D "CPM_cryptopp-cmake_SOURCE=${CMAKE_CURRENT_SOURCE_DIR}/.."
+      # Enable verbose makefiles so we can see the full compile command line
+      -D CMAKE_VERBOSE_MAKEFILE=ON)
+  # Build
+  add_test(NAME ${test_name}-build
+           COMMAND ${CMAKE_COMMAND} --build
+                   "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test")
+  # Run build test case after the configure test case
+  set_tests_properties(${test_name}-build PROPERTIES DEPENDS
+                                                     ${test_name}-configure)
+endforeach()
 
 add_custom_target(
   test-verbose
