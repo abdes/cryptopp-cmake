@@ -1253,15 +1253,13 @@ if(CRYPTOPP_INSTALL)
     EXPORT ${TARGETS_EXPORT_NAME}
     RUNTIME COMPONENT ${runtime}
     LIBRARY COMPONENT ${runtime}
-    ARCHIVE COMPONENT ${dev}
-    INCLUDES
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    ARCHIVE COMPONENT ${dev})
 
   # Header files
   install(
     FILES ${cryptopp_HEADERS}
-    TYPE INCLUDE
-    COMPONENT ${dev})
+    COMPONENT ${dev}
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/cryptopp")
 
   if(CRYPTOPP_BUILD_SHARED)
     set(type shared)
