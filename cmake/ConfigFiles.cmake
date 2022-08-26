@@ -26,11 +26,7 @@ function(_module_pkgconfig_files)
       set(target_debug_postfix "")
     endif()
   endif()
-  if(${CRYPTOPP_BUILD_SHARED})
-    set(MODULE_LINK_LIBS "-lcryptopp${target_debug_postfix}")
-  else()
-    set(MODULE_LINK_LIBS "cryptopp${target_debug_postfix}.lib")
-  endif()
+  set(MODULE_LINK_LIBS "-lcryptopp${target_debug_postfix}")
 
   configure_file(config.pc.in
                  ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_PKGCONFIG_FILE} @ONLY)
