@@ -1067,7 +1067,7 @@ target_include_directories(
   cryptopp
   PUBLIC $<BUILD_INTERFACE:${CRYPTOPP_PROJECT_DIR}>
          $<BUILD_INTERFACE:${CRYPTOPP_PREFIXED_INCLUDE_DIR}>
-         $<INSTALL_INTERFACE:include/cryptopp>)
+         $<INSTALL_INTERFACE:include>)
 
 # ============================================================================
 # Third-party libraries
