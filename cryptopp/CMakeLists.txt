@@ -307,12 +307,6 @@ list(APPEND CRYPTOPP_MSVC_COMPILE_OPTIONS "/Zi")
 list(APPEND CRYPTOPP_MSVC_COMPILE_OPTIONS "/GR")
 list(APPEND CRYPTOPP_MSVC_COMPILE_OPTIONS "/EHsc")
 
-# Enable PIC for all target machines except 32-bit i386 due to register
-# pressures.
-if(NOT CRYPTOPP_I386)
-  set(CMAKE_POSITION_INDEPENDENT_CODE 1)
-endif()
-
 # IBM XLC compiler options for AIX and Linux. Must use CMAKE_CXX_COMPILER here
 # due to XLC 13.1 and LLVM front-end.
 if(CMAKE_CXX_COMPILER MATCHES "xlC")
