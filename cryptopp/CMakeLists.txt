@@ -1061,11 +1061,13 @@ if(${CRYPTOPP_BUILD_SHARED})
   target_compile_definitions(cryptopp PRIVATE "CRYPTOPP_EXPORTS")
 endif()
 
-# FIXME: for now, we use crypto++ files as #include"xxxx.h" Should it rather be
-# #include "cryptopp/xxxx.h"?
+# TODO: make the prefix for includes settable (e.g. cryptopp, crypto++)
+cmake_path(GET CRYPTOPP_PROJECT_DIR PARENT_PATH CRYPTOPP_PREFIXED_INCLUDE_DIR)
 target_include_directories(
-  cryptopp PUBLIC $<BUILD_INTERFACE:${CRYPTOPP_PROJECT_DIR}>
-                  $<INSTALL_INTERFACE:include/cryptopp>)
+  cryptopp
+  PUBLIC $<BUILD_INTERFACE:${CRYPTOPP_PROJECT_DIR}>
+         $<BUILD_INTERFACE:${CRYPTOPP_PREFIXED_INCLUDE_DIR}>
+         $<INSTALL_INTERFACE:include/cryptopp>)
 
 # ============================================================================
 # Third-party libraries

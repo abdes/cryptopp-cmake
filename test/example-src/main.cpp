@@ -7,7 +7,7 @@
 #include <array>
 #include <cstdint>
 
-#include <osrng.h> // for random number generation
+#include <cryptopp/osrng.h> // for random number generation
 
 int main(int argc, char **argv) {
   constexpr size_t c_buffer_size = 16;

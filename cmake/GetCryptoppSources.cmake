@@ -27,7 +27,12 @@ function(get_cryptopp_sources)
   include(FetchContent)
   set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/external)
   file(MAKE_DIRECTORY ${FETCHCONTENT_BASE_DIR})
-  FetchContent_Populate(ext_cryptopp ${source_location})
+  FetchContent_Populate(
+    ext_cryptopp
+    ${source_location} QUIET
+    SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-src/cryptopp
+    BINARY_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-build
+    SUBBUILD_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-subbuild)
   FetchContent_GetProperties(ext_cryptopp SOURCE_DIR)
   set(CRYPTOPP_PROJECT_DIR
       ${ext_cryptopp_SOURCE_DIR}
