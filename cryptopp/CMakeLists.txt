@@ -43,6 +43,30 @@ endif()
 # Compiler options
 # ============================================================================
 
+# Enable PIC for all target machines except 32-bit i386 due to register
+# pressures. See https://github.com/abdes/cryptopp-cmake/issues/4
+#
+# Although the common practice with many Linux distros is to build static
+# librarues with no PIC, we have a special case here for cryptopp:
+#
+# * We prefer to enable hardening of targets
+#   (https://en.wikipedia.org/wiki/Address_space_layout_randomization), which at
+#   a minimum requires the library and its using targets to be compiled and
+#   linked with PIE
+#
+# * The wrapper DLL (https://www.cryptopp.com/wiki/Wrapper_DLL) usage scenario
+#   requires that the object files in the static library be built with PIC,
+#   otherwise, such object files cannot be linked into a DLL/shared library
+#
+# To satisfy both scenarios, we need to compile all source code with PIC enabled
+# and link executables with PIE.
+# 
+# TODO: make a specific test case for using wrapper DLL
+# TODO: make a test case for -fPIE executable
+if(NOT CRYPTOPP_I386)
+  set(CMAKE_POSITION_INDEPENDENT_CODE 1)
+endif()
+
 set(CRYPTOPP_COMPILE_DEFINITIONS)
 set(CRYPTOPP_COMPILE_OPTIONS)
 
