@@ -58,6 +58,20 @@ option(
   "Use a common intermediate objects target for the static and shared library targets"
   ON)
 
+if (CRYPTOPP_INCLUDE_PREFIX)
+  set (CRYPTOPP_INCLUDE_PREFIX
+    ${CRYPTOPP_INCLUDE_PREFIX}
+    CACHE
+    STRING
+    "Set the dir where the headers get installed. Defaults to cryptopp.")
+else()
+  set (CRYPTOPP_INCLUDE_PREFIX
+    "cryptopp"
+    CACHE
+    STRING
+    "Set the dir where the headers get installed. Defaults to cryptopp.")
+endif()
+
 if(${CMAKE_VERSION} VERSION_GREATER "3.1")
   option(
     USE_OPENMP
