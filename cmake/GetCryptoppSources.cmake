@@ -17,13 +17,14 @@ macro(use_gitclone)
   include(GitClone)
   git_clone(
     PROJECT_NAME
-    cryptopp
+    "${CRYPTOPP_INCLUDE_PREFIX}"
     GIT_URL
     ${META_GITHUB_REPO}
     ${source_location}
     DIRECTORY
     ${CMAKE_CURRENT_BINARY_DIR}/_deps
-    QUIET)
+    SOURCE_DIR_VARIABLE
+    cryptopp_SOURCE_DIR)
   set(CRYPTOPP_PROJECT_DIR
       ${cryptopp_SOURCE_DIR}
       PARENT_SCOPE)
@@ -37,15 +38,16 @@ macro(use_url_download)
     include(FetchContent)
     file(MAKE_DIRECTORY ${FETCHCONTENT_BASE_DIR})
     FetchContent_Populate(
-      ext_cryptopp
+      cryptopp
       URL "${META_GITHUB_REPO}/releases/download/CRYPTOPP_${META_VERSION_MAJOR}_${META_VERSION_MINOR}_${META_VERSION_PATCH}/cryptopp${META_VERSION_MAJOR}${META_VERSION_MINOR}${META_VERSION_PATCH}.zip"
       QUIET
-      SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-src/cryptopp
+      SOURCE_DIR
+        ${FETCHCONTENT_BASE_DIR}/cryptopp-src/${CRYPTOPP_INCLUDE_PREFIX}
       BINARY_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-build
       SUBBUILD_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-subbuild)
-    FetchContent_GetProperties(ext_cryptopp SOURCE_DIR)
+    FetchContent_GetProperties(cryptopp SOURCE_DIR)
     set(CRYPTOPP_PROJECT_DIR
-        ${ext_cryptopp_SOURCE_DIR}
+        ${cryptopp_SOURCE_DIR}
         PARENT_SCOPE)
   endif()
 endmacro()
