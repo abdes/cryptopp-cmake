@@ -122,8 +122,7 @@
             "inherits": [
                 "base",
                 "debug",
-                "compiler-clang",
-                "code-coverage"
+                "compiler-clang"
             ]
         },
         {
