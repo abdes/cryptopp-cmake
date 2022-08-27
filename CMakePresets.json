@@ -17,7 +17,9 @@
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
             },
             "cacheVariables": {
-                "CRYPTOPP_BUILD_TESTING": "ON"
+                "CRYPTOPP_BUILD_TESTING": "ON",
+                "USE_CCACHE": "ON",
+                "CMAKE_USER_MAKE_RULES_OVERRIDE": "${sourceDir}/cmake/ResetInitialCompilerOptions.cmake"
             }
         },
         {

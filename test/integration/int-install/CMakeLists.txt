@@ -11,8 +11,10 @@ project(CryptoppCmakeInstallTest)
 
 # ---- Add dependencies via CPM ----
 # see https://github.com/TheLartians/CPM.cmake for more info
-
 include(${TEST_CMAKE_FILES_DIR}/CPM.cmake)
+
+# ---- Speedup build using ccache (needs CPM) ----
+include(${TEST_CMAKE_FILES_DIR}/FasterBuild.cmake)
 
 cpmaddpackage(
   NAME

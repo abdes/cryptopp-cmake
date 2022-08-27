@@ -29,7 +29,3 @@ if(NOT (EXISTS ${CPM_DOWNLOAD_LOCATION}))
 endif()
 
 include(${CPM_DOWNLOAD_LOCATION})
-
-# We make sure that we have 'third_party' in the name so that the targets get
-# excluded from the generated target lists for the various tools.
-set(FETCHCONTENT_BASE_DIR ${CMAKE_BINARY_DIR}/third_party_deps)

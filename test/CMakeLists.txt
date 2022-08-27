@@ -4,8 +4,11 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # ===-----------------------------------------------------------------------===#
 
-set(TEST_CMAKE_FILES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+set(TEST_CMAKE_FILES_DIR ${CMAKE_SOURCE_DIR}/cmake)
 set(TEST_EXAMPLE_SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/example-src)
+
+set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_BINARY_DIR})
+cmake_path(APPEND FETCHCONTENT_BASE_DIR _deps)
 
 file(GLOB tests "${CMAKE_CURRENT_SOURCE_DIR}/unit/*")
 foreach(test ${tests})
@@ -18,10 +21,17 @@ foreach(test ${tests})
       ${CMAKE_COMMAND}
       # Always use ninja, never the visual studio generator (bugged)
       -GNinja
-      # Pass the locations for common cmake test files
+      # Pass the locations for common cmake files
       -D TEST_CMAKE_FILES_DIR=${TEST_CMAKE_FILES_DIR}
       # Pass the locations for common test source files
       -D TEST_EXAMPLE_SOURCES_DIR=${TEST_EXAMPLE_SOURCES_DIR}
+      # Share the cryptopp fetched sources among all tests
+      -D "FETCHCONTENT_BASE_DIR=${FETCHCONTENT_BASE_DIR}"
+      # Use ccache
+      -D "USE_CCACHE=TRUE"
+      # Override cmake compiler flags for ccache/MSVC
+      -D
+      "CMAKE_USER_MAKE_RULES_OVERRIDE=${TEST_CMAKE_FILES_DIR}/ResetInitialCompilerOptions.cmake"
       # Setup cmake source/build dirs
       -S "${test}" -B "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
       # Use local source code for cryptopp-cmake

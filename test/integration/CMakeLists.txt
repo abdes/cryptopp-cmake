@@ -14,6 +14,10 @@ set(CRYPTOPP_CMAKE_INSTALL_ROOT
 set(test_name "int-install")
 message(STATUS "Adding base integration test: ${test_name}")
 
+set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_BINARY_DIR})
+cmake_path(GET FETCHCONTENT_BASE_DIR PARENT_PATH FETCHCONTENT_BASE_DIR)
+cmake_path(APPEND FETCHCONTENT_BASE_DIR _deps)
+
 # Configure
 add_test(
   NAME ${test_name}-configure
@@ -25,6 +29,13 @@ add_test(
     -D "TEST_CMAKE_FILES_DIR=${TEST_CMAKE_FILES_DIR}"
     # Pass the locations for common test source files
     -D "TEST_EXAMPLE_SOURCES_DIR=${TEST_EXAMPLE_SOURCES_DIR}"
+    # Share the cryptopp fetched sources among all tests
+    -D "FETCHCONTENT_BASE_DIR=${FETCHCONTENT_BASE_DIR}"
+    # Use ccache
+    -D "USE_CCACHE=TRUE"
+    # Override cmake compiler flags for ccache/MSVC
+    -D
+    "CMAKE_USER_MAKE_RULES_OVERRIDE=${TEST_CMAKE_FILES_DIR}/ResetInitialCompilerOptions.cmake"
     # Set the install prefix
     -D "CMAKE_INSTALL_PREFIX=${CRYPTOPP_CMAKE_INSTALL_ROOT}"
     # Setup cmake source/build dirs

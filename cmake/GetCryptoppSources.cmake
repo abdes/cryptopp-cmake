@@ -4,37 +4,62 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # ===-----------------------------------------------------------------------===#
 
-function(get_cryptopp_sources)
-  find_package(Git QUIET)
-  if(GIT_FOUND)
-    if(${CRYPTOPP_USE_MASTER_BRANCH})
-      set(source_location GIT_REPOSITORY "${META_GITHUB_REPO}" GIT_TAG "master")
-    else()
-      set(source_location
-          GIT_REPOSITORY
-          "${META_GITHUB_REPO}"
-          GIT_TAG
-          "CRYPTOPP_${META_VERSION_MAJOR}_${META_VERSION_MINOR}_${META_VERSION_PATCH}"
-      )
-    endif()
-  elseif(NOT ${CRYPTOPP_USE_MASTER_BRANCH})
+macro(use_gitclone)
+  if(${CRYPTOPP_USE_MASTER_BRANCH})
+    set(source_location GIT_BRANCH "master")
+  else()
     set(source_location
-        URL
-        "${META_GITHUB_REPO}/releases/download/CRYPTOPP_${META_VERSION_MAJOR}_${META_VERSION_MINOR}_${META_VERSION_PATCH}/cryptopp${META_VERSION_MAJOR}${META_VERSION_MINOR}${META_VERSION_PATCH}.zip"
+        GIT_TAG
+        "CRYPTOPP_${META_VERSION_MAJOR}_${META_VERSION_MINOR}_${META_VERSION_PATCH}"
     )
   endif()
-  # Use FetchContent
-  include(FetchContent)
-  set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/external)
-  file(MAKE_DIRECTORY ${FETCHCONTENT_BASE_DIR})
-  FetchContent_Populate(
-    ext_cryptopp
-    ${source_location} QUIET
-    SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-src/cryptopp
-    BINARY_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-build
-    SUBBUILD_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-subbuild)
-  FetchContent_GetProperties(ext_cryptopp SOURCE_DIR)
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/_deps)
+  include(GitClone)
+  git_clone(
+    PROJECT_NAME
+    cryptopp
+    GIT_URL
+    ${META_GITHUB_REPO}
+    ${source_location}
+    DIRECTORY
+    ${CMAKE_CURRENT_BINARY_DIR}/_deps
+    QUIET)
   set(CRYPTOPP_PROJECT_DIR
-      ${ext_cryptopp_SOURCE_DIR}
+      ${cryptopp_SOURCE_DIR}
       PARENT_SCOPE)
+endmacro()
+
+macro(use_url_download)
+  if(NOT ${CRYPTOPP_USE_MASTER_BRANCH})
+    if(NOT DEFINED FETCHCONTENT_BASE_DIR)
+      set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/_deps)
+    endif()
+    include(FetchContent)
+    file(MAKE_DIRECTORY ${FETCHCONTENT_BASE_DIR})
+    FetchContent_Populate(
+      ext_cryptopp
+      URL "${META_GITHUB_REPO}/releases/download/CRYPTOPP_${META_VERSION_MAJOR}_${META_VERSION_MINOR}_${META_VERSION_PATCH}/cryptopp${META_VERSION_MAJOR}${META_VERSION_MINOR}${META_VERSION_PATCH}.zip"
+      QUIET
+      SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-src/cryptopp
+      BINARY_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-build
+      SUBBUILD_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-subbuild)
+    FetchContent_GetProperties(ext_cryptopp SOURCE_DIR)
+    set(CRYPTOPP_PROJECT_DIR
+        ${ext_cryptopp_SOURCE_DIR}
+        PARENT_SCOPE)
+  endif()
+endmacro()
+
+function(get_cryptopp_sources)
+  # If we have git on the system, prefer the basic git workflow, which is more
+  # predictable and straightforward than the FetchContent.
+  find_package(Git QUIET)
+  if(GIT_FOUND)
+    use_gitclone()
+  else()
+    message(STATUS "Downloading crypto++ from URL...")
+    # We use FetchContent for its ability to download an archive from a URL and
+    # unzip it.
+    use_url_download()
+  endif()
 endfunction()
