@@ -20,7 +20,7 @@ foreach(test ${tests})
     COMMAND
       ${CMAKE_COMMAND}
       # Always use ninja, never the visual studio generator (bugged)
-      -GNinja
+      -G${CMAKE_GENERATOR}
       # Pass the locations for common cmake files
       -D TEST_CMAKE_FILES_DIR=${TEST_CMAKE_FILES_DIR}
       # Pass the locations for common test source files
