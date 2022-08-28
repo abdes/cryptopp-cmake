@@ -25,7 +25,7 @@ cpmaddpackage(
   GIT_TAG
   master
   OPTIONS
-  "CRYPTOPP_BUILD_TESTING ON"
+  "CRYPTOPP_BUILD_TESTING OFF"
   "CRYPTOPP_INSTALL ON")
 
 include(${INT_TEST_CMAKE_FILES_DIR}/ProjectInstallTests.cmake)
