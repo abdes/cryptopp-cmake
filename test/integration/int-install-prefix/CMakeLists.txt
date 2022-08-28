@@ -29,4 +29,8 @@ cpmaddpackage(
   "CRYPTOPP_INSTALL ON"
   "CRYPTOPP_INCLUDE_PREFIX ${CRYPTOPP_INCLUDE_PREFIX}")
 
+add_executable(rng-test main.cpp)
+target_link_libraries(rng-test PUBLIC cryptopp::cryptopp)
+target_compile_features(rng-test PRIVATE cxx_constexpr)
+
 include(${INT_TEST_CMAKE_FILES_DIR}/ProjectInstallTests.cmake)

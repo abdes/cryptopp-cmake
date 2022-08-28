@@ -8,17 +8,6 @@ set(INT_TEST_CMAKE_FILES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set(CRYPTOPP_CMAKE_INSTALL_ROOT
     "${CMAKE_CURRENT_BINARY_DIR}/cryptopp-cmake-install")
 
-# ------------------------------------------------------------------------------
-# Basic install tests
-# ------------------------------------------------------------------------------
-
-set(test_name "int-install")
-message(STATUS "Adding base integration test: ${test_name}")
-
-set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_BINARY_DIR})
-cmake_path(GET FETCHCONTENT_BASE_DIR PARENT_PATH FETCHCONTENT_BASE_DIR)
-cmake_path(APPEND FETCHCONTENT_BASE_DIR _deps)
-
 file(GLOB tests "${CMAKE_CURRENT_SOURCE_DIR}/int-install-*")
 foreach(test ${tests})
   cmake_path(GET test FILENAME test_name)
@@ -35,8 +24,6 @@ foreach(test ${tests})
       "INT_TEST_CMAKE_FILES_DIR=${INT_TEST_CMAKE_FILES_DIR}"
       # Pass the locations for common test source files
       -D "TEST_EXAMPLE_SOURCES_DIR=${TEST_EXAMPLE_SOURCES_DIR}"
-      # Share the cryptopp fetched sources among all tests
-      -D "FETCHCONTENT_BASE_DIR=${FETCHCONTENT_BASE_DIR}"
       # Use ccache
       -D "USE_CCACHE=TRUE"
       # Override cmake compiler flags for ccache/MSVC
@@ -89,24 +76,13 @@ add_test(
     ${CMAKE_COMMAND}
     # Always use ninja, never the visual studio generator (bugged)
     -G${CMAKE_GENERATOR}
-    # Pass the locations for common cmake test files
-    -D TEST_CMAKE_FILES_DIR=${TEST_CMAKE_FILES_DIR}
     # Pass the locations for common test source files
-    -D TEST_EXAMPLE_SOURCES_DIR=${TEST_EXAMPLE_SOURCES_DIR}
-    # Share the cryptopp fetched sources among all tests
-    -D "FETCHCONTENT_BASE_DIR=${FETCHCONTENT_BASE_DIR}"
-    # Use ccache
-    -D "USE_CCACHE=TRUE"
-    # Override cmake compiler flags for ccache/MSVC
-    -D
-    "CMAKE_USER_MAKE_RULES_OVERRIDE=${TEST_CMAKE_FILES_DIR}/ResetInitialCompilerOptions.cmake"
+    -D "TEST_EXAMPLE_SOURCES_DIR=${TEST_EXAMPLE_SOURCES_DIR}"
     # Set the install prefix
     -D "CRYPTOPP_CMAKE_INSTALL_ROOT=${CRYPTOPP_CMAKE_INSTALL_ROOT}"
     # Setup cmake source/build dirs
     -S "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}" -B
     "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
-    # Use local source code for cryptopp-cmake
-    -D "CPM_cryptopp-cmake_SOURCE=${CMAKE_CURRENT_SOURCE_DIR}/../.."
     # Enable verbose makefiles so we can see the full compile command line
     -D "CMAKE_VERBOSE_MAKEFILE=ON")
 

@@ -5,10 +5,6 @@
 # ===-----------------------------------------------------------------------===#
 # compile and link a test program using crypto++
 
-add_executable(rng-test ${TEST_EXAMPLE_SOURCES_DIR}/main.cpp)
-target_link_libraries(rng-test PUBLIC cryptopp::cryptopp)
-target_compile_features(rng-test PRIVATE cxx_constexpr)
-
 # add custom target to check the installed files at build time
 add_custom_target(do-checks)
 
