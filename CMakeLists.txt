@@ -8,7 +8,7 @@
 # CMake basic options
 # ------------------------------------------------------------------------------
 
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.14)
 
 # List of directories specifying a search path for CMake modules to be loaded by
 # the include() or find_package() commands before checking the default modules
