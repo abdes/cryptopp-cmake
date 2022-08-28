@@ -60,9 +60,9 @@ endif()
 #
 # To satisfy both scenarios, we need to compile all source code with PIC enabled
 # and link executables with PIE.
-# 
-# TODO: make a specific test case for using wrapper DLL
-# TODO: make a test case for -fPIE executable
+#
+# TODO: make a specific test case for using wrapper DLL TODO: make a test case
+# for -fPIE executable
 if(NOT CRYPTOPP_I386)
   set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 endif()
@@ -322,7 +322,7 @@ if(MSVC)
   # winapifamily.h is missing on AppVeyor machines
   include(CheckIncludeFileCXX)
   check_include_file_cxx("winapifamily.h" HAVE_WINAPIFAMILY_H)
-  if(HAVE_WINAPIFAMILY_H)
+  if(HAVE_WINAPIFAMILY_H AND (NOT (USE_CCACHE)))
     list(APPEND CRYPTOPP_MSVC_COMPILE_OPTIONS "/FIwinapifamily.h")
   endif()
 
