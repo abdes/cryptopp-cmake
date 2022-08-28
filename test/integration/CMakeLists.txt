@@ -103,8 +103,8 @@ add_test(
     # Enable verbose makefiles so we can see the full compile command line
     -D "CMAKE_VERBOSE_MAKEFILE=ON")
 
-set_tests_properties(${test_name}-configure PROPERTIES DEPENDS
-                                                       "int-install-install")
+set_tests_properties(${test_name}-configure
+                     PROPERTIES DEPENDS "int-install-default-install")
 
 # Build
 add_test(NAME ${test_name}-build
