@@ -7,7 +7,7 @@
 # and full source at https://github.com/alexreinking/SharedStaticStarter
 # ===-----------------------------------------------------------------------===#
 
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.12)
 
 set(cryptopp_known_comps static shared)
 set(cryptopp_comp_static NO)
