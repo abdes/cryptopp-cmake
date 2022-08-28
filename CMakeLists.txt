@@ -72,12 +72,10 @@ else()
   )
 endif()
 
-if(${CMAKE_VERSION} VERSION_GREATER "3.1")
-  option(
-    USE_OPENMP
-    "Enable OpenMP to parallelize some of the algorithms. Note that this isn't always faster, see https://www.cryptopp.com/wiki/OpenMP"
-    OFF)
-endif()
+option(
+  USE_OPENMP
+  "Enable OpenMP to parallelize some of the algorithms. Note that this isn't always faster, see https://www.cryptopp.com/wiki/OpenMP"
+  OFF)
 
 # These are IA-32 options.
 option(DISABLE_ASM "Disable ASM" OFF)
@@ -140,21 +138,12 @@ endif()
 # ------------------------------------------------------------------------------
 
 # Declare project
-if(CMAKE_VERSION VERSION_LESS 3.12)
-  project(${META_PROJECT_NAME} CXX C)
-  set(PROJECT_VERSION_MAJOR "${META_VERSION_MAJOR}")
-  set(PROJECT_VERSION_MINOR "${META_VERSION_MINOR}")
-  set(PROJECT_VERSION_PATCH"${META_VERSION_PATCH}")
-  set(PROJECT_VERSION "${LIB_VERSION_STRING}")
-else()
-  cmake_policy(SET CMP0048 NEW)
-  project(
-    ${META_PROJECT_NAME}
-    VERSION "${META_VERSION}"
-    DESCRIPTION "${META_PROJECT_DESCRIPTION}"
-    HOMEPAGE_URL "${META_GITHUB_REPO}"
-    LANGUAGES CXX C)
-endif()
+project(
+  ${META_PROJECT_NAME}
+  VERSION "${META_VERSION}"
+  DESCRIPTION "${META_PROJECT_DESCRIPTION}"
+  HOMEPAGE_URL "${META_GITHUB_REPO}"
+  LANGUAGES CXX C)
 
 # ---- Speedup build using ccache (needs CPM) ----
 include(cmake/FasterBuild.cmake)

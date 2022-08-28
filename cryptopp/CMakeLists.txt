@@ -1109,7 +1109,7 @@ target_link_libraries(cryptopp ${CMAKE_THREAD_LIBS_INIT})
 # ============================================================================
 # Setup OpenMP
 # ============================================================================
-if(${CMAKE_VERSION} VERSION_GREATER "3.1" AND USE_OPENMP)
+if(USE_OPENMP)
   find_package(OpenMP)
 
   if(OPENMP_FOUND OR OPENMP_CXX_FOUND)
@@ -1171,8 +1171,7 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.1" AND USE_OPENMP)
   if((NOT OPENMP_FOUND) AND (NOT OPENMP_CXX_FOUND))
     if((APPLE AND ((CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
                    OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")))
-       AND ((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "7.0")
-            AND (CMAKE_VERSION VERSION_LESS "3.12.0")))
+       AND (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "7.0"))
       message(
         STATUS
           "OpenMP: Applying workaround for OSX OpenMP with old cmake that doesn't have FindOpenMP"
