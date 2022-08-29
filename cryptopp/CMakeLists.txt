@@ -1083,8 +1083,9 @@ set_target_properties(cryptopp PROPERTIES LINKER_LANGUAGE CXX)
 if(${CRYPTOPP_BUILD_SHARED})
   target_compile_definitions(cryptopp PRIVATE "CRYPTOPP_EXPORTS")
 endif()
-
-# TODO: make the prefix for includes settable (e.g. cryptopp, crypto++)
+target_compile_definitions(
+  cryptopp
+  INTERFACE $<INSTALL_INTERFACE:CRYPTOPP_INCLUDE_PREFIX=${CRYPTOPP_INCLUDE_PREFIX}>)
 cmake_path(GET CRYPTOPP_PROJECT_DIR PARENT_PATH CRYPTOPP_PREFIXED_INCLUDE_DIR)
 target_include_directories(
   cryptopp
