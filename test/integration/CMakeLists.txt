@@ -37,7 +37,9 @@ foreach(test ${tests})
       # Use local source code for cryptopp-cmake
       -D "CPM_cryptopp-cmake_SOURCE=${CMAKE_CURRENT_SOURCE_DIR}/../.."
       # Enable verbose makefiles so we can see the full compile command line
-      -D "CMAKE_VERBOSE_MAKEFILE=ON")
+      -D "CMAKE_VERBOSE_MAKEFILE=ON"
+      # Throw the version in
+      -D CRYPTOPP_MINIMUM_CMAKE_VERSION=${CRYPTOPP_MINIMUM_CMAKE_VERSION})
 
   # Build
   add_test(NAME ${test_name}-build
@@ -84,7 +86,9 @@ add_test(
     -S "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}" -B
     "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
     # Enable verbose makefiles so we can see the full compile command line
-    -D "CMAKE_VERBOSE_MAKEFILE=ON")
+    -D "CMAKE_VERBOSE_MAKEFILE=ON"
+    # Throw the version in
+      -D CRYPTOPP_MINIMUM_CMAKE_VERSION=${CRYPTOPP_MINIMUM_CMAKE_VERSION})
 
 set_tests_properties(${test_name}-configure
                      PROPERTIES DEPENDS "int-install-default-install")

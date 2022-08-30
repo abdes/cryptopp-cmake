@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # ===-----------------------------------------------------------------------===#
 
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION ${CRYPTOPP_MINIMUM_CMAKE_VERSION})
 
 # Test project for cryptopp-cmake installation
 project(CryptoppCmakeInstallDefaultTest)
