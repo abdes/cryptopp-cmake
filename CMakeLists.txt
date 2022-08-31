@@ -105,7 +105,7 @@ option(DISABLE_POWER9 "Disable POWER9" OFF)
 
 option(CRYPTOPP_USE_MASTER_BRANCH
        "Get crypto++ from the master branch, not from a release tag" FALSE)
-option(CRYPTOPP_SOURCES
+set(CRYPTOPP_SOURCES "" CACHE PATH
        "Use the provided location for crypto++ sources; do not fetch")
 option(CRYPTOPP_BUILD_TESTING "Build library tests" ON)
 option(CRYPTOPP_BUILD_DOCUMENTATION
