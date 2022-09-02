@@ -73,6 +73,18 @@ else()
   )
 endif()
 
+if(CRYPTOPP_SOURCES)
+  set(CRYPTOPP_SOURCES
+      ${CRYPTOPP_SOURCES}
+      CACHE PATH
+            "Use the provided location for crypto++ sources; do not fetch")
+else()
+  set(CRYPTOPP_SOURCES
+      ""
+      CACHE PATH
+            "Use the provided location for crypto++ sources; do not fetch")
+endif()
+
 option(
   USE_OPENMP
   "Enable OpenMP to parallelize some of the algorithms. Note that this isn't always faster, see https://www.cryptopp.com/wiki/OpenMP"
@@ -105,8 +117,6 @@ option(DISABLE_POWER9 "Disable POWER9" OFF)
 
 option(CRYPTOPP_USE_MASTER_BRANCH
        "Get crypto++ from the master branch, not from a release tag" FALSE)
-option(CRYPTOPP_SOURCES
-       "Use the provided location for crypto++ sources; do not fetch")
 option(CRYPTOPP_BUILD_TESTING "Build library tests" ON)
 option(CRYPTOPP_BUILD_DOCUMENTATION
        "Use Doxygen to create the HTML-based API documentation" OFF)
