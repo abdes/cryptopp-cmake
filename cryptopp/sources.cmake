@@ -108,6 +108,7 @@ set(cryptopp_SOURCES
     mqueue.cpp
     mqv.cpp
     nbtheory.cpp
+    neon_simd.cpp
     oaep.cpp
     osrng.cpp
     padlkrng.cpp
