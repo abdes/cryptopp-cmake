@@ -7,28 +7,16 @@
 
 set(archdetect_c_code
     "
-#if defined(__arm__) || defined(__TARGET_ARCH_ARM)
-    #if defined(__ARM_ARCH_7__) \\
-        || defined(__ARM_ARCH_7A__) \\
-        || defined(__ARM_ARCH_7R__) \\
-        || defined(__ARM_ARCH_7M__) \\
-        || (defined(__TARGET_ARCH_ARM) && __TARGET_ARCH_ARM-0 >= 7)
-        #error cmake_ARCH armv7
-    #elif defined(__ARM_ARCH_6__) \\
-        || defined(__ARM_ARCH_6J__) \\
-        || defined(__ARM_ARCH_6T2__) \\
-        || defined(__ARM_ARCH_6Z__) \\
-        || defined(__ARM_ARCH_6K__) \\
-        || defined(__ARM_ARCH_6ZK__) \\
-        || defined(__ARM_ARCH_6M__) \\
-        || (defined(__TARGET_ARCH_ARM) && __TARGET_ARCH_ARM-0 >= 6)
-        #error cmake_ARCH armv6
-    #elif defined(__ARM_ARCH_5TEJ__) \\
-        || (defined(__TARGET_ARCH_ARM) && __TARGET_ARCH_ARM-0 >= 5)
-        #error cmake_ARCH armv5
-    #else
-        #error cmake_ARCH arm
-    #endif
+/*
+    ARM family, known revisions: V5, V6, V7, V8
+*/
+#if defined(__arm__) || defined(__TARGET_ARCH_ARM) || defined(_M_ARM) || defined(_M_ARM64) || defined(__aarch64__) || defined(__ARM64__)
+#  if defined(__aarch64__) || defined(__ARM64__) || defined(_M_ARM64)
+#    error cmake_ARCH arm64
+#  else
+#    error cmake_ARCH arm
+#  endif
+
 #elif defined(__i386) || defined(__i386__) || defined(_M_IX86)
     #error cmake_ARCH i386
 #elif defined(__x86_64) || defined(__x86_64__) || defined(__amd64) || defined(_M_X64)

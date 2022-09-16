@@ -397,7 +397,7 @@ endif()
 set(cryptopp_SOURCES_ASM)
 
 if(MSVC AND NOT DISABLE_ASM)
-  if(${CMAKE_GENERATOR} MATCHES ".*ARM")
+  if(${CMAKE_GENERATOR_PLATFORM} MATCHES "ARM")
     message(
       STATUS
         "[cryptopp] Disabling ASM because ARM is specified as target platform.")
