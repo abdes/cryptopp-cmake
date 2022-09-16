@@ -1031,7 +1031,7 @@ function(cryptopp_set_compile_properties)
       list(REMOVE_ITEM options ${global_flags})
     endif()
   endif()
-  foreach(cxx_file ${cryptopp_SOURCES})
+  foreach(cxx_file ${cryptopp_SOURCES} ${cryptopp_SOURCES_TEST})
     set_property(
       SOURCE ${cxx_file}
       APPEND
