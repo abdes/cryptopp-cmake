@@ -407,9 +407,9 @@ if(MSVC AND NOT DISABLE_ASM)
       list(APPEND cryptopp_SOURCES_ASM ${CRYPTOPP_PROJECT_DIR}/rdrand.asm)
       if(${CMAKE_GENERATOR} MATCHES "Visual Studio.*")
         # workaround https://github.com/abdes/cryptopp-cmake/issues/13
-        set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/rdrand.asm
-                                    PROPERTIES COMPILE_OPTIONS
-                                               "/Fo\$(IntDir)rdrand.asm.obj")
+        set_source_files_properties(
+          ${CRYPTOPP_PROJECT_DIR}/rdrand.asm
+          PROPERTIES COMPILE_OPTIONS "/Fo\$(IntDir)rdrand.asm.obj")
       endif()
     endif()
     if(NOT DISABLE_RDSEED)
@@ -1091,7 +1091,8 @@ if(${CRYPTOPP_BUILD_SHARED})
 endif()
 target_compile_definitions(
   cryptopp
-  INTERFACE $<INSTALL_INTERFACE:CRYPTOPP_INCLUDE_PREFIX=${CRYPTOPP_INCLUDE_PREFIX}>)
+  INTERFACE
+    $<INSTALL_INTERFACE:CRYPTOPP_INCLUDE_PREFIX=${CRYPTOPP_INCLUDE_PREFIX}>)
 cmake_path(GET CRYPTOPP_PROJECT_DIR PARENT_PATH CRYPTOPP_PREFIXED_INCLUDE_DIR)
 target_include_directories(
   cryptopp
