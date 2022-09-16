@@ -216,7 +216,7 @@ dumpmachine(CRYPTOPP_I386 "^i.86$")
 dumpmachine(CRYPTOPP_MINGW32 "^mingw32")
 dumpmachine(CRYPTOPP_MINGW64 "(w64-mingw32|mingw64)")
 dumpmachine(CRYPTOPP_ARMV8 "(armv8|arm64|aarch32|aarch64)")
-dumpmachine(CRYPTOPP_ARM32 "(arm|armhf|arm7l|eabihf)")
+dumpmachine(CRYPTOPP_ARM32 "(^arm$|arm32|armhf|arm7l|eabihf)")
 dumpmachine(CRYPTOPP_PPC32 "^(powerpc|ppc)")
 dumpmachine(CRYPTOPP_PPC64 "^ppc64")
 
