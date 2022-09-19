@@ -18,7 +18,7 @@ jobs:
           node-version: 14.x
 
       - name: Install dependencies
-        run: npm install
+        run: npm install -g @commitlint/cli @commitlint/config-conventional
 
       - name: Validate all commits from PR
         run: |
