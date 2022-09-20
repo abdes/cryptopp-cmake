@@ -35,6 +35,16 @@ jobs:
               generators: "Ninja",
             }
           - {
+              name: "ubuntu-22.04-gcc12",
+              os: ubuntu-22.04,
+              artifact: "Linux.7z",
+              build_type: "Release",
+              cc: "gcc-12",
+              cxx: "g++-12",
+              archiver: "7z a",
+              generators: "Ninja",
+            }
+          - {
               name: "macos-latest",
               os: macos-latest,
               artifact: "macOS.7z",
@@ -71,6 +81,14 @@ jobs:
         with:
           prepend_symlinks_to_path: false
           windows_compile_environment: msvc # this field is required
+
+      - name: Install gcc-12
+        shell: bash
+        if: endsWith(matrix.config.name, 'gcc12')
+        run: |
+          sudo apt-get update
+          sudo apt-get install gcc-12 g++-12
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 110 --slave /usr/bin/g++ g++ /usr/bin/g++-12 --slave /usr/bin/gcov gcov /usr/bin/gcov-12
 
       - name: Configure
         shell: cmake -P {0}
