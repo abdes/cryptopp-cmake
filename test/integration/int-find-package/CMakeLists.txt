@@ -9,6 +9,14 @@ cmake_minimum_required(VERSION ${CRYPTOPP_MINIMUM_CMAKE_VERSION})
 # Test project for cryptopp-cmake installation
 project(CryptoppCmakeFindPackageTest)
 
+message(
+  "---------------------- ${CRYPTOPP_CMAKE_INSTALL_ROOT} ----------------")
+file(GLOB_RECURSE contents "${CRYPTOPP_CMAKE_INSTALL_ROOT}/*cryptopp*")
+foreach(file ${contents})
+  message(${file})
+endforeach()
+
+message("--------------------------------------")
 find_package(cryptopp REQUIRED static PATHS ${CRYPTOPP_CMAKE_INSTALL_ROOT})
 
 # compile and link a test program using crypto++
