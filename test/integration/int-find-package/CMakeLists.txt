@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION ${CRYPTOPP_MINIMUM_CMAKE_VERSION})
 # Test project for cryptopp-cmake installation
 project(CryptoppCmakeFindPackageTest)
 
-find_package(cryptopp REQUIRED PATHS ${CRYPTOPP_CMAKE_INSTALL_ROOT})
+find_package(cryptopp REQUIRED static PATHS ${CRYPTOPP_CMAKE_INSTALL_ROOT})
 
 # compile and link a test program using crypto++
 add_executable(rng-test ${TEST_EXAMPLE_SOURCES_DIR}/main.cpp)
