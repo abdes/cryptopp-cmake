@@ -9,14 +9,10 @@ cmake_minimum_required(VERSION ${CRYPTOPP_MINIMUM_CMAKE_VERSION})
 # Test project for cryptopp-cmake installation
 project(CryptoppCmakeFindPackageTest)
 
-message(
-  "---------------------- ${CRYPTOPP_CMAKE_INSTALL_ROOT} ----------------")
-file(GLOB_RECURSE contents "${CRYPTOPP_CMAKE_INSTALL_ROOT}/*cryptopp*")
-foreach(file ${contents})
-  message(${file})
-endforeach()
-
-message("--------------------------------------")
+# Guide CMake to immediately find the package config exactly where we installed
+# before. Not doing this could (and it happened) result in CMake finding the
+# package config file in the source folder rather than in the install folder.
+set(cryptopp_ROOT ${CRYPTOPP_CMAKE_INSTALL_ROOT})
 find_package(cryptopp REQUIRED static PATHS ${CRYPTOPP_CMAKE_INSTALL_ROOT})
 
 # compile and link a test program using crypto++
