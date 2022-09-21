@@ -18,8 +18,7 @@
             },
             "cacheVariables": {
                 "CRYPTOPP_BUILD_TESTING": "ON",
-                "USE_CCACHE": "ON",
-                "CMAKE_USER_MAKE_RULES_OVERRIDE": "${sourceDir}/cmake/ResetInitialCompilerOptions.cmake"
+                "USE_CCACHE": "ON"
             }
         },
         {

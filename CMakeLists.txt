@@ -16,6 +16,10 @@ cmake_minimum_required(VERSION ${CRYPTOPP_MINIMUM_CMAKE_VERSION})
 # that come with CMake.
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
+# Setup our override file, in which we may cleanup cmake's default compiler
+# options, based on what we are doing.
+set(CMAKE_USER_MAKE_RULES_OVERRIDE "ResetInitialCompilerOptions")
+
 # ------------------------------------------------------------------------------
 # Project description and (meta) information
 # ------------------------------------------------------------------------------
@@ -76,13 +80,11 @@ endif()
 if(CRYPTOPP_SOURCES)
   set(CRYPTOPP_SOURCES
       ${CRYPTOPP_SOURCES}
-      CACHE PATH
-            "Use the provided location for crypto++ sources; do not fetch")
+      CACHE PATH "Use the provided location for crypto++ sources; do not fetch")
 else()
   set(CRYPTOPP_SOURCES
       ""
-      CACHE PATH
-            "Use the provided location for crypto++ sources; do not fetch")
+      CACHE PATH "Use the provided location for crypto++ sources; do not fetch")
 endif()
 
 option(
