@@ -35,8 +35,16 @@ set(cryptopp_static_targets
 set(cryptopp_shared_targets
     "${CMAKE_CURRENT_LIST_DIR}/cryptopp-shared-targets.cmake")
 
+message(
+  "^^^^^^^^^^^^^^^^^ cryptopp_static_targets = ${cryptopp_static_targets}")
+message(
+  "^^^^^^^^^^^^^^^^^ cryptopp_shared_targets = ${cryptopp_shared_targets}")
+
 macro(cryptopp_load_targets type)
   if(NOT EXISTS "${cryptopp_${type}_targets}")
+    message(
+      "^^^^^^^^^^^^^^^^^ NOT EXISTS cryptopp_${type}_targets : ${cryptopp_${type}_targets}"
+    )
     set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE
         "cryptopp `${type}` libraries were requested but not found.")
     set(${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
