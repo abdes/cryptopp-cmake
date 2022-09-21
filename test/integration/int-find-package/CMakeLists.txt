@@ -13,6 +13,9 @@ project(CryptoppCmakeFindPackageTest)
 # before. Not doing this could (and it happened) result in CMake finding the
 # package config file in the source folder rather than in the install folder.
 set(cryptopp_ROOT ${CRYPTOPP_CMAKE_INSTALL_ROOT})
+
+# Explicitly request the static library component to avoid cmake defaulting to
+# the shared component, which is currently not being built.
 find_package(cryptopp REQUIRED static PATHS ${CRYPTOPP_CMAKE_INSTALL_ROOT})
 
 # compile and link a test program using crypto++
