@@ -379,6 +379,18 @@ if(CRYPTOPP_SOLARIS)
 
 endif()
 
+# ------------------------------------------------------------------------------
+# https://github.com/abdes/cryptopp-cmake/issues/3
+#
+# If on Linux with GCC 12 or above, we need to add "-fno-devirtualize" flag to
+# workaround a specific issue introduced by gcc-12.
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux"
+   AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
+   AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "12")
+  list(APPEND CRYPTOPP_COMPILE_OPTIONS "-fno-devirtualize")
+endif()
+# ------------------------------------------------------------------------------
+
 # ============================================================================
 # Sources & headers
 # ============================================================================
