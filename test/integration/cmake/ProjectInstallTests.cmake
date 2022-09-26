@@ -3,7 +3,8 @@
 # copy at https://opensource.org/licenses/BSD-3-Clause).
 # SPDX-License-Identifier: BSD-3-Clause
 # ===-----------------------------------------------------------------------===#
-# compile and link a test program using crypto++
+
+include(GNUInstallDirs)
 
 # add custom target to check the installed files at build time
 add_custom_target(do-checks)
@@ -19,17 +20,17 @@ endfunction()
 
 if(MSVC)
   if(CRYPTOPP_BUILD_SHARED)
-    check_file_exists(${CMAKE_INSTALL_PREFIX}/lib/cryptopp.dll)
+    check_file_exists(${CMAKE_INSTALL_FULL_LIBDIR}/cryptopp.dll)
   else()
-    check_file_exists(${CMAKE_INSTALL_PREFIX}/lib/cryptopp.lib)
+    check_file_exists(${CMAKE_INSTALL_FULL_LIBDIR}/cryptopp.lib)
   endif()
 else()
-  check_file_exists(${CMAKE_INSTALL_PREFIX}/lib/$<TARGET_FILE_NAME:cryptopp>)
+  check_file_exists(${CMAKE_INSTALL_FULL_LIBDIR}/$<TARGET_FILE_NAME:cryptopp>)
 endif()
-check_file_exists(${CMAKE_INSTALL_PREFIX}/include/${CRYPTOPP_INCLUDE_PREFIX})
+check_file_exists(${CMAKE_INSTALL_FULL_INCLUDEDIR}/${CRYPTOPP_INCLUDE_PREFIX})
 check_file_exists(
-  ${CMAKE_INSTALL_PREFIX}/include/${CRYPTOPP_INCLUDE_PREFIX}/config.h)
-check_file_exists(${CMAKE_INSTALL_PREFIX}/share/pkgconfig/cryptopp.pc)
-check_file_exists(${CMAKE_INSTALL_PREFIX}/share/cmake/cryptopp)
+  ${CMAKE_INSTALL_FULL_INCLUDEDIR}/${CRYPTOPP_INCLUDE_PREFIX}/config.h)
+check_file_exists(${CMAKE_INSTALL_FULL_DATAROOTDIR}/pkgconfig/cryptopp.pc)
+check_file_exists(${CMAKE_INSTALL_FULL_DATAROOTDIR}/cmake/cryptopp)
 check_file_exists(
-  ${CMAKE_INSTALL_PREFIX}/share/cmake/cryptopp/cryptoppConfig.cmake)
+  ${CMAKE_INSTALL_FULL_DATAROOTDIR}/cmake/cryptopp/cryptoppConfig.cmake)
