@@ -401,17 +401,6 @@ endif()
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 include(sources)
 
-if(ANDROID)
-  include_directories(${ANDROID_NDK}/sources/android/cpufeatures)
-  list(APPEND cryptopp_SOURCES
-       ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c)
-endif()
-
-# Initially we start with an empty list for ASM sources. It will be populated
-# based on the compiler, target architecture and whether the user requested to
-# disable ASM or not.
-set(cryptopp_SOURCES_ASM)
-
 # ============================================================================
 # Compiler and architecture specific options
 # ============================================================================
