@@ -407,8 +407,18 @@ if(ANDROID)
        ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c)
 endif()
 
+# Initially we start with an empty list for ASM sources. It will be populated
+# based on the compiler, target architecture and whether the user requested to
+# disable ASM or not.
 set(cryptopp_SOURCES_ASM)
 
+# ============================================================================
+# Compiler and architecture specific options
+# ============================================================================
+
+# ------------------------------------------------------------------------------
+# Compiler: MSVC
+# ------------------------------------------------------------------------------
 if(MSVC AND NOT DISABLE_ASM)
   if(${CMAKE_GENERATOR_PLATFORM} MATCHES "ARM")
     message(
@@ -443,14 +453,10 @@ if(MSVC AND NOT DISABLE_ASM)
   endif()
 endif()
 
-# ============================================================================
-# Architecture flags
-# ============================================================================
-
 # TODO: Android, AIX, IBM xlC, iOS and a few other profiles are missing.
 
 # ------------------------------------------------------------------------------
-# Clang, GCC, INtel, xlC
+# Compiler: Clang, GCC, INtel, xlC
 # -------------------------------------------------------------------------------
 
 # New as of Pull Request 461, http://github.com/weidai11/cryptopp/pull/461. Must
@@ -460,6 +466,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang"
    OR CMAKE_CXX_COMPILER_ID STREQUAL "Intel"
    OR CMAKE_CXX_COMPILER MATCHES "xlC")
 
+  # ----------------------------------------------------------------------------
+  # Architecture: AMD64 / I386
+  # ----------------------------------------------------------------------------
   if(CRYPTOPP_AMD64 OR CRYPTOPP_I386)
 
     # For Darwin and a GCC port compiler, we need to check for -Wa,-q first.
@@ -581,12 +590,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang"
         endif()
       endif()
     endif()
+  endif()
 
-    # ------------------------------------------------------------------------------
-    # ARMV8 (and MSVC?)
-    # -------------------------------------------------------------------------------
-
-  elseif(CRYPTOPP_ARMV8)
+  # ----------------------------------------------------------------------------
+  # Architecture: ARM64V8
+  # ----------------------------------------------------------------------------
+  if(CRYPTOPP_ARMV8)
 
     # This checks for <arm_acle.h>
     check_compile_link_option("-march=armv8-a" CRYPTOPP_ARM_ACLE_HEADER
@@ -655,8 +664,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang"
       list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_DISABLE_ARM_PMULL")
       list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_DISABLE_ARM_SHA")
     endif()
+  endif()
 
-  elseif(CRYPTOPP_ARM32)
+  # ----------------------------------------------------------------------------
+  # Architecture: ARM32
+  # ----------------------------------------------------------------------------
+  if(CRYPTOPP_ARM32)
 
     # This checks for <arm_neon.h>
     check_compile_link_option(
@@ -674,97 +687,82 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang"
         "${TEST_PROG_DIR}/test_arm_neon.cpp")
     endif()
 
-    if(CRYPTOPP_ARM32)
+    # Add Cryptogams ASM files for ARM on Linux. Linux is required due to GNU
+    # Assembler. AES requires -mthumb under Clang. Do not add -mthumb for SHA
+    # for any files.
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL
+                                             "Android")
+      foreach(asm_file aes_armv4.S sha1_armv4.S sha256_armv4.S sha512_armv4.S)
+        set(asm_file "${CRYPTOPP_PROJECT_DIR}/${asm_file}")
+        list(APPEND cryptopp_SOURCES_ASM ${asm_file})
 
-      # Add Cryptogams ASM files for ARM on Linux. Linux is required due to GNU
-      # Assembler. AES requires -mthumb under Clang. Do not add -mthumb for SHA
-      # for any files.
-      if(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL
-                                               "Android")
-        foreach(asm_file aes_armv4.S sha1_armv4.S sha256_armv4.S sha512_armv4.S)
-          set(asm_file "${CRYPTOPP_PROJECT_DIR}/${asm_file}")
-          list(APPEND cryptopp_SOURCES ${asm_file})
-          set_source_files_properties(${asm_file} PROPERTIES LANGUAGE CXX)
-          set_source_files_properties(
-            ${asm_file} PROPERTIES COMPILE_OPTIONS "-x;assembler-with-cpp")
-        endforeach()
-      endif()
+        set_source_files_properties(${asm_file} PROPERTIES LANGUAGE CXX)
+        set_source_files_properties(
+          ${asm_file} PROPERTIES COMPILE_OPTIONS "-x;assembler-with-cpp")
 
-      if(CRYPTOPP_ARMV7A_NEON)
+        set_source_files_properties(${asm_file} PROPERTIES COMPILE_OPTIONS
+                                                           "-Wa,--noexecstack")
 
-        if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        if(CRYPTOPP_ARMV7A_NEON)
           set_source_files_properties(
             ${CRYPTOPP_PROJECT_DIR}/aes_armv4.S
-            PROPERTIES COMPILE_FLAGS
-                       "-march=armv7-a -mthumb -mfpu=neon -Wa,--noexecstack")
-        else()
-          set_source_files_properties(
-            ${CRYPTOPP_PROJECT_DIR}/aes_armv4.S
-            PROPERTIES COMPILE_FLAGS
-                       "-march=armv7-a -mfpu=neon -Wa,--noexecstack")
+            PROPERTIES COMPILE_OPTIONS "-march=armv7-a;-mfpu=neon")
+          if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/aes_armv4.S
+                                        PROPERTIES COMPILE_OPTIONS "-mthumb")
+          endif()
         endif()
-
-        set_source_files_properties(
-          ${CRYPTOPP_PROJECT_DIR}/sha1_armv4.S
-          PROPERTIES COMPILE_FLAGS
-                     "-march=armv7-a -mfpu=neon -Wa,--noexecstack")
-        set_source_files_properties(
-          ${CRYPTOPP_PROJECT_DIR}/sha256_armv4.S
-          PROPERTIES COMPILE_FLAGS
-                     "-march=armv7-a -mfpu=neon -Wa,--noexecstack")
-        set_source_files_properties(
-          ${CRYPTOPP_PROJECT_DIR}/sha512_armv4.S
-          PROPERTIES COMPILE_FLAGS
-                     "-march=armv7-a -mfpu=neon -Wa,--noexecstack")
-      endif()
-
-      set_source_files_properties(
-        ${CRYPTOPP_PROJECT_DIR}/aria_simd.cpp
-        PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
-      set_source_files_properties(
-        ${CRYPTOPP_PROJECT_DIR}/blake2s_simd.cpp
-        PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
-      set_source_files_properties(
-        ${CRYPTOPP_PROJECT_DIR}/blake2b_simd.cpp
-        PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
-      set_source_files_properties(
-        ${CRYPTOPP_PROJECT_DIR}/chacha_simd.cpp
-        PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
-      set_source_files_properties(
-        ${CRYPTOPP_PROJECT_DIR}/cham_simd.cpp
-        PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
-      set_source_files_properties(
-        ${CRYPTOPP_PROJECT_DIR}/crc_simd.cpp
-        PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
-      set_source_files_properties(
-        ${CRYPTOPP_PROJECT_DIR}/lea_simd.cpp
-        PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
-      set_source_files_properties(
-        ${CRYPTOPP_PROJECT_DIR}/gcm_simd.cpp
-        PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
-      set_source_files_properties(
-        ${CRYPTOPP_PROJECT_DIR}/rijndael_simd.cpp
-        PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
-      set_source_files_properties(
-        ${CRYPTOPP_PROJECT_DIR}/neon_simd.cpp
-        PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
-      set_source_files_properties(
-        ${CRYPTOPP_PROJECT_DIR}/sha_simd.cpp
-        PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
-      set_source_files_properties(
-        ${CRYPTOPP_PROJECT_DIR}/simon128_simd.cpp
-        PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
-      set_source_files_properties(
-        ${CRYPTOPP_PROJECT_DIR}/speck128_simd.cpp
-        PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
-      set_source_files_properties(
-        ${CRYPTOPP_PROJECT_DIR}/sm4_simd.cpp
-        PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
-    else()
-      list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_DISABLE_ARM_NEON")
+      endforeach()
     endif()
 
-  elseif(CRYPTOPP_PPC32 OR CRYPTOPP_PPC64)
+    set_source_files_properties(
+      ${CRYPTOPP_PROJECT_DIR}/aria_simd.cpp
+      PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+    set_source_files_properties(
+      ${CRYPTOPP_PROJECT_DIR}/blake2s_simd.cpp
+      PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+    set_source_files_properties(
+      ${CRYPTOPP_PROJECT_DIR}/blake2b_simd.cpp
+      PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+    set_source_files_properties(
+      ${CRYPTOPP_PROJECT_DIR}/chacha_simd.cpp
+      PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+    set_source_files_properties(
+      ${CRYPTOPP_PROJECT_DIR}/cham_simd.cpp
+      PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+    set_source_files_properties(
+      ${CRYPTOPP_PROJECT_DIR}/crc_simd.cpp
+      PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+    set_source_files_properties(
+      ${CRYPTOPP_PROJECT_DIR}/lea_simd.cpp
+      PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+    set_source_files_properties(
+      ${CRYPTOPP_PROJECT_DIR}/gcm_simd.cpp
+      PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+    set_source_files_properties(
+      ${CRYPTOPP_PROJECT_DIR}/rijndael_simd.cpp
+      PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+    set_source_files_properties(
+      ${CRYPTOPP_PROJECT_DIR}/neon_simd.cpp
+      PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+    set_source_files_properties(
+      ${CRYPTOPP_PROJECT_DIR}/sha_simd.cpp
+      PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+    set_source_files_properties(
+      ${CRYPTOPP_PROJECT_DIR}/simon128_simd.cpp
+      PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+    set_source_files_properties(
+      ${CRYPTOPP_PROJECT_DIR}/speck128_simd.cpp
+      PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+    set_source_files_properties(
+      ${CRYPTOPP_PROJECT_DIR}/sm4_simd.cpp
+      PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+  endif()
+
+  # ----------------------------------------------------------------------------
+  # Architecture: PPC32 / PPC64
+  # ----------------------------------------------------------------------------
+  if(CRYPTOPP_PPC32 OR CRYPTOPP_PPC64)
 
     # XLC requires -qaltivec in addition to Arch or CPU option Disable POWER9
     # due to https://github.com/weidai11/cryptopp/issues/986.
