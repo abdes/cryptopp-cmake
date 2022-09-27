@@ -411,6 +411,7 @@ list(
   simple.cpp)
 set(cryptopp_SOURCES cryptlib.cpp cpu.cpp integer.cpp ${cryptopp_SOURCES})
 
+# Build the sources lists with full paths
 set(sources_tmp)
 foreach(src ${cryptopp_SOURCES})
   list(APPEND sources_tmp "${CRYPTOPP_PROJECT_DIR}/${src}")
@@ -428,3 +429,15 @@ foreach(src ${cryptopp_HEADERS})
   list(APPEND sources_tmp "${CRYPTOPP_PROJECT_DIR}/${src}")
 endforeach()
 set(cryptopp_HEADERS ${sources_tmp})
+
+# Initially we start with an empty list for ASM sources. It will be populated
+# based on the compiler, target architecture and whether the user requested to
+# disable ASM or not.
+set(cryptopp_SOURCES_ASM)
+
+# Adjust for Android
+if(ANDROID)
+  include_directories(${ANDROID_NDK}/sources/android/cpufeatures)
+  list(APPEND cryptopp_SOURCES
+       ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c)
+endif()

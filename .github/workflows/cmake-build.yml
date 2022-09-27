@@ -155,7 +155,8 @@ jobs:
               -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE}
               -G Ninja
               -D CMAKE_MAKE_PROGRAM=ninja
-              -D USE_CCACHE=${enable_ccache}              
+              -D USE_CCACHE=${enable_ccache}    
+              -D CMAKE_VERBOSE_MAKEFILE=ON
             RESULT_VARIABLE result
           )
           if (NOT result EQUAL 0)
@@ -190,7 +191,7 @@ jobs:
             message(FATAL_ERROR "Build failed")
           endif()
 
-      - name: Run tests
+      - name: Run cryptest
         shell: cmake -P {0}
         run: |
           # Do not run tests in parallel as we share things between them to
@@ -200,7 +201,31 @@ jobs:
           set(ENV{CTEST_OUTPUT_ON_FAILURE} "ON")
 
           execute_process(
-            COMMAND ctest "--verbose"
+            COMMAND ctest "--verbose" "-R" "cryptest"
+            WORKING_DIRECTORY build
+            RESULT_VARIABLE result
+            OUTPUT_VARIABLE output
+            ERROR_VARIABLE output
+            ECHO_OUTPUT_VARIABLE ECHO_ERROR_VARIABLE
+          )
+          if (NOT result EQUAL 0)
+            string(REGEX MATCH "[0-9]+% tests.*[0-9.]+ sec.*$" test_results "${output}")
+            string(REPLACE "\n" "%0A" test_results "${test_results}")
+            message("::error::${test_results}")
+            message(FATAL_ERROR "Running tests failed!")
+          endif()
+
+      - name: Run build tests
+        shell: cmake -P {0}
+        run: |
+          # Do not run tests in parallel as we share things between them to
+          # speed up the build and enable caching. The benefit of caching is
+          # much higher than parallel tests.
+
+          set(ENV{CTEST_OUTPUT_ON_FAILURE} "ON")
+
+          execute_process(
+            COMMAND ctest "-E" "cryptest"
             WORKING_DIRECTORY build
             RESULT_VARIABLE result
             OUTPUT_VARIABLE output
