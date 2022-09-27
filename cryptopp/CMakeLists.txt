@@ -996,8 +996,8 @@ set_source_files_properties(
   PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_LSH256_AVX2_FLAGS}")
 
 set_source_files_properties(
-  ${CRYPTOPP_PROJECT_DIR}/lsh512_sse.cpp
-  PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_LSH512_AVX2_FLAGS}")
+  ${CRYPTOPP_PROJECT_DIR}/lsh512_sse.cpp PROPERTIES COMPILE_OPTIONS
+                                                    "${CRYPTOPP_LSH512_FLAGS}")
 
 set_source_files_properties(
   ${CRYPTOPP_PROJECT_DIR}/lsh512_avx.cpp
