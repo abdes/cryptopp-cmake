@@ -106,7 +106,7 @@ foreach(
   POWER9)
   if(${DISABLE_${feature}})
     message(STATUS "[cryptopp] -!!- DISABLE_${feature}=${DISABLE_${feature}}")
-    list(APPEND CRYPTOPP_COMPILE_DEFINITIONS CRYPTOPP_DISABLE_${feature})
+    list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_DISABLE_${feature}=1")
   endif()
 endforeach()
 
