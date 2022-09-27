@@ -411,12 +411,6 @@ list(
   simple.cpp)
 set(cryptopp_SOURCES cryptlib.cpp cpu.cpp integer.cpp ${cryptopp_SOURCES})
 
-# If ASM is disabled we can remove the SIMD files, too.
-if(DISABLE_ASM)
-  list(FILTER cryptopp_SOURCES EXCLUDE REGEX
-       "^arm_|^ppc_|^neon_|^sse_|_sse.cpp$|_avx.cpp$|_ppc.cpp$|_simd.cpp$")
-endif()
-
 # Build the sources lists with full paths
 set(sources_tmp)
 foreach(src ${cryptopp_SOURCES})
