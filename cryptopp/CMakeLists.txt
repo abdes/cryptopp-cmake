@@ -493,9 +493,9 @@ if((CRYPTOPP_I386 OR CRYPTOPP_AMD64) AND NOT MSVC)
     check_compile_link_option(${sse42_flag} CRYPTOPP_HAVE_SSE42
                               "${TEST_PROG_DIR}/test_x86_sse42.cpp")
     if(CRYPTOPP_HAVE_SSE42)
-    list(APPEND CRYPTOPP_CRC_FLAGS "${sse42_flag}")
-    list(APPEND CRYPTOPP_SHA_FLAGS "${sse42_flag}")
-    list(APPEND CRYPTOPP_SUN_LDFLAGS "${sse42_flag}")
+      list(APPEND CRYPTOPP_CRC_FLAGS "${sse42_flag}")
+      list(APPEND CRYPTOPP_SHA_FLAGS "${sse42_flag}")
+      list(APPEND CRYPTOPP_SUN_LDFLAGS "${sse42_flag}")
     else()
       set(sse42_flag "")
     endif()
@@ -920,21 +920,19 @@ if(CRYPTOPP_PPC32 OR CRYPTOPP_PPC64)
 
 endif()
 
-
 # Remove unneeded arch specific files to speed build time.
-if (NOT CRYPTOPP_PPC32 AND NOT CRYPTOPP_PPC64)
-list(FILTER cryptopp_SOURCES EXCLUDE REGEX "_ppc.cpp")
+if(NOT CRYPTOPP_PPC32 AND NOT CRYPTOPP_PPC64)
+  list(FILTER cryptopp_SOURCES EXCLUDE REGEX "_ppc.cpp")
 endif()
-if (NOT CRYPTOPP_ARM32 AND NOT CRYPTOPP_ARMV8)
-list(FILTER cryptopp_SOURCES EXCLUDE REGEX "arm_|neon_|_armv4.S")
+if(NOT CRYPTOPP_ARM32 AND NOT CRYPTOPP_ARMV8)
+  list(FILTER cryptopp_SOURCES EXCLUDE REGEX "arm_|neon_|_armv4.S")
 endif()
 if(NOTCRYPTOPP_I386 AND NOT CRYPTOPP_AMD64)
-list(FILTER cryptopp_SOURCES EXCLUDE REGEX "sse_|_sse.cpp|_avx.cpp")
+  list(FILTER cryptopp_SOURCES EXCLUDE REGEX "sse_|_sse.cpp|_avx.cpp")
 endif()
 
 # If ASM is disabled we can remove the SIMD files, too.
-list(FIND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_DISABLE_ASM=1"
-has_disable_asm)
+list(FIND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_DISABLE_ASM=1" has_disable_asm)
 if(NOT has_disable_asm EQUAL -1)
   list(FILTER cryptopp_SOURCES EXCLUDE REGEX
        "arm_|ppc_|neon_|sse_|_sse.cpp|_avx.cpp|_ppc.cpp|_simd.cpp")
@@ -998,8 +996,8 @@ set_source_files_properties(
   PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_LSH256_AVX2_FLAGS}")
 
 set_source_files_properties(
-  ${CRYPTOPP_PROJECT_DIR}/lsh512_sse.cpp PROPERTIES COMPILE_OPTIONS
-                                                    "${CRYPTOPP_LSH512_AVX2_FLAGS}")
+  ${CRYPTOPP_PROJECT_DIR}/lsh512_sse.cpp
+  PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_LSH512_AVX2_FLAGS}")
 
 set_source_files_properties(
   ${CRYPTOPP_PROJECT_DIR}/lsh512_avx.cpp
@@ -1011,19 +1009,17 @@ set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/neon_simd.cpp
 set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/ppc_simd.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_PPC_FLAGS}")
 
-set_source_files_properties(
-  ${CRYPTOPP_PROJECT_DIR}/rijndael_simd.cpp
-  PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_AES_FLAGS}")
+set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/rijndael_simd.cpp
+                            PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_AES_FLAGS}")
 
-  set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/sha_simd.cpp
-  PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_SHA_FLAGS}")
+set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/sha_simd.cpp
+                            PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_SHA_FLAGS}")
 
-  set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/sha3_simd.cpp
-  PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_SHA3_FLAGS}")
+set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/sha3_simd.cpp
+                            PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_SHA3_FLAGS}")
 
-set_source_files_properties(
-  ${CRYPTOPP_PROJECT_DIR}/shacal2_simd.cpp
-  PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_SHA_FLAGS}")
+set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/shacal2_simd.cpp
+                            PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_SHA_FLAGS}")
 
 set_source_files_properties(
   ${CRYPTOPP_PROJECT_DIR}/simon128_simd.cpp
