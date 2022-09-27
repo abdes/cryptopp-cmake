@@ -681,20 +681,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang"
       # for any files.
       if(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL
                                                "Android")
-        list(APPEND cryptopp_SOURCES ${CRYPTOPP_PROJECT_DIR}/aes_armv4.S)
-        list(APPEND cryptopp_SOURCES ${CRYPTOPP_PROJECT_DIR}/sha1_armv4.S)
-        list(APPEND cryptopp_SOURCES ${CRYPTOPP_PROJECT_DIR}/sha256_armv4.S)
-        list(APPEND cryptopp_SOURCES ${CRYPTOPP_PROJECT_DIR}/sha512_armv4.S)
-
-        set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/aes_armv4.S
-                                    PROPERTIES LANGUAGE CXX)
-        set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/sha1_armv4.S
-                                    PROPERTIES LANGUAGE CXX)
-        set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/sha256_armv4.S
-                                    PROPERTIES LANGUAGE CXX)
-        set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/sha512_armv4.S
-                                    PROPERTIES LANGUAGE CXX)
-
+        foreach(asm_file aes_armv4.S sha1_armv4.S sha256_armv4.S sha512_armv4.S)
+          set(asm_file "${CRYPTOPP_PROJECT_DIR}/${asm_file}")
+          list(APPEND cryptopp_SOURCES ${asm_file})
+          set_source_files_properties(${asm_file} PROPERTIES LANGUAGE CXX)
+          set_source_files_properties(
+            ${asm_file} PROPERTIES COMPILE_OPTIONS "-x;assembler-with-cpp")
+        endforeach()
       endif()
 
       if(CRYPTOPP_ARMV7A_NEON)
