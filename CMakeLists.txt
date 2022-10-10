@@ -92,6 +92,9 @@ option(
   "Enable OpenMP to parallelize some of the algorithms. Note that this isn't always faster, see https://www.cryptopp.com/wiki/OpenMP"
   OFF)
 
+# These are MSVC options
+option(MSVC_LINK_TO_SHARED "Link to MSVC shared libraries" ON)
+
 # These are IA-32 options.
 option(DISABLE_ASM "Disable ASM" OFF)
 option(DISABLE_SSSE3 "Disable SSSE3" OFF)
