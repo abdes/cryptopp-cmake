@@ -1247,7 +1247,7 @@ if(USE_OPENMP)
   endif()
 
   # If OpenMP wasn't found, try if we can find it in the default Homebrew
-  # location
+  # location (Intel Macs)
   if((NOT OPENMP_FOUND)
      AND (NOT OPENMP_CXX_FOUND)
      AND EXISTS "/usr/local/opt/libomp/lib/libomp.dylib")
@@ -1259,11 +1259,33 @@ if(USE_OPENMP)
     find_package(OpenMP)
     if(OPENMP_FOUND OR OPENMP_CXX_FOUND)
       message(
-        STATUS "[cryptopp] OpenMP: Found libomp in homebrew default location.")
+        STATUS "[cryptopp] OpenMP: Found libomp in homebrew default location for Intel Macs.")
     else()
       message(
         FATAL_ERROR
-          "OpenMP: Didn't find libomp. Tried homebrew default location but also didn't find it."
+          "[cryptopp] OpenMP: Didn't find libomp. Tried homebrew default location for Intel Macs but also didn't find it."
+      )
+    endif()
+  endif()
+
+  # If OpenMP wasn't found, try if we can find it in the default Homebrew
+  # location (Apple Silicon Macs)
+  if((NOT OPENMP_FOUND)
+     AND (NOT OPENMP_CXX_FOUND)
+     AND EXISTS "/opt/homebrew/opt/libomp/lib/libomp.dylib")
+    set(OpenMP_CXX_FLAGS
+        "-Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include")
+    set(OpenMP_CXX_LIB_NAMES omp)
+    set(OpenMP_omp_LIBRARY /opt/homebrew/opt/libomp/lib/libomp.dylib)
+
+    find_package(OpenMP)
+    if(OPENMP_FOUND OR OPENMP_CXX_FOUND)
+      message(
+        STATUS "[cryptopp] OpenMP: Found libomp in homebrew default location for Apple Silicon Macs.")
+    else()
+      message(
+        FATAL_ERROR
+          "[cryptopp] OpenMP: Didn't find libomp. Tried homebrew default location for Apple Silicon Macs but also didn't find it."
       )
     endif()
   endif()
