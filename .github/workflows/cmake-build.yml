@@ -56,7 +56,7 @@ jobs:
             }
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: recursive
 
@@ -66,12 +66,12 @@ jobs:
           echo github.event_name: ${{ github.event_name }}
 
       - name: Setup Ninja
-        uses: seanmiddleditch/gha-setup-ninja@master
+        uses: abdes/gha-setup-ninja@master
         with:
           version: 1.11.0
 
       - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.12
+        uses: jwlawson/actions-setup-cmake@v1.13
         with:
           cmake-version: 3.21.x
 
@@ -320,8 +320,8 @@ jobs:
       - id: set_upload_url
         run: |
           upload_url=`cat ./upload_url`
-          echo ::set-output name=upload_url::$upload_url
-        shell: bash
+          echo "{upload_url}={$upload_url}" >> $GITHUB_OUTPUT
+          shell: bash
 
       - name: Upload to Release
         id: upload_to_release
