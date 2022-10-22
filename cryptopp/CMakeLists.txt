@@ -207,8 +207,6 @@ message(
     "[cryptopp] CMAKE_HOST_SYSTEM_PROCESSOR : ${CMAKE_HOST_SYSTEM_PROCESSOR}")
 message(
   STATUS "[cryptopp]      CMAKE_SYSTEM_PROCESSOR : ${CMAKE_SYSTEM_PROCESSOR}")
-message(
-  STATUS "[cryptopp]        CMAKE_CROSSCOMPILING : ${CMAKE_CROSSCOMPILING}")
 
 check_target_architecture(CRYPTOPP_AMD64 "(x86_64|amd64)")
 check_target_architecture(CRYPTOPP_I386 "^i.86$")
