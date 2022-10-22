@@ -175,50 +175,49 @@ endfunction(check_compile_link_option)
 
 # ##############################################################################
 
-function(DumpMachine output pattern)
-
-  if(MSVC)
-    # The -dumpmachine does not work with MSVC, so we do detection using some C
-    # code that will leverage the compiler deinitions for the target
-    # architecture.
-    include(TargetArch)
-    target_architecture(target_arch)
-    if(${target_arch} MATCHES ${pattern})
-      message(
-        STATUS
-          "[cryptopp] Target architecture detected as: ${target_arch} -> ${output}"
-      )
-      set(${output}
-          TRUE
-          PARENT_SCOPE)
-    else()
-      set(${output}
-          FALSE
-          PARENT_SCOPE)
-    endif()
-  else()
-    execute_process(
-      COMMAND sh -c "${CMAKE_CXX_COMPILER} -dumpmachine 2>&1"
-      COMMAND ${GREP_CMD} -i -c -E "${pattern}"
-      OUTPUT_VARIABLE ${output}
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
+function(check_target_architecture output pattern)
+  # The -dumpmachine does not work with MSVC, so we do detection using some C
+  # code that will leverage the compiler definitions for the target
+  # architecture.
+  include(TargetArch)
+  target_architecture(target_arch)
+  string(TOLOWER ${target_arch} target_arch)
+  if(${target_arch} MATCHES ${pattern})
+    message(
+      STATUS
+        "[cryptopp] Target architecture detected as: ${target_arch} -> ${output}"
+    )
     set(${output}
-        "${${output}}"
+        TRUE
+        PARENT_SCOPE)
+  else()
+    set(${output}
+        FALSE
         PARENT_SCOPE)
   endif()
+endfunction()
 
-endfunction(DumpMachine)
+if(APPLE)
+  message(
+    STATUS "[cryptopp]     CMAKE_OSX_ARCHITECTURES : ${CMAKE_OSX_ARCHITECTURES}"
+  )
+endif()
+message(
+  STATUS
+    "[cryptopp] CMAKE_HOST_SYSTEM_PROCESSOR : ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+message(
+  STATUS "[cryptopp]      CMAKE_SYSTEM_PROCESSOR : ${CMAKE_SYSTEM_PROCESSOR}")
+message(
+  STATUS "[cryptopp]        CMAKE_CROSSCOMPILING : ${CMAKE_CROSSCOMPILING}")
 
-# Thanks to Anonimal for MinGW; see
-# http://github.com/weidai11/cryptopp/issues/466
-dumpmachine(CRYPTOPP_AMD64 "(x86_64|AMD64|amd64)")
-dumpmachine(CRYPTOPP_I386 "^i.86$")
-dumpmachine(CRYPTOPP_MINGW32 "^mingw32")
-dumpmachine(CRYPTOPP_MINGW64 "(w64-mingw32|mingw64)")
-dumpmachine(CRYPTOPP_ARMV8 "(armv8|arm64|aarch32|aarch64)")
-dumpmachine(CRYPTOPP_ARM32 "(^arm$|arm32|armhf|arm7l|eabihf)")
-dumpmachine(CRYPTOPP_PPC32 "^(powerpc|ppc)")
-dumpmachine(CRYPTOPP_PPC64 "^ppc64")
+check_target_architecture(CRYPTOPP_AMD64 "(x86_64|amd64)")
+check_target_architecture(CRYPTOPP_I386 "^i.86$")
+check_target_architecture(CRYPTOPP_MINGW32 "^mingw32")
+check_target_architecture(CRYPTOPP_MINGW64 "(w64-mingw32|mingw64)")
+check_target_architecture(CRYPTOPP_ARMV8 "(armv8|arm64|aarch32|aarch64)")
+check_target_architecture(CRYPTOPP_ARM32 "(^arm$|arm32|armhf|arm7l|eabihf)")
+check_target_architecture(CRYPTOPP_PPC32 "^(powerpc|ppc)")
+check_target_architecture(CRYPTOPP_PPC64 "^ppc64")
 
 # Cleanup 32/64 bit
 if(CRYPTOPP_AMD64)
