@@ -156,10 +156,13 @@ function(check_compile_link_option opt var prog)
   endif()
 
   message(STATUS "[cryptopp] Performing Test ${var}")
+  set(definitions ${CRYPTOPP_COMPILE_DEFINITIONS})
+  list(TRANSFORM definitions PREPEND "-D")
+  list(APPEND definitions ${opt})
   try_compile(
     COMMAND_SUCCESS ${CMAKE_BINARY_DIR}
     ${prog}
-    COMPILE_DEFINITIONS ${opt})
+    COMPILE_DEFINITIONS "${definitions}")
   if(COMMAND_SUCCESS)
     set(${var}
         1
