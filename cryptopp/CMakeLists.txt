@@ -162,7 +162,7 @@ function(check_compile_link_option opt var prog)
   try_compile(
     COMMAND_SUCCESS ${CMAKE_BINARY_DIR}
     ${prog}
-    COMPILE_DEFINITIONS "${definitions}")
+    COMPILE_DEFINITIONS ${definitions})
   if(COMMAND_SUCCESS)
     set(${var}
         1
