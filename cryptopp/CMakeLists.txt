@@ -1214,6 +1214,7 @@ target_link_libraries(cryptopp ${CMAKE_THREAD_LIBS_INIT})
 # ============================================================================
 if(USE_OPENMP)
   list (APPEND CMAKE_PREFIX_PATH /usr/local/opt/libomp)
+  list (APPEND CMAKE_PREFIX_PATH /opt/homebrew/opt/libomp/)
   find_package(OpenMP)
 
   if(OPENMP_FOUND OR OPENMP_CXX_FOUND)
