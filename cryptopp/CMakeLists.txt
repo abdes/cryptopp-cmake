@@ -1213,6 +1213,8 @@ target_link_libraries(cryptopp ${CMAKE_THREAD_LIBS_INIT})
 # Setup OpenMP
 # ============================================================================
 if(USE_OPENMP)
+  list (APPEND CMAKE_PREFIX_PATH /usr/local/opt/libomp)
+  list (APPEND CMAKE_PREFIX_PATH /opt/homebrew/opt/libomp/)
   find_package(OpenMP)
 
   if(OPENMP_FOUND OR OPENMP_CXX_FOUND)
@@ -1242,28 +1244,6 @@ if(USE_OPENMP)
       message(
         FATAL_ERROR
           "OpenMP: Didn't find libomp. Tried macports default location but also didn't find it."
-      )
-    endif()
-  endif()
-
-  # If OpenMP wasn't found, try if we can find it in the default Homebrew
-  # location
-  if((NOT OPENMP_FOUND)
-     AND (NOT OPENMP_CXX_FOUND)
-     AND EXISTS "/usr/local/opt/libomp/lib/libomp.dylib")
-    set(OpenMP_CXX_FLAGS
-        "-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include")
-    set(OpenMP_CXX_LIB_NAMES omp)
-    set(OpenMP_omp_LIBRARY /usr/local/opt/libomp/lib/libomp.dylib)
-
-    find_package(OpenMP)
-    if(OPENMP_FOUND OR OPENMP_CXX_FOUND)
-      message(
-        STATUS "[cryptopp] OpenMP: Found libomp in homebrew default location.")
-    else()
-      message(
-        FATAL_ERROR
-          "OpenMP: Didn't find libomp. Tried homebrew default location but also didn't find it."
       )
     endif()
   endif()
