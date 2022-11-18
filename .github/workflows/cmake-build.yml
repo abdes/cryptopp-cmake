@@ -54,6 +54,16 @@ jobs:
               archiver: "7za a",
               generators: "Ninja",
             }
+          - {
+              name: "macos-latest-omp-homebrew",
+              os: macos-latest,
+              artifact: "macOS.7z",
+              build_type: "Release",
+              cc: "clang",
+              cxx: "clang++",
+              archiver: "7za a",
+              generators: "Ninja",
+            }
 
     steps:
       - uses: actions/checkout@v3
@@ -115,6 +125,12 @@ jobs:
           sudo apt-get install gcc-12 g++-12
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 110 --slave /usr/bin/g++ g++ /usr/bin/g++-12 --slave /usr/bin/gcov gcov /usr/bin/gcov-12
 
+      - name: Install homebrew
+        uses: tecolicom/actions-use-homebrew-tools@v1
+        with:
+          tools: libomp
+        if: endsWith(matrix.config.name, 'homebrew')
+
       - name: Configure
         shell: cmake -P {0}
         run: |
@@ -148,6 +164,12 @@ jobs:
             set(enable_ccache "ON")
           endif()
 
+          if ("${{ matrix.config.name }}" STREQUAL "macos-latest-omp-homebrew")
+            set(OMP "ON")
+          else()
+            set(OMP "OFF")
+          endif()
+
           execute_process(
             COMMAND cmake
               -S .
@@ -155,8 +177,9 @@ jobs:
               -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE}
               -G Ninja
               -D CMAKE_MAKE_PROGRAM=ninja
-              -D USE_CCACHE=${enable_ccache}    
+              -D USE_CCACHE=${enable_ccache}
               -D CMAKE_VERBOSE_MAKEFILE=ON
+              -D USE_OPENMP=${OMP}
             RESULT_VARIABLE result
           )
           if (NOT result EQUAL 0)
