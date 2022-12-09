@@ -96,9 +96,10 @@ the criticality of the defects, an additional release tag may be made. These
 *patch tags* will never introduce any additional changes in `crypto++` itself.
 
 Main release tags will have the format: `CRYPTOPP_M_m_p`, while *patch tags*
-will have the format `CRYPTOPP_M_m_p_l`, where `M.m.p` represents the `crypto++`
-version and `l` is a suffix letter incremented each time a *patch tag* is
-created.
+will have the format `CRYPTOPP_M_m_p_f`, where `M.m.p` represents the `crypto++`
+version and `f` is a suffix number incremented each time a *patch tag* is
+created. *Patch tags* will keep the same `crypto++` version as the main release
+tag.
 
 > As always, if you want to get the latest and greatest, always track the
 master branch.
