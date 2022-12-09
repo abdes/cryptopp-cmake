@@ -404,7 +404,7 @@ set(cryptopp_HEADERS_TEST bench.h factory.h validate.h)
 list(
   REMOVE_ITEM
   cryptopp_SOURCES
-  $cryptlib.cpp
+  cryptlib.cpp
   cpu.cpp
   integer.cpp
   pch.cpp
