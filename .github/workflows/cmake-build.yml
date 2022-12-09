@@ -341,10 +341,10 @@ jobs:
           path: ./
 
       - id: set_upload_url
+        shell: bash
         run: |
           upload_url=`cat ./upload_url`
           echo "{upload_url}={$upload_url}" >> $GITHUB_OUTPUT
-          shell: bash
 
       - name: Upload to Release
         id: upload_to_release
