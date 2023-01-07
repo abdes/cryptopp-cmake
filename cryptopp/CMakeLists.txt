@@ -185,7 +185,7 @@ function(check_target_architecture output pattern)
   include(TargetArch)
   target_architecture(target_arch)
   string(TOLOWER ${target_arch} target_arch)
-  if(${target_arch} MATCHES ${pattern})
+  if("${target_arch}" MATCHES ${pattern})
     message(
       STATUS
         "[cryptopp] Target architecture detected as: ${target_arch} -> ${output}"
