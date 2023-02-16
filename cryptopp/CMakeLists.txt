@@ -659,7 +659,7 @@ endif()
 # Limit to Linux. The source files target the GNU assembler. Also see
 # https://www.cryptopp.com/wiki/Cryptogams.
 if(CRYPTOPP_ARM32
-   AND CMAKE_SYSTEM_NAME STREQUAL "Linux"
+   AND (CMAKE_SYSTEM_NAME STREQUAL "Linux" OR ANDROID)
    AND NOT CRYPTOPP_DISABLE_ARM_NEON
    AND NOT CRYPTOPP_DISABLE_ASM)
   list(
