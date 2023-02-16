@@ -156,7 +156,7 @@ project(
   VERSION "${META_VERSION}"
   DESCRIPTION "${META_PROJECT_DESCRIPTION}"
   HOMEPAGE_URL "${META_GITHUB_REPO}"
-  LANGUAGES CXX C)
+  LANGUAGES CXX C ASM)
 
 # ---- Speedup build using ccache (needs CPM) ----
 include(cmake/FasterBuild.cmake)
