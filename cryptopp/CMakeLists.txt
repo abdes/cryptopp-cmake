@@ -1217,11 +1217,7 @@ if(USE_OPENMP)
   list (APPEND CMAKE_PREFIX_PATH /opt/homebrew/opt/libomp/)
   list (APPEND CMAKE_PREFIX_PATH /opt/local/lib/libomp/)
   list (APPEND CMAKE_INCLUDE_PATH /opt/local/include/libomp/)
-  find_package(OpenMP)
-
-  if(OPENMP_FOUND OR OPENMP_CXX_FOUND)
-    message(STATUS "[cryptopp] OpenMP: Found libomp without any special flags")
-  endif()
+  find_package(OpenMP REQUIRED)
 
   set(Additional_OpenMP_Libraries_Workaround "")
 
