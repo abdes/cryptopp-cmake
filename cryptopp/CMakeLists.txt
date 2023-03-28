@@ -1218,47 +1218,6 @@ if(USE_OPENMP)
   list (APPEND CMAKE_PREFIX_PATH /opt/local/lib/libomp/)
   list (APPEND CMAKE_INCLUDE_PATH /opt/local/include/libomp/)
   find_package(OpenMP REQUIRED)
-
-  set(Additional_OpenMP_Libraries_Workaround "")
-
-  # Workaround because older cmake on apple doesn't support FindOpenMP
-  if((NOT OPENMP_FOUND) AND (NOT OPENMP_CXX_FOUND))
-    if((APPLE AND ((CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-                   OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")))
-       AND (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "7.0"))
-      message(
-        STATUS
-          "OpenMP: Applying workaround for OSX OpenMP with old cmake that doesn't have FindOpenMP"
-      )
-      set(OpenMP_CXX_FLAGS "-Xclang -fopenmp")
-      set(Additional_OpenMP_Libraries_Workaround "-lomp")
-    else()
-      message(
-        FATAL_ERROR
-          "OpenMP: Did not find OpenMP. Build without USE_OPENMP if you want to allow this."
-      )
-    endif()
-  endif()
-
-  if(NOT TARGET OpenMP::OpenMP_CXX)
-    # We're on cmake < 3.9, handle behavior of the old FindOpenMP implementation
-    message(
-      STATUS
-        "OpenMP: Applying workaround for old CMake that doesn't define FindOpenMP using targets"
-    )
-    add_library(OpenMP_TARGET INTERFACE)
-    add_library(OpenMP::OpenMP_CXX ALIAS OpenMP_TARGET)
-    target_compile_options(OpenMP_TARGET INTERFACE ${OpenMP_CXX_FLAGS}
-    )# add to all targets depending on this
-    find_package(Threads REQUIRED)
-    target_link_libraries(OpenMP_TARGET INTERFACE Threads::Threads)
-    target_link_libraries(
-      OpenMP_TARGET INTERFACE ${OpenMP_CXX_FLAGS}
-                              ${Additional_OpenMP_Libraries_Workaround})
-  endif()
-  # Workaround for Ubuntu 18.04 that otherwise doesn't set -fopenmp for linking
-  target_link_libraries(cryptopp ${OpenMP_CXX_FLAGS})
-  target_link_libraries(cryptopp OpenMP::OpenMP_CXX)
 endif()
 
 # ============================================================================
