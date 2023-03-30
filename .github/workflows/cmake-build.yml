@@ -65,6 +65,16 @@ jobs:
               generators: "Ninja",
             }
 
+          - {
+              name: "macos-latest-omp-macports",
+              os: macos-latest,
+              artifact: "macOS.7z",
+              build_type: "Release",
+              cc: "clang",
+              cxx: "clang++",
+              archiver: "7za a",
+              generators: "Ninja",
+            }
     steps:
       - uses: actions/checkout@v3
         with:
@@ -131,6 +141,14 @@ jobs:
           tools: libomp
         if: endsWith(matrix.config.name, 'homebrew')
 
+      - name: Install macports
+        uses: melusina-org/gha-install-macports@v1
+        if: endsWith(matrix.config.name, 'macports')
+
+      - name: Install libomp (macports)
+        run: port install libomp
+        if: endsWith(matrix.config.name, 'macports')
+
       - name: Configure
         shell: cmake -P {0}
         run: |
@@ -164,7 +182,7 @@ jobs:
             set(enable_ccache "ON")
           endif()
 
-          if ("${{ matrix.config.name }}" STREQUAL "macos-latest-omp-homebrew")
+          if ("${{ matrix.config.name }}" STREQUAL "macos-latest-omp-homebrew" OR "${{ matrix.config.name }}" STREQUAL "macos-latest-omp-macports")
             set(OMP "ON")
           else()
             set(OMP "OFF")
