@@ -380,16 +380,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { icon: '⬛', sys: mingw32 }
-          - { icon: '🟦', sys: mingw64 }
-          - { icon: '🟨', sys: ucrt64  }
-          - { icon: '🟧', sys: clang64 }
-    name: 🚧${{ matrix.icon }} ${{ matrix.sys }}
+          - {sys: mingw32 }
+          - {sys: mingw64 }
+          - {sys: ucrt64  }
+          - {sys: clang64 }
+    name: ${{ matrix.sys }}
     defaults:
       run:
         shell: msys2 {0}
     steps:
-    - name: '🧰 Checkout'
+    - name: 'Checkout'
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
@@ -405,11 +405,45 @@ jobs:
           toolchain:p
           cmake:p
           ninja:p
-    - name: '🚧 Build TOOL'
+    - name: 'Configure'
       run: |
-        cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release
+        cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -D CMAKE_VERBOSE_MAKEFILE=ON
+    - name: 'Build'
+      run: |
         cmake --build build
-    - name: Run tests
+    - name: 'Run cryptest'
       run: |
         ctest --test-dir build --verbose -R cryptest
+    - name: 'Run tests'
+      run: |
         ctest --test-dir build --output-on-failure -E cryptest
+
+  cygwin-build:
+    runs-on: windows-latest
+    name: Cygwin
+    steps:
+    - name: 'Checkout'
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: 'Setup cygwin'
+      uses: cygwin/cygwin-install-action@master
+      with:
+        packages: >-
+          ccache
+          cmake
+          gcc-g++
+          git
+          ninja
+    - name: 'Configure'
+      run: |
+        cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -D CMAKE_VERBOSE_MAKEFILE=ON -D USE_CCACHE=ON
+    - name: 'Build'
+      run: |
+        cmake --build build
+    - name: 'Run cryptest'
+      run: |
+        ctest --test-dir build --verbose -R cryptest
+    - name: Run tests
+      run: |
+        ctest --test-dir build --verbose -E cryptest
