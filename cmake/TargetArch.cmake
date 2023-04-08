@@ -17,6 +17,8 @@ set(archdetect_c_code
 #    error cmake_ARCH arm
 #  endif
 
+#elif defined(__CYGWIN__)
+    #error cmake_ARCH cygwin
 #elif defined(__MINGW64__)
     #error cmake_ARCH mingw64
 #elif defined(__MINGW32__)
