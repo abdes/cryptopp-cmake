@@ -435,6 +435,9 @@ jobs:
           gcc-g++
           git
           ninja
+    - name: 'Workaround git warning'
+      run: |
+        git config --global --add safe.directory /cygdrive/d/a/cryptopp-cmake/cryptopp-cmake
     - name: 'Configure'
       run: |
         cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -D CMAKE_VERBOSE_MAKEFILE=ON -D USE_CCACHE=ON
