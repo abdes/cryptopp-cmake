@@ -423,6 +423,8 @@ jobs:
     name: Cygwin
     steps:
     - name: 'Checkout'
+      env:
+        HOME: C:\cygwin\home\runneradmin
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
@@ -435,9 +437,6 @@ jobs:
           gcc-g++
           git
           ninja
-    - name: 'Workaround git warning'
-      run: |
-        git config --global --add safe.directory /cygdrive/d/a/cryptopp-cmake/cryptopp-cmake
     - name: 'Configure'
       run: |
         cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -D CMAKE_VERBOSE_MAKEFILE=ON -D USE_CCACHE=ON
@@ -450,3 +449,6 @@ jobs:
     - name: Run tests
       run: |
         ctest --test-dir build --verbose -E cryptest
+    - name: 'Workaround git warning'
+      run: |
+        git config --global --add safe.directory /cygdrive/d/a/cryptopp-cmake/cryptopp-cmake
