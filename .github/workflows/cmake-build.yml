@@ -444,6 +444,16 @@ jobs:
           gcc-g++
           git
           ninja
+    - name: 'Removing ccache from choco'
+      run: |
+        Remove-Item -Path C:\ProgramData\Chocolatey\bin\ccache.exe -Verbose
+    - name: Setup ccache
+      uses: Chocobo1/setup-ccache-action@v1
+      with:
+        install_ccache: false
+        prepend_symlinks_to_path: false
+        update_packager_index: false
+        windows_compile_environment: msvc
     - name: 'Configure'
       run: |
         cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -D CMAKE_VERBOSE_MAKEFILE=ON -D USE_CCACHE=ON -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
