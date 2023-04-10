@@ -2,16 +2,14 @@ name: CI Matrix
 
 on: [push, pull_request]
 
-env:
-  BUILD_TYPE: Release
-
 jobs:
   build:
-    name: ${{ matrix.config.name }}
+    name: '${{ matrix.config.name }} - ${{ matrix.build-type }}'
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
       matrix:
+        build-type: [Release, Debug]
         config:
           - {
               name: "windows-latest",
@@ -192,7 +190,7 @@ jobs:
             COMMAND cmake
               -S .
               -B build
-              -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE}
+              -D CMAKE_BUILD_TYPE=${{ matrix.build-type }}
               -G Ninja
               -D CMAKE_MAKE_PROGRAM=ninja
               -D USE_CCACHE=${enable_ccache}
@@ -379,12 +377,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        build-type: [Release, Debug]
         include:
           - {sys: mingw32 }
           - {sys: mingw64 }
           - {sys: ucrt64  }
           - {sys: clang64 }
-    name: 'MSys - ${{ matrix.sys }}'
+    name: 'MSys - ${{ matrix.sys }} - ${{ matrix.build-type }}'
     defaults:
       run:
         shell: msys2 {0}
@@ -411,7 +410,7 @@ jobs:
         windows_compile_environment: msys2
     - name: 'Configure'
       run: |
-        cmake -G"Unix Makefiles" -Bbuild -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=ON -DUSE_CCACHE=ON
+        cmake -G"Unix Makefiles" -Bbuild -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=ON -DUSE_CCACHE=ON -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
     - name: 'Build'
       run: |
         cmake --build build
@@ -423,8 +422,12 @@ jobs:
         ctest --test-dir build --output-on-failure -E cryptest
 
   cygwin-build:
+    strategy:
+      fail-fast: false
+      matrix:
+        build-type: [Release, Debug]
     runs-on: windows-latest
-    name: Cygwin
+    name: 'Cygwin - ${{ matrix.build-type }}'
     steps:
     - name: 'Checkout'
       env:
@@ -443,7 +446,7 @@ jobs:
           ninja
     - name: 'Configure'
       run: |
-        cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -D CMAKE_VERBOSE_MAKEFILE=ON -D USE_CCACHE=ON
+        cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -D CMAKE_VERBOSE_MAKEFILE=ON -D USE_CCACHE=ON -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
     - name: 'Build'
       run: |
         cmake --build build
