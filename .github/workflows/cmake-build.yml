@@ -23,6 +23,17 @@ jobs:
               generators: "Visual Studio 17 2022",
             }
           - {
+              name: "windows-latest-nmake",
+              os: windows-latest,
+              artifact: "Windows-MSVC.7z",
+              build_type: "Release",
+              cc: "cl",
+              cxx: "cl",
+              environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+              archiver: "7z a",
+              generators: "Visual Studio 17 2022",
+            }
+          - {
               name: "windows-msvc",
               os: windows-2019,
               artifact: "Windows-MSVC.7z",
@@ -198,10 +209,12 @@ jobs:
             set(OMP "OFF")
           endif()
 
-          if (NOT "${{ matrix.config.name }}" STREQUAL "windows-msvc")
-            set(Generator -G Ninja -D CMAKE_MAKE_PROGRAM=ninja)
-          else()
+          if ("${{ matrix.config.name }}" STREQUAL "windows-msvc")
             set(Generator -G "Visual Studio 16 2019")
+          elseif("${{ matrix.config.name }}" STREQUAL "windows-latest-nmake")
+            set(Generator -G "NMake Makefiles" -D CMAKE_MAKE_PROGRAM=nmake)
+          else()
+            set(Generator -G Ninja -D CMAKE_MAKE_PROGRAM=ninja)
           endif()
 
           execute_process(
@@ -257,6 +270,15 @@ jobs:
 
           set(ENV{CTEST_OUTPUT_ON_FAILURE} "ON")
 
+          if ("${{ runner.os }}" STREQUAL "Windows" AND NOT "x${{ matrix.config.environment_script }}" STREQUAL "x")
+            file(STRINGS environment_script_output.txt output_lines)
+            foreach(line IN LISTS output_lines)
+              if (line MATCHES "^([a-zA-Z0-9_-]+)=(.*)$")
+                set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
+              endif()
+            endforeach()
+          endif()
+
           execute_process(
             COMMAND ctest "--verbose" "-R" "cryptest" "-C" "${{ matrix.build-type }}"
             WORKING_DIRECTORY build
@@ -280,6 +302,15 @@ jobs:
           # much higher than parallel tests.
 
           set(ENV{CTEST_OUTPUT_ON_FAILURE} "ON")
+
+          if ("${{ runner.os }}" STREQUAL "Windows" AND NOT "x${{ matrix.config.environment_script }}" STREQUAL "x")
+            file(STRINGS environment_script_output.txt output_lines)
+            foreach(line IN LISTS output_lines)
+              if (line MATCHES "^([a-zA-Z0-9_-]+)=(.*)$")
+                set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
+              endif()
+            endforeach()
+          endif()
 
           execute_process(
             COMMAND ctest "-E" "cryptest" "-C" "${{ matrix.build-type }}"
