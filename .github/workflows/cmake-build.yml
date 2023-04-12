@@ -12,8 +12,19 @@ jobs:
         build-type: [Release, Debug]
         config:
           - {
-              name: "windows-latest",
+              name: "windows-latest-ninja",
               os: windows-latest,
+              artifact: "Windows-MSVC.7z",
+              build_type: "Release",
+              cc: "cl",
+              cxx: "cl",
+              environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+              archiver: "7z a",
+              generators: "Visual Studio 17 2022",
+            }
+          - {
+              name: "windows-msvc",
+              os: windows-2019,
               artifact: "Windows-MSVC.7z",
               build_type: "Release",
               cc: "cl",
@@ -87,6 +98,7 @@ jobs:
         uses: abdes/gha-setup-ninja@master
         with:
           version: 1.11.0
+        if: ${{ !endsWith(matrix.config.name, 'msvc') }}
 
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v1.13
@@ -186,17 +198,23 @@ jobs:
             set(OMP "OFF")
           endif()
 
+          if (NOT "${{ matrix.config.name }}" STREQUAL "windows-msvc")
+            set(Generator -G Ninja -D CMAKE_MAKE_PROGRAM=ninja)
+          else()
+            set(Generator -G "Visual Studio 16 2019")
+          endif()
+
           execute_process(
             COMMAND cmake
               -S .
               -B build
               -D CMAKE_BUILD_TYPE=${{ matrix.build-type }}
-              -G Ninja
-              -D CMAKE_MAKE_PROGRAM=ninja
+              ${Generator}
               -D USE_CCACHE=${enable_ccache}
               -D CMAKE_VERBOSE_MAKEFILE=ON
               -D USE_OPENMP=${OMP}
             RESULT_VARIABLE result
+            COMMAND_ECHO STDOUT
           )
           if (NOT result EQUAL 0)
             message(FATAL_ERROR "Bad exit status")
@@ -217,7 +235,7 @@ jobs:
           endif()
 
           execute_process(
-            COMMAND cmake --build build --target all
+            COMMAND cmake --build build --config ${{ matrix.build-type }}
             RESULT_VARIABLE result
             OUTPUT_VARIABLE output
             ERROR_VARIABLE output
@@ -240,7 +258,7 @@ jobs:
           set(ENV{CTEST_OUTPUT_ON_FAILURE} "ON")
 
           execute_process(
-            COMMAND ctest "--verbose" "-R" "cryptest"
+            COMMAND ctest "--verbose" "-R" "cryptest" "-C" "${{ matrix.build-type }}"
             WORKING_DIRECTORY build
             RESULT_VARIABLE result
             OUTPUT_VARIABLE output
@@ -264,7 +282,7 @@ jobs:
           set(ENV{CTEST_OUTPUT_ON_FAILURE} "ON")
 
           execute_process(
-            COMMAND ctest "-E" "cryptest"
+            COMMAND ctest "-E" "cryptest" "-C" "${{ matrix.build-type }}"
             WORKING_DIRECTORY build
             RESULT_VARIABLE result
             OUTPUT_VARIABLE output
@@ -279,7 +297,7 @@ jobs:
           endif()
 
       - name: Install Strip
-        run: cmake --install build --prefix instdir --strip
+        run: cmake --install build --prefix instdir --strip --config ${{ matrix.build-type }}
 
       - name: Pack
         working-directory: instdir

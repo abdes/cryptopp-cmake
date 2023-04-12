@@ -39,12 +39,15 @@ foreach(test ${tests})
       # Enable verbose makefiles so we can see the full compile command line
       -D "CMAKE_VERBOSE_MAKEFILE=ON"
       # Throw the version in
-      -D CRYPTOPP_MINIMUM_CMAKE_VERSION=${CRYPTOPP_MINIMUM_CMAKE_VERSION})
+      -D CRYPTOPP_MINIMUM_CMAKE_VERSION=${CRYPTOPP_MINIMUM_CMAKE_VERSION}
+      # Replicate the build-type
+      -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
 
   # Build
   add_test(NAME ${test_name}-build
            COMMAND ${CMAKE_COMMAND} --build
-                   "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test")
+                   "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
+                    --config ${CMAKE_BUILD_TYPE})
   set_tests_properties(${test_name}-build PROPERTIES DEPENDS
                                                      ${test_name}-configure)
 
@@ -52,15 +55,15 @@ foreach(test ${tests})
   add_test(
     NAME ${test_name}-install
     COMMAND ${CMAKE_COMMAND} --build
-            "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test" --target install)
-  set_tests_properties(${test_name}-install PROPERTIES DEPENDS
-                                                       ${test_name}-build)
+            "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test" --target install
+             --config ${CMAKE_BUILD_TYPE})
 
   # Check installed files
   add_test(
     NAME ${test_name}-checks
     COMMAND ${CMAKE_COMMAND} --build
-            "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test" --target do-checks)
+            "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test" --target do-checks
+             --config ${CMAKE_BUILD_TYPE})
   set_tests_properties(${test_name}-checks PROPERTIES DEPENDS
                                                       ${test_name}-install)
 endforeach()
@@ -88,7 +91,9 @@ add_test(
     # Enable verbose makefiles so we can see the full compile command line
     -D "CMAKE_VERBOSE_MAKEFILE=ON"
     # Throw the version in
-    -D CRYPTOPP_MINIMUM_CMAKE_VERSION=${CRYPTOPP_MINIMUM_CMAKE_VERSION})
+    -D CRYPTOPP_MINIMUM_CMAKE_VERSION=${CRYPTOPP_MINIMUM_CMAKE_VERSION}
+    # Replicate the build-type
+    -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
 
 set_tests_properties(${test_name}-configure
                      PROPERTIES DEPENDS "int-install-default-install")
@@ -96,7 +101,8 @@ set_tests_properties(${test_name}-configure
 # Build
 add_test(NAME ${test_name}-build
          COMMAND ${CMAKE_COMMAND} --build
-                 "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test")
+                 "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
+                  --config ${CMAKE_BUILD_TYPE})
 set_tests_properties(${test_name}-build PROPERTIES DEPENDS
                                                    ${test_name}-configure)
 
