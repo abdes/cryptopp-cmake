@@ -14,7 +14,7 @@ foreach(test ${tests})
   message(STATUS "Adding install integration test: ${test_name}")
   # Configure
   add_test(
-    NAME ${test_name}-configure
+    NAME cryptopp-${test_name}-configure
     COMMAND
       ${CMAKE_COMMAND}
       # Always use ninja, never the visual studio generator (bugged)
@@ -44,28 +44,30 @@ foreach(test ${tests})
       -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
 
   # Build
-  add_test(NAME ${test_name}-build
+  add_test(NAME cryptopp-${test_name}-build
            COMMAND ${CMAKE_COMMAND} --build
                    "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
                     --config ${CMAKE_BUILD_TYPE})
-  set_tests_properties(${test_name}-build PROPERTIES DEPENDS
-                                                     ${test_name}-configure)
+  set_tests_properties(cryptopp-${test_name}-build PROPERTIES DEPENDS
+                                                     cryptopp-${test_name}-configure)
 
   # Install
   add_test(
-    NAME ${test_name}-install
+    NAME cryptopp-${test_name}-install
     COMMAND ${CMAKE_COMMAND} --build
             "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test" --target install
              --config ${CMAKE_BUILD_TYPE})
+  set_tests_properties(cryptopp-${test_name}-install PROPERTIES DEPENDS
+                                                       cryptopp-${test_name}-build)
 
   # Check installed files
   add_test(
-    NAME ${test_name}-checks
+    NAME cryptopp-${test_name}-checks
     COMMAND ${CMAKE_COMMAND} --build
             "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test" --target do-checks
              --config ${CMAKE_BUILD_TYPE})
-  set_tests_properties(${test_name}-checks PROPERTIES DEPENDS
-                                                      ${test_name}-install)
+  set_tests_properties(cryptopp-${test_name}-checks PROPERTIES DEPENDS
+                                                      cryptopp-${test_name}-install)
 endforeach()
 
 # ------------------------------------------------------------------------------
@@ -76,7 +78,7 @@ set(test_name "int-find-package")
 
 # Configure
 add_test(
-  NAME ${test_name}-configure
+  NAME cryptopp-${test_name}-configure
   COMMAND
     ${CMAKE_COMMAND}
     # Always use ninja, never the visual studio generator (bugged)
@@ -95,16 +97,16 @@ add_test(
     # Replicate the build-type
     -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
 
-set_tests_properties(${test_name}-configure
-                     PROPERTIES DEPENDS "int-install-default-install")
+set_tests_properties(cryptopp-${test_name}-configure
+                     PROPERTIES DEPENDS "cryptopp-int-install-default-install")
 
 # Build
-add_test(NAME ${test_name}-build
+add_test(NAME cryptopp-${test_name}-build
          COMMAND ${CMAKE_COMMAND} --build
                  "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
                   --config ${CMAKE_BUILD_TYPE})
-set_tests_properties(${test_name}-build PROPERTIES DEPENDS
-                                                   ${test_name}-configure)
+set_tests_properties(cryptopp-${test_name}-build PROPERTIES DEPENDS
+                                                   cryptopp-${test_name}-configure)
 
-set_tests_properties(int-install-prefix-configure
-                     PROPERTIES DEPENDS "int-find-package-build")
+set_tests_properties(cryptopp-int-install-prefix-configure
+                     PROPERTIES DEPENDS "cryptopp-int-find-package-build")
