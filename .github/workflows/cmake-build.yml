@@ -2,20 +2,40 @@ name: CI Matrix
 
 on: [push, pull_request]
 
-env:
-  BUILD_TYPE: Release
-
 jobs:
   build:
-    name: ${{ matrix.config.name }}
+    name: '${{ matrix.config.name }} - ${{ matrix.build-type }}'
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
       matrix:
+        build-type: [Release, Debug]
         config:
           - {
-              name: "windows-latest",
+              name: "windows-latest-ninja",
               os: windows-latest,
+              artifact: "Windows-MSVC.7z",
+              build_type: "Release",
+              cc: "cl",
+              cxx: "cl",
+              environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+              archiver: "7z a",
+              generators: "Visual Studio 17 2022",
+            }
+          - {
+              name: "windows-latest-nmake",
+              os: windows-latest,
+              artifact: "Windows-MSVC.7z",
+              build_type: "Release",
+              cc: "cl",
+              cxx: "cl",
+              environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+              archiver: "7z a",
+              generators: "Visual Studio 17 2022",
+            }
+          - {
+              name: "windows-msvc",
+              os: windows-2019,
               artifact: "Windows-MSVC.7z",
               build_type: "Release",
               cc: "cl",
@@ -89,11 +109,12 @@ jobs:
         uses: abdes/gha-setup-ninja@master
         with:
           version: 1.11.0
+        if: ${{ !endsWith(matrix.config.name, 'msvc') }}
 
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v1.13
         with:
-          cmake-version: 3.21.x
+          cmake-version: 3.20.0
 
       - name: Install ccache
         shell: cmake -P {0}
@@ -188,17 +209,25 @@ jobs:
             set(OMP "OFF")
           endif()
 
+          if ("${{ matrix.config.name }}" STREQUAL "windows-msvc")
+            set(Generator -G "Visual Studio 16 2019")
+          elseif("${{ matrix.config.name }}" STREQUAL "windows-latest-nmake")
+            set(Generator -G "NMake Makefiles" -D CMAKE_MAKE_PROGRAM=nmake)
+          else()
+            set(Generator -G Ninja -D CMAKE_MAKE_PROGRAM=ninja)
+          endif()
+
           execute_process(
             COMMAND cmake
               -S .
               -B build
-              -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE}
-              -G Ninja
-              -D CMAKE_MAKE_PROGRAM=ninja
+              -D CMAKE_BUILD_TYPE=${{ matrix.build-type }}
+              ${Generator}
               -D USE_CCACHE=${enable_ccache}
               -D CMAKE_VERBOSE_MAKEFILE=ON
               -D USE_OPENMP=${OMP}
             RESULT_VARIABLE result
+            COMMAND_ECHO STDOUT
           )
           if (NOT result EQUAL 0)
             message(FATAL_ERROR "Bad exit status")
@@ -219,7 +248,7 @@ jobs:
           endif()
 
           execute_process(
-            COMMAND cmake --build build --target all
+            COMMAND cmake --build build --config ${{ matrix.build-type }}
             RESULT_VARIABLE result
             OUTPUT_VARIABLE output
             ERROR_VARIABLE output
@@ -241,8 +270,17 @@ jobs:
 
           set(ENV{CTEST_OUTPUT_ON_FAILURE} "ON")
 
+          if ("${{ runner.os }}" STREQUAL "Windows" AND NOT "x${{ matrix.config.environment_script }}" STREQUAL "x")
+            file(STRINGS environment_script_output.txt output_lines)
+            foreach(line IN LISTS output_lines)
+              if (line MATCHES "^([a-zA-Z0-9_-]+)=(.*)$")
+                set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
+              endif()
+            endforeach()
+          endif()
+
           execute_process(
-            COMMAND ctest "--verbose" "-R" "cryptest"
+            COMMAND ctest "--verbose" "-R" "cryptest" "-C" "${{ matrix.build-type }}"
             WORKING_DIRECTORY build
             RESULT_VARIABLE result
             OUTPUT_VARIABLE output
@@ -265,8 +303,17 @@ jobs:
 
           set(ENV{CTEST_OUTPUT_ON_FAILURE} "ON")
 
+          if ("${{ runner.os }}" STREQUAL "Windows" AND NOT "x${{ matrix.config.environment_script }}" STREQUAL "x")
+            file(STRINGS environment_script_output.txt output_lines)
+            foreach(line IN LISTS output_lines)
+              if (line MATCHES "^([a-zA-Z0-9_-]+)=(.*)$")
+                set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
+              endif()
+            endforeach()
+          endif()
+
           execute_process(
-            COMMAND ctest "-E" "cryptest"
+            COMMAND ctest "-E" "cryptest" "-C" "${{ matrix.build-type }}"
             WORKING_DIRECTORY build
             RESULT_VARIABLE result
             OUTPUT_VARIABLE output
@@ -281,7 +328,7 @@ jobs:
           endif()
 
       - name: Install Strip
-        run: cmake --install build --prefix instdir --strip
+        run: cmake --install build --prefix instdir --strip --config ${{ matrix.build-type }}
 
       - name: Pack
         working-directory: instdir
@@ -322,7 +369,7 @@ jobs:
 
   publish:
     if: contains(github.ref, 'tags/CRYPTOPP_')
-    name: ${{ matrix.config.name }}
+    name: 'Publish ${{ matrix.config.name }}'
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
@@ -374,3 +421,96 @@ jobs:
           asset_path: ./${{ matrix.config.artifact }}
           asset_name: ${{ matrix.config.artifact }}
           asset_content_type: application/x-gtar
+  msys-build:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build-type: [Release, Debug]
+        sys: [mingw32, mingw64, ucrt64, clang64]
+    name: 'MSys - ${{ matrix.sys }} - ${{ matrix.build-type }}'
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - name: 'Checkout'
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: 'Setup MSYS2'
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{matrix.sys}}
+        update: true
+        install: >-
+          git
+          make
+        pacboy: >-
+          toolchain:p
+          cmake:p
+    - name: Setup ccache
+      uses: Chocobo1/setup-ccache-action@v1
+      with:
+        prepend_symlinks_to_path: false
+        windows_compile_environment: msys2
+    - name: 'Configure'
+      run: |
+        cmake -G"Unix Makefiles" -Bbuild -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=ON -DUSE_CCACHE=ON -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
+    - name: 'Build'
+      run: |
+        cmake --build build
+    - name: 'Run cryptest'
+      run: |
+        ctest --test-dir build --verbose -R cryptest
+    - name: 'Run tests'
+      run: |
+        ctest --test-dir build --output-on-failure -E cryptest
+
+  cygwin-build:
+    strategy:
+      fail-fast: false
+      matrix:
+        build-type: [Release, Debug]
+    runs-on: windows-latest
+    name: 'Cygwin - ${{ matrix.build-type }}'
+    steps:
+    - name: 'Checkout'
+      env:
+        HOME: C:\cygwin\home\runneradmin
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: 'Setup cygwin'
+      uses: cygwin/cygwin-install-action@master
+      with:
+        packages: >-
+          ccache
+          cmake
+          gcc-g++
+          git
+          ninja
+    - name: 'Removing ccache from choco'
+      run: |
+        Remove-Item -Path C:\ProgramData\Chocolatey\bin\ccache.exe -Verbose
+    - name: Setup ccache
+      uses: Chocobo1/setup-ccache-action@v1
+      with:
+        install_ccache: false
+        prepend_symlinks_to_path: false
+        update_packager_index: false
+        windows_compile_environment: msvc
+    - name: 'Configure'
+      run: |
+        cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -D CMAKE_VERBOSE_MAKEFILE=ON -D USE_CCACHE=ON -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
+    - name: 'Build'
+      run: |
+        cmake --build build
+    - name: 'Run cryptest'
+      run: |
+        ctest --test-dir build --verbose -R cryptest
+    - name: Run tests
+      run: |
+        ctest --test-dir build --verbose -E cryptest
+    - name: 'Workaround git warning'
+      run: |
+        git config --global --add safe.directory /cygdrive/d/a/cryptopp-cmake/cryptopp-cmake

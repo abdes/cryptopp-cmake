@@ -215,10 +215,21 @@ check_target_architecture(CRYPTOPP_AMD64 "(x86_64|amd64)")
 check_target_architecture(CRYPTOPP_I386 "^i.86$")
 check_target_architecture(CRYPTOPP_MINGW32 "^mingw32")
 check_target_architecture(CRYPTOPP_MINGW64 "(w64-mingw32|mingw64)")
+check_target_architecture(CRYPTOPP_CYGWIN "(^cygwin)")
 check_target_architecture(CRYPTOPP_ARMV8 "(armv8|arm64|aarch32|aarch64)")
 check_target_architecture(CRYPTOPP_ARM32 "(^arm$|arm32|armhf|arm7l|eabihf)")
 check_target_architecture(CRYPTOPP_PPC32 "^(powerpc|ppc)")
 check_target_architecture(CRYPTOPP_PPC64 "^ppc64")
+
+if (CRYPTOPP_MINGW32 AND NOT DISABLE_ASM)
+    message (STATUS "[cryptopp] Disabling ASM on MinGW32")
+    list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_DISABLE_ASM=1")
+endif()
+
+if (CRYPTOPP_CYGWIN AND NOT DISABLE_ASM)
+    message (STATUS "[cryptopp] Disabling ASM on Cygwin")
+    list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_DISABLE_ASM=1")
+endif()
 
 # Cleanup 32/64 bit
 if(CRYPTOPP_AMD64)
@@ -409,7 +420,7 @@ include(sources)
 # X86/X32/X64 Options               #####
 # ##############################################################################
 
-if((CRYPTOPP_I386 OR CRYPTOPP_AMD64) AND NOT MSVC)
+if((CRYPTOPP_I386 OR CRYPTOPP_AMD64 OR MINGW) AND NOT MSVC)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
     set(sse2_flag "-xarch=sse2")
     set(sse3_flag "-xarch=sse3")
@@ -1233,7 +1244,8 @@ if(CRYPTOPP_BUILD_TESTING)
        DESTINATION ${PROJECT_BINARY_DIR})
 
   add_test(NAME build_cryptest COMMAND "${CMAKE_COMMAND}" --build
-                                       ${CMAKE_BINARY_DIR} --target cryptest)
+                                       ${PROJECT_BINARY_DIR} --target cryptest
+                                       --config ${CMAKE_BUILD_TYPE})
   add_test(
     NAME cryptest
     COMMAND $<TARGET_FILE:cryptest> v
@@ -1356,6 +1368,8 @@ elseif(CRYPTOPP_MINGW32)
   message(STATUS "[cryptopp] Platform: MinGW-32")
 elseif(CRYPTOPP_MINGW64)
   message(STATUS "[cryptopp] Platform: MinGW-64")
+elseif(CRYPTOPP_CYGWIN)
+  message(STATUS "[cryptopp] Platform: Cygwin")
 endif()
 if(CRYPTOPP_HAVE_ARM_NEON)
   message(STATUS "[cryptopp] NEON: TRUE")
