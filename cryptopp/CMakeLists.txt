@@ -1232,13 +1232,13 @@ if(CRYPTOPP_BUILD_TESTING)
   file(COPY ${CRYPTOPP_PROJECT_DIR}/TestVectors
        DESTINATION ${PROJECT_BINARY_DIR})
 
-  add_test(NAME build_cryptest COMMAND "${CMAKE_COMMAND}" --build
+  add_test(NAME cryptopp-build_cryptest COMMAND "${CMAKE_COMMAND}" --build
                                        ${CMAKE_BINARY_DIR} --target cryptest)
   add_test(
-    NAME cryptest
+    NAME cryptopp-cryptest
     COMMAND $<TARGET_FILE:cryptest> v
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
-  set_tests_properties(cryptest PROPERTIES DEPENDS build_cryptest)
+  set_tests_properties(cryptopp-cryptest PROPERTIES DEPENDS cryptopp-build_cryptest)
 endif()
 
 # ============================================================================
