@@ -16,63 +16,51 @@ jobs:
           - {
               name: "windows-latest",
               os: windows-latest,
-              artifact: "Windows-MSVC.7z",
               build_type: "Release",
               cc: "cl",
               cxx: "cl",
               environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
-              archiver: "7z a",
               generators: "Visual Studio 17 2022",
             }
           - {
               name: "ubuntu-latest",
               os: ubuntu-latest,
-              artifact: "Linux.7z",
               build_type: "Release",
               cc: "gcc-10",
               cxx: "g++-10",
-              archiver: "7z a",
               generators: "Ninja",
             }
           - {
               name: "ubuntu-22.04-gcc12",
               os: ubuntu-22.04,
-              artifact: "Linux.7z",
               build_type: "Release",
               cc: "gcc-12",
               cxx: "g++-12",
-              archiver: "7z a",
               generators: "Ninja",
             }
           - {
               name: "macos-latest",
               os: macos-latest,
-              artifact: "macOS.7z",
               build_type: "Release",
               cc: "clang",
               cxx: "clang++",
-              archiver: "7za a",
               generators: "Ninja",
             }
           - {
               name: "macos-latest-omp-homebrew",
               os: macos-latest,
-              artifact: "macOS.7z",
               build_type: "Release",
               cc: "clang",
               cxx: "clang++",
-              archiver: "7za a",
               generators: "Ninja",
             }
 
           - {
               name: "macos-latest-omp-macports",
               os: macos-latest,
-              artifact: "macOS.7z",
               build_type: "Release",
               cc: "clang",
               cxx: "clang++",
-              archiver: "7za a",
               generators: "Ninja",
             }
     steps:
