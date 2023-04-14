@@ -1,6 +1,8 @@
-name: CI Matrix
+name: Release Matrix
 
-on: [push, pull_request]
+on:
+  release:
+    types: [published]
 
 env:
   BUILD_TYPE: Release
@@ -35,38 +37,7 @@ jobs:
               generators: "Ninja",
             }
           - {
-              name: "ubuntu-22.04-gcc12",
-              os: ubuntu-22.04,
-              artifact: "Linux.7z",
-              build_type: "Release",
-              cc: "gcc-12",
-              cxx: "g++-12",
-              archiver: "7z a",
-              generators: "Ninja",
-            }
-          - {
               name: "macos-latest",
-              os: macos-latest,
-              artifact: "macOS.7z",
-              build_type: "Release",
-              cc: "clang",
-              cxx: "clang++",
-              archiver: "7za a",
-              generators: "Ninja",
-            }
-          - {
-              name: "macos-latest-omp-homebrew",
-              os: macos-latest,
-              artifact: "macOS.7z",
-              build_type: "Release",
-              cc: "clang",
-              cxx: "clang++",
-              archiver: "7za a",
-              generators: "Ninja",
-            }
-
-          - {
-              name: "macos-latest-omp-macports",
               os: macos-latest,
               artifact: "macOS.7z",
               build_type: "Release",
@@ -126,28 +97,6 @@ jobs:
           update_packager_index: false
           prepend_symlinks_to_path: false
           windows_compile_environment: msvc # this field is required
-
-      - name: Install gcc-12
-        shell: bash
-        if: endsWith(matrix.config.name, 'gcc12')
-        run: |
-          sudo apt-get update
-          sudo apt-get install gcc-12 g++-12
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 110 --slave /usr/bin/g++ g++ /usr/bin/g++-12 --slave /usr/bin/gcov gcov /usr/bin/gcov-12
-
-      - name: Install homebrew
-        uses: tecolicom/actions-use-homebrew-tools@v1
-        with:
-          tools: libomp
-        if: endsWith(matrix.config.name, 'homebrew')
-
-      - name: Install macports
-        uses: melusina-org/gha-install-macports@v1
-        if: endsWith(matrix.config.name, 'macports')
-
-      - name: Install libomp (macports)
-        run: port install libomp
-        if: endsWith(matrix.config.name, 'macports')
 
       - name: Configure
         shell: cmake -P {0}
@@ -308,3 +257,83 @@ jobs:
           path: ./${{ matrix.config.artifact }}
           name: ${{ matrix.config.artifact }}
 
+  release:
+    if: contains(github.ref, 'tags/CRYPTOPP_')
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Store Release url
+        run: |
+          echo "${{ steps.create_release.outputs.upload_url }}" > ./upload_url
+
+      - uses: actions/upload-artifact@v1
+        with:
+          path: ./upload_url
+          name: upload_url
+
+  publish:
+    if: contains(github.ref, 'tags/CRYPTOPP_')
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+              name: "Windows Latest MSVC",
+              artifact: "Windows-MSVC.7z",
+              os: windows-latest,
+            }
+          - {
+              name: "Ubuntu Latest GCC",
+              artifact: "Linux.7z",
+              os: ubuntu-latest,
+            }
+          - {
+              name: "macOS Latest Clang",
+              artifact: "macOS.7z",
+              os: macos-latest,
+            }
+    needs: release
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: ${{ matrix.config.artifact }}
+          path: ./
+
+      - name: Download URL
+        uses: actions/download-artifact@v1
+        with:
+          name: upload_url
+          path: ./
+
+      - id: set_upload_url
+        shell: bash
+        run: |
+          upload_url=`cat ./upload_url`
+          echo "{upload_url}={$upload_url}" >> $GITHUB_OUTPUT
+
+      - name: Upload to Release
+        id: upload_to_release
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.set_upload_url.outputs.upload_url }}
+          asset_path: ./${{ matrix.config.artifact }}
+          asset_name: ${{ matrix.config.artifact }}
+          asset_content_type: application/x-gtar
