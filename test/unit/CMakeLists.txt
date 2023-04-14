@@ -10,7 +10,7 @@ foreach(test ${tests})
   message(STATUS "Adding unit test: ${test_name}")
   # Configure
   add_test(
-    NAME ${test_name}-configure
+    NAME cryptopp-${test_name}-configure
     COMMAND
       ${CMAKE_COMMAND}
       # Always use ninja, never the visual studio generator (bugged)
@@ -31,10 +31,10 @@ foreach(test ${tests})
       # Enable verbose makefiles so we can see the full compile command line
       -D CMAKE_VERBOSE_MAKEFILE=ON)
   # Build
-  add_test(NAME ${test_name}-build
+  add_test(NAME cryptopp-${test_name}-build
            COMMAND ${CMAKE_COMMAND} --build
                    "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test")
   # Run build test case after the configure test case
-  set_tests_properties(${test_name}-build PROPERTIES DEPENDS
-                                                     ${test_name}-configure)
+  set_tests_properties(cryptopp-${test_name}-build PROPERTIES DEPENDS
+                                                     cryptopp-${test_name}-configure)
 endforeach()
