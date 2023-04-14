@@ -262,8 +262,22 @@ jobs:
           # Do not run tests in parallel as we share things between them to
           # speed up the build and enable caching. The benefit of caching is
           # much higher than parallel tests.
-
+          set(ENV{CC} ${{ matrix.config.cc }})
+          set(ENV{CXX} ${{ matrix.config.cxx }})
           set(ENV{CTEST_OUTPUT_ON_FAILURE} "ON")
+
+          if ("${{ runner.os }}" STREQUAL "Windows" AND NOT "x${{ matrix.config.environment_script }}" STREQUAL "x")
+            execute_process(
+              COMMAND "${{ matrix.config.environment_script }}" && set
+              OUTPUT_FILE environment_script_output.txt
+            )
+            file(STRINGS environment_script_output.txt output_lines)
+            foreach(line IN LISTS output_lines)
+              if (line MATCHES "^([a-zA-Z0-9_-]+)=(.*)$")
+                set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
+              endif()
+            endforeach()
+          endif()
 
           execute_process(
             COMMAND ctest "-E" "cryptest"
