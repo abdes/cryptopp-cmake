@@ -297,16 +297,14 @@ jobs:
           prepend_symlinks_to_path: false
           windows_compile_environment: msvc # this field is required
 
-      - name: Install libomp with homebrew
-        run: brew install libomp
-        if: endsWith(matrix.config.name, 'homebrew')
-
       - name: Install macports
         uses: melusina-org/gha-install-macports@v1
         if: endsWith(matrix.config.name, 'macports')
 
       - name: Install libomp (macports)
-        run: port install libomp
+        run: |
+          port install libomp
+          brew uninstall --ignore-dependencies --zap libomp
         if: endsWith(matrix.config.name, 'macports')
 
       - name: Configure
