@@ -293,14 +293,3 @@ jobs:
             message("::error::${test_results}")
             message(FATAL_ERROR "Running tests failed!")
           endif()
-      - name: Pack
-        working-directory: instdir
-        run: cmake -E tar cfv ../${{ matrix.config.artifact }} --format=7zip .
-
-      - name: Upload
-        if: ${{ !env.ACT }}
-        uses: actions/upload-artifact@v1
-        with:
-          path: ./${{ matrix.config.artifact }}
-          name: ${{ matrix.config.artifact }}
-
