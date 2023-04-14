@@ -388,3 +388,47 @@ jobs:
           asset_path: ./${{ matrix.config.artifact }}
           asset_name: ${{ matrix.config.artifact }}
           asset_content_type: application/x-gtar
+  msys-build:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build-type: [Release, Debug]
+        sys: [mingw32, mingw64, ucrt64, clang64]
+    name: 'MSys - ${{ matrix.sys }} - ${{ matrix.build-type }}'
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - name: 'Checkout'
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: 'Setup MSYS2'
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{matrix.sys}}
+        update: true
+        install: >-
+          git
+          make
+        pacboy: >-
+          toolchain:p
+          cmake:p
+    - name: Setup ccache
+      uses: Chocobo1/setup-ccache-action@v1
+      with:
+        prepend_symlinks_to_path: false
+        windows_compile_environment: msys2
+    - name: 'Configure'
+      run: |
+        cmake -G"Unix Makefiles" -Bbuild -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=ON -DUSE_CCACHE=ON -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
+    - name: 'Build'
+      run: |
+        cmake --build build
+    - name: 'Run cryptest'
+      run: |
+        ctest --test-dir build --verbose -R cryptest
+    - name: 'Run tests'
+      run: |
+        ctest --test-dir build --output-on-failure -E cryptest
