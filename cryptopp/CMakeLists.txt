@@ -233,6 +233,10 @@ if(CRYPTOPP_PPC64)
   set(CRYPTOPP_PPC32 0)
 endif()
 
+if (CRYPTOPP_CYGWIN AND NOT DISABLE_ASM)
+    message (STATUS "[cryptopp] Disabling ASM on Cygwin")
+    list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_DISABLE_ASM=1")
+endif()
 # ##############################################################################
 
 # Test SunCC for a string like 'CC: Sun C++ 5.13 SunOS_i386'
