@@ -19,6 +19,8 @@ set(archdetect_c_code
 
 #elif defined(__CYGWIN__)
     #error cmake_ARCH cygwin
+#elif defined(__MINGW32__)
+    #error cmake_ARCH mingw32
 #elif defined(__i386) || defined(__i386__) || defined(_M_IX86)
     #error cmake_ARCH i386
 #elif defined(__x86_64) || defined(__x86_64__) || defined(__amd64) || defined(_M_X64)
