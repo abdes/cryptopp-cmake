@@ -38,31 +38,6 @@ jobs:
               cxx: "g++-12",
               generators: "Ninja",
             }
-          - {
-              name: "macos-latest",
-              os: macos-latest,
-              build_type: "Release",
-              cc: "clang",
-              cxx: "clang++",
-              generators: "Ninja",
-            }
-          - {
-              name: "macos-latest-omp-homebrew",
-              os: macos-latest,
-              build_type: "Release",
-              cc: "clang",
-              cxx: "clang++",
-              generators: "Ninja",
-            }
-
-          - {
-              name: "macos-latest-omp-macports",
-              os: macos-latest,
-              build_type: "Release",
-              cc: "clang",
-              cxx: "clang++",
-              generators: "Ninja",
-            }
     steps:
       - uses: actions/checkout@v3
         with:
@@ -89,8 +64,6 @@ jobs:
           if("${{ runner.os }}" STREQUAL "Windows")
             # If ccache behaves badly on windows, skip this step
             execute_process(COMMAND choco install ccache)
-          elseif("${{ runner.os }}" STREQUAL "macOS")
-            execute_process(COMMAND brew install ccache)
           elseif("${{ runner.os }}" STREQUAL "Linux")
             set(ccache_version "4.6.3")
             set(ccache_dist "ccache-${ccache_version}-linux-x86_64")
@@ -122,20 +95,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install gcc-12 g++-12
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 110 --slave /usr/bin/g++ g++ /usr/bin/g++-12 --slave /usr/bin/gcov gcov /usr/bin/gcov-12
-
-      - name: Install homebrew
-        uses: tecolicom/actions-use-homebrew-tools@v1
-        with:
-          tools: libomp
-        if: endsWith(matrix.config.name, 'homebrew')
-
-      - name: Install macports
-        uses: melusina-org/gha-install-macports@v1
-        if: endsWith(matrix.config.name, 'macports')
-
-      - name: Install libomp (macports)
-        run: port install libomp
-        if: endsWith(matrix.config.name, 'macports')
 
       - name: Configure
         shell: cmake -P {0}
@@ -170,12 +129,6 @@ jobs:
             set(enable_ccache "ON")
           endif()
 
-          if ("${{ matrix.config.name }}" STREQUAL "macos-latest-omp-homebrew" OR "${{ matrix.config.name }}" STREQUAL "macos-latest-omp-macports")
-            set(OMP "ON")
-          else()
-            set(OMP "OFF")
-          endif()
-
           execute_process(
             COMMAND cmake
               -S .
@@ -185,7 +138,6 @@ jobs:
               -D CMAKE_MAKE_PROGRAM=ninja
               -D USE_CCACHE=${enable_ccache}
               -D CMAKE_VERBOSE_MAKEFILE=ON
-              -D USE_OPENMP=${OMP}
             RESULT_VARIABLE result
           )
           if (NOT result EQUAL 0)
@@ -266,6 +218,183 @@ jobs:
               endif()
             endforeach()
           endif()
+
+          execute_process(
+            COMMAND ctest "-E" "cryptest"
+            WORKING_DIRECTORY build
+            RESULT_VARIABLE result
+            OUTPUT_VARIABLE output
+            ERROR_VARIABLE output
+            ECHO_OUTPUT_VARIABLE ECHO_ERROR_VARIABLE
+          )
+          if (NOT result EQUAL 0)
+            string(REGEX MATCH "[0-9]+% tests.*[0-9.]+ sec.*$" test_results "${output}")
+            string(REPLACE "\n" "%0A" test_results "${test_results}")
+            message("::error::${test_results}")
+            message(FATAL_ERROR "Running tests failed!")
+          endif()
+
+  MacOS:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+              name: "macos-latest",
+              os: macos-latest,
+              build_type: "Release",
+              cc: "clang",
+              cxx: "clang++",
+              generators: "Ninja",
+            }
+          - {
+              name: "macos-latest-omp-homebrew",
+              os: macos-latest,
+              build_type: "Release",
+              cc: "clang",
+              cxx: "clang++",
+              generators: "Ninja",
+            }
+
+          - {
+              name: "macos-latest-omp-macports",
+              os: macos-latest,
+              build_type: "Release",
+              cc: "clang",
+              cxx: "clang++",
+              generators: "Ninja",
+            }
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Print env
+        run: |
+          echo github.event.action: ${{ github.event.action }}
+          echo github.event_name: ${{ github.event_name }}
+
+      - name: Setup Ninja
+        uses: abdes/gha-setup-ninja@master
+        with:
+          version: 1.11.0
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.13
+        with:
+          cmake-version: 3.21.x
+
+      - name: Install ccache
+        shell: cmake -P {0}
+        run: |
+          execute_process(COMMAND brew install ccache)
+
+      - name: Setup ccache
+        uses: Chocobo1/setup-ccache-action@v1
+        with:
+          install_ccache: false
+          update_packager_index: false
+          prepend_symlinks_to_path: false
+          windows_compile_environment: msvc # this field is required
+
+      - name: Install homebrew
+        uses: tecolicom/actions-use-homebrew-tools@v1
+        with:
+          tools: libomp
+        if: endsWith(matrix.config.name, 'homebrew')
+
+      - name: Install macports
+        uses: melusina-org/gha-install-macports@v1
+        if: endsWith(matrix.config.name, 'macports')
+
+      - name: Install libomp (macports)
+        run: port install libomp
+        if: endsWith(matrix.config.name, 'macports')
+
+      - name: Configure
+        shell: cmake -P {0}
+        run: |
+          set(ENV{CC} ${{ matrix.config.cc }})
+          set(ENV{CXX} ${{ matrix.config.cxx }})
+          set(path_separator ":")
+          set(ENV{PATH} "$ENV{GITHUB_WORKSPACE}${path_separator}$ENV{PATH}")
+
+          if ("${{ matrix.config.name }}" STREQUAL "macos-latest-omp-homebrew" OR "${{ matrix.config.name }}" STREQUAL "macos-latest-omp-macports")
+            set(OMP "ON")
+          else()
+            set(OMP "OFF")
+          endif()
+
+          execute_process(
+            COMMAND cmake
+              -S .
+              -B build
+              -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE}
+              -G Ninja
+              -D CMAKE_MAKE_PROGRAM=ninja
+              -D USE_CCACHE=ON
+              -D CMAKE_VERBOSE_MAKEFILE=ON
+              -D USE_OPENMP=${OMP}
+            RESULT_VARIABLE result
+          )
+          if (NOT result EQUAL 0)
+            message(FATAL_ERROR "Bad exit status")
+          endif()
+
+      - name: Build
+        shell: cmake -P {0}
+        run: |
+          set(ENV{NINJA_STATUS} "[%f/%t %o/sec] ")
+
+          execute_process(
+            COMMAND cmake --build build --target all
+            RESULT_VARIABLE result
+            OUTPUT_VARIABLE output
+            ERROR_VARIABLE output
+            ECHO_OUTPUT_VARIABLE ECHO_ERROR_VARIABLE
+          )
+          if (NOT result EQUAL 0)
+            string(REGEX MATCH "FAILED:.*$" error_message "${output}")
+            string(REPLACE "\n" "%0A" error_message "${error_message}")
+            message("::error::${error_message}")
+            message(FATAL_ERROR "Build failed")
+          endif()
+
+      - name: Run cryptest
+        shell: cmake -P {0}
+        run: |
+          # Do not run tests in parallel as we share things between them to
+          # speed up the build and enable caching. The benefit of caching is
+          # much higher than parallel tests.
+
+          set(ENV{CTEST_OUTPUT_ON_FAILURE} "ON")
+
+          execute_process(
+            COMMAND ctest "--verbose" "-R" "cryptest"
+            WORKING_DIRECTORY build
+            RESULT_VARIABLE result
+            OUTPUT_VARIABLE output
+            ERROR_VARIABLE output
+            ECHO_OUTPUT_VARIABLE ECHO_ERROR_VARIABLE
+          )
+          if (NOT result EQUAL 0)
+            string(REGEX MATCH "[0-9]+% tests.*[0-9.]+ sec.*$" test_results "${output}")
+            string(REPLACE "\n" "%0A" test_results "${test_results}")
+            message("::error::${test_results}")
+            message(FATAL_ERROR "Running tests failed!")
+          endif()
+
+      - name: Run build tests
+        shell: cmake -P {0}
+        run: |
+          # Do not run tests in parallel as we share things between them to
+          # speed up the build and enable caching. The benefit of caching is
+          # much higher than parallel tests.
+          set(ENV{CC} ${{ matrix.config.cc }})
+          set(ENV{CXX} ${{ matrix.config.cxx }})
+          set(ENV{CTEST_OUTPUT_ON_FAILURE} "ON")
 
           execute_process(
             COMMAND ctest "-E" "cryptest"
