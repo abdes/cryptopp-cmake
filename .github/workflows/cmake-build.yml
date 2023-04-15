@@ -377,8 +377,6 @@ jobs:
           file(APPEND "$ENV{GITHUB_PATH}" "$ENV{GITHUB_WORKSPACE}${path_separator}${ccache_dir}")
 
       - name: Setup ccache
-        # If ccache behaves badly on windows, skip this step
-        # if: runner.os != 'Windows'
         uses: Chocobo1/setup-ccache-action@v1
         with:
           install_ccache: false
