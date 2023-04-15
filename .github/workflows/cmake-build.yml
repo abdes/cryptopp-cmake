@@ -52,143 +52,47 @@ jobs:
           prepend_symlinks_to_path: true
           windows_compile_environment: msvc # this field is required
 
-      - name: Configure
-        shell: cmake -P {0}
+      - name: Set environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Set compiler
         run: |
-          set(ENV{CC} ${{ matrix.config.cc }})
-          set(ENV{CXX} ${{ matrix.config.cxx }})
+         echo ("CC=${{ matrix.config.cc }}") >> $env:GITHUB_ENV
+         echo ("CXX=${{ matrix.config.cxx }}") >> $env:GITHUB_ENV
+         echo ("PATH=$env:GITHUB_WORKSPACE;$env:PATH") >> $env:GITHUB_ENV
 
-          if ("${{ runner.os }}" STREQUAL "Windows" AND NOT "x${{ matrix.config.environment_script }}" STREQUAL "x")
-            execute_process(
-              COMMAND "${{ matrix.config.environment_script }}" && set
-              OUTPUT_FILE environment_script_output.txt
-            )
-            file(STRINGS environment_script_output.txt output_lines)
-            foreach(line IN LISTS output_lines)
-              if (line MATCHES "^([a-zA-Z0-9_-]+)=(.*)$")
-                set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
-              endif()
-            endforeach()
-          endif()
-
-          set(path_separator ":")
-          if ("${{ runner.os }}" STREQUAL "Windows")
-            set(path_separator ";")
-          endif()
-
-          set(ENV{PATH} "$ENV{GITHUB_WORKSPACE}${path_separator}$ENV{PATH}")
-          # If ccache shows some strange behavior on windows, you can easily
-          # disable it here by setting the variable to "OFF"
-          if (NOT "${{ runner.os }}" STREQUAL "Windows")
-            set(enable_ccache "ON")
-          else()
-            set(enable_ccache "ON")
-          endif()
-
-          execute_process(
-            COMMAND cmake
-              -S .
-              -B build
-              -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE}
-              -G Ninja
-              -D CMAKE_MAKE_PROGRAM=ninja
-              -D USE_CCACHE=${enable_ccache}
-              -D CMAKE_VERBOSE_MAKEFILE=ON
-            RESULT_VARIABLE result
-          )
-          if (NOT result EQUAL 0)
-            message(FATAL_ERROR "Bad exit status")
-          endif()
+      - name: Configure
+        run: |
+          cmake `
+            -S . `
+            -B build `
+            -D CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} `
+            -G Ninja `
+            -D CMAKE_MAKE_PROGRAM=ninja `
+            -D USE_CCACHE=ON `
+            -D CMAKE_VERBOSE_MAKEFILE=ON
 
       - name: Build
-        shell: cmake -P {0}
-        run: |
-          set(ENV{NINJA_STATUS} "[%f/%t %o/sec] ")
-
-          if ("${{ runner.os }}" STREQUAL "Windows" AND NOT "x${{ matrix.config.environment_script }}" STREQUAL "x")
-            file(STRINGS environment_script_output.txt output_lines)
-            foreach(line IN LISTS output_lines)
-              if (line MATCHES "^([a-zA-Z0-9_-]+)=(.*)$")
-                set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
-              endif()
-            endforeach()
-          endif()
-
-          execute_process(
-            COMMAND cmake --build build --target all
-            RESULT_VARIABLE result
-            OUTPUT_VARIABLE output
-            ERROR_VARIABLE output
-            ECHO_OUTPUT_VARIABLE ECHO_ERROR_VARIABLE
-          )
-          if (NOT result EQUAL 0)
-            string(REGEX MATCH "FAILED:.*$" error_message "${output}")
-            string(REPLACE "\n" "%0A" error_message "${error_message}")
-            message("::error::${error_message}")
-            message(FATAL_ERROR "Build failed")
-          endif()
+        run: cmake --build build --target all
 
       - name: Run cryptest
-        shell: cmake -P {0}
         run: |
           # Do not run tests in parallel as we share things between them to
           # speed up the build and enable caching. The benefit of caching is
           # much higher than parallel tests.
 
-          set(ENV{CTEST_OUTPUT_ON_FAILURE} "ON")
-
-          execute_process(
-            COMMAND ctest "--verbose" "-R" "cryptest"
-            WORKING_DIRECTORY build
-            RESULT_VARIABLE result
-            OUTPUT_VARIABLE output
-            ERROR_VARIABLE output
-            ECHO_OUTPUT_VARIABLE ECHO_ERROR_VARIABLE
-          )
-          if (NOT result EQUAL 0)
-            string(REGEX MATCH "[0-9]+% tests.*[0-9.]+ sec.*$" test_results "${output}")
-            string(REPLACE "\n" "%0A" test_results "${test_results}")
-            message("::error::${test_results}")
-            message(FATAL_ERROR "Running tests failed!")
-          endif()
+          ctest --verbose -R cryptest --test-dir build
 
       - name: Run build tests
-        shell: cmake -P {0}
         run: |
           # Do not run tests in parallel as we share things between them to
           # speed up the build and enable caching. The benefit of caching is
           # much higher than parallel tests.
-          set(ENV{CC} ${{ matrix.config.cc }})
-          set(ENV{CXX} ${{ matrix.config.cxx }})
-          set(ENV{CTEST_OUTPUT_ON_FAILURE} "ON")
+          set CC=${{ matrix.config.cc }}
+          set CXX=${{ matrix.config.cxx }}
+          "${{ matrix.config.environment_script }}"
 
-          if ("${{ runner.os }}" STREQUAL "Windows" AND NOT "x${{ matrix.config.environment_script }}" STREQUAL "x")
-            execute_process(
-              COMMAND "${{ matrix.config.environment_script }}" && set
-              OUTPUT_FILE environment_script_output.txt
-            )
-            file(STRINGS environment_script_output.txt output_lines)
-            foreach(line IN LISTS output_lines)
-              if (line MATCHES "^([a-zA-Z0-9_-]+)=(.*)$")
-                set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
-              endif()
-            endforeach()
-          endif()
-
-          execute_process(
-            COMMAND ctest "-E" "cryptest"
-            WORKING_DIRECTORY build
-            RESULT_VARIABLE result
-            OUTPUT_VARIABLE output
-            ERROR_VARIABLE output
-            ECHO_OUTPUT_VARIABLE ECHO_ERROR_VARIABLE
-          )
-          if (NOT result EQUAL 0)
-            string(REGEX MATCH "[0-9]+% tests.*[0-9.]+ sec.*$" test_results "${output}")
-            string(REPLACE "\n" "%0A" test_results "${test_results}")
-            message("::error::${test_results}")
-            message(FATAL_ERROR "Running tests failed!")
-          endif()
+          ctest -E cryptest --output-on-failure --test-dir build
 
   MacOS:
     name: ${{ matrix.config.name }}
