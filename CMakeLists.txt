@@ -34,7 +34,7 @@ endif()
 
 # Meta information about the project
 # cmake-format: off
-set(META_PROJECT_NAME        "cryptopp")
+set(META_PROJECT_NAME        "cryptopp-cmake")
 set(META_PROJECT_DESCRIPTION "Free C++ class library of cryptographic schemes")
 set(META_GITHUB_REPO         "https://github.com/weidai11/cryptopp")
 set(META_VERSION_MAJOR       "8")
