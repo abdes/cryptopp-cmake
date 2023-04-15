@@ -29,11 +29,14 @@ foreach(test ${tests})
       # Use local source code for cryptopp-cmake
       -D "CPM_cryptopp-cmake_SOURCE=${CMAKE_CURRENT_SOURCE_DIR}/.."
       # Enable verbose makefiles so we can see the full compile command line
-      -D CMAKE_VERBOSE_MAKEFILE=ON)
+      -D CMAKE_VERBOSE_MAKEFILE=ON
+      # Set the build-type to what we are building
+      -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
   # Build
   add_test(NAME cryptopp-${test_name}-build
            COMMAND ${CMAKE_COMMAND} --build
-                   "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test")
+                   "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
+                   --config ${CMAKE_BUILD_TYPE})
   # Run build test case after the configure test case
   set_tests_properties(cryptopp-${test_name}-build PROPERTIES DEPENDS
                                                      cryptopp-${test_name}-configure)
