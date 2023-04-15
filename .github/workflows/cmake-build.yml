@@ -324,22 +324,20 @@ jobs:
 
   Ubuntu:
     name: ${{ matrix.config.name }}
-    runs-on: ${{ matrix.config.os }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         config:
           - {
-              name: "ubuntu-latest",
-              os: ubuntu-latest,
+              name: "ubuntu",
               build_type: "Release",
               cc: "gcc-10",
               cxx: "g++-10",
               generators: "Ninja",
             }
           - {
-              name: "ubuntu-22.04-gcc12",
-              os: ubuntu-22.04,
+              name: "ubuntu-gcc12",
               build_type: "Release",
               cc: "gcc-12",
               cxx: "g++-12",
