@@ -4,7 +4,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # ===-----------------------------------------------------------------------===#
 
-file(GLOB tests "${CMAKE_CURRENT_SOURCE_DIR}/unit/*")
+file(GLOB tests "${CMAKE_CURRENT_SOURCE_DIR}/*")
+list(REMOVE_ITEM tests "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt")
+
 foreach(test ${tests})
   cmake_path(GET test FILENAME test_name)
   message(STATUS "Adding unit test: ${test_name}")
@@ -27,7 +29,7 @@ foreach(test ${tests})
       # Setup cmake source/build dirs
       -S "${test}" -B "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
       # Use local source code for cryptopp-cmake
-      -D "CPM_cryptopp-cmake_SOURCE=${CMAKE_CURRENT_SOURCE_DIR}/.."
+      -D "CPM_cryptopp-cmake_SOURCE=${cryptopp-cmake_SOURCE_DIR}"
       # Enable verbose makefiles so we can see the full compile command line
       -D CMAKE_VERBOSE_MAKEFILE=ON
       # Set the build-type to what we are building
