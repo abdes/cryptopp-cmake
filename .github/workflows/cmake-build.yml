@@ -7,16 +7,16 @@ env:
 
 jobs:
   Windows:
-    name: ${{ matrix.config.name }}
+    name: ${{ matrix.config.name }} (${{ matrix.build-type }})
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
       matrix:
+        build-type: [Release, Debug]
         config:
           - {
               name: "windows-latest",
               os: windows-latest,
-              build_type: "Release",
               cc: "cl",
               cxx: "cl",
               environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
@@ -66,14 +66,14 @@ jobs:
           cmake `
             -S . `
             -B build `
-            -D CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} `
+            -D CMAKE_BUILD_TYPE=${{ matrix.build-type }} `
             -G Ninja `
             -D CMAKE_MAKE_PROGRAM=ninja `
             -D USE_CCACHE=ON `
             -D CMAKE_VERBOSE_MAKEFILE=ON
 
       - name: Build
-        run: cmake --build build --target all
+        run: cmake --build build --target all --config ${{ matrix.build-type }}
 
       - name: Run cryptest
         run: |
@@ -81,7 +81,7 @@ jobs:
           # speed up the build and enable caching. The benefit of caching is
           # much higher than parallel tests.
 
-          ctest --verbose -R cryptest --test-dir build
+          ctest --verbose -R cryptest --test-dir build -C ${{ matrix.build-type }}
 
       - name: Run build tests
         run: |
@@ -92,19 +92,19 @@ jobs:
           set CXX=${{ matrix.config.cxx }}
           "${{ matrix.config.environment_script }}"
 
-          ctest -E cryptest --output-on-failure --test-dir build
+          ctest -E cryptest --output-on-failure --test-dir build -C ${{ matrix.build-type }}
 
   MacOS:
-    name: ${{ matrix.config.name }}
+    name: ${{ matrix.config.name }} (${{ matrix.build-type }})
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
       matrix:
+        build-type: [Release, Debug]
         config:
           - {
               name: "macos-latest",
               os: macos-latest,
-              build_type: "Release",
               cc: "clang",
               cxx: "clang++",
               generators: "Ninja",
@@ -113,7 +113,6 @@ jobs:
           - {
               name: "macos-latest-omp-homebrew",
               os: macos-latest,
-              build_type: "Release",
               cc: "clang",
               cxx: "clang++",
               generators: "Ninja",
@@ -123,7 +122,6 @@ jobs:
           - {
               name: "macos-latest-omp-macports",
               os: macos-latest,
-              build_type: "Release",
               cc: "clang",
               cxx: "clang++",
               generators: "Ninja",
@@ -175,18 +173,18 @@ jobs:
           cmake \
             -S . \
             -B build \
-            -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} \
+            -D CMAKE_BUILD_TYPE=${{ matrix.config.build-type }} \
             -G Ninja \
             -D CMAKE_MAKE_PROGRAM=ninja \
             -D USE_CCACHE=ON \
             -D CMAKE_VERBOSE_MAKEFILE=ON \
             -D USE_OPENMP=${{ matrix.config.omp }} \
-            -D CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+            -D CMAKE_BUILD_TYPE=${{ matrix.build-type }}
 
       - name: Build
         run: |
           NINJA_STATUS="[%f/%t %o/sec] " export NINJA_STATUS
-          cmake --build build --target all
+          cmake --build build --target all --config ${{ matrix.build-type }}
 
       - name: Run cryptest
         run: |
@@ -194,7 +192,7 @@ jobs:
           # speed up the build and enable caching. The benefit of caching is
           # much higher than parallel tests.
 
-          ctest --verbose -R "cryptest" --test-dir build
+          ctest --verbose -R "cryptest" --test-dir build -C ${{ matrix.build-type }}
 
       - name: Run build tests
         run: |
@@ -204,25 +202,24 @@ jobs:
           CC=${{ matrix.config.cc }} export CC
           CXX=${{ matrix.config.cxx }} export CXX
 
-          ctest -E "cryptest"  --output-on-failure --test-dir build
+          ctest -E "cryptest"  --output-on-failure --test-dir build -C ${{ matrix.build-type }}
 
   Ubuntu:
-    name: ${{ matrix.config.name }}
+    name: ${{ matrix.config.name }} (${{ matrix.build-type }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        build-type: [Release, Debug]
         config:
           - {
               name: "ubuntu",
-              build_type: "Release",
               cc: "gcc-10",
               cxx: "g++-10",
               generators: "Ninja",
             }
           - {
               name: "ubuntu-gcc12",
-              build_type: "Release",
               cc: "gcc-12",
               cxx: "g++-12",
               generators: "Ninja",
@@ -282,13 +279,13 @@ jobs:
             -D CMAKE_MAKE_PROGRAM=ninja \
             -D USE_CCACHE=ON \
             -D CMAKE_VERBOSE_MAKEFILE=ON \
-            -D CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+            -D CMAKE_BUILD_TYPE=${{ matrix.build-type }}
 
       - name: Build
         run: |
           export NINJA_STATUS="[%f/%t %o/sec] "
 
-          cmake --build build --target all
+          cmake --build build --target all --config ${{ matrix.build-type }}
 
       - name: Run cryptest
         run: |
@@ -296,7 +293,7 @@ jobs:
           # speed up the build and enable caching. The benefit of caching is
           # much higher than parallel tests.
 
-          ctest --verbose -R cryptest --test-dir build
+          ctest --verbose -R cryptest --test-dir build -C ${{ matrix.build-type }}
 
       - name: Run build tests
         run: |
@@ -306,4 +303,4 @@ jobs:
           export CC=${{ matrix.config.cc }}
           export CXX=${{ matrix.config.cxx }}
 
-          ctest -E cryptest --output-on-failure --test-dir build
+          ctest -E cryptest --output-on-failure --test-dir build -C ${{ matrix.build-type }}
