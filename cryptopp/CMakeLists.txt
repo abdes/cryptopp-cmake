@@ -946,7 +946,9 @@ endif()
 list(FIND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_DISABLE_ASM=1" has_disable_asm)
 if(NOT has_disable_asm EQUAL -1)
   list(FILTER cryptopp_SOURCES EXCLUDE REGEX
-       "arm_|ppc_|neon_|sse_|_sse.cpp|_avx.cpp|_ppc.cpp|_simd.cpp")
+       "arm_|ppc_|neon_|sse_|_sse.cpp|_avx.cpp|_ppc.cpp|_simd.cpp|_armv4.S")
+  # But keep sse_simd.cpp or we get undefined symbols at link
+  list(PREPEND cryptopp_SOURCES "${CRYPTOPP_PROJECT_DIR}/sse_simd.cpp")
 endif()
 
 # Apply compiler options to SIMD source files
