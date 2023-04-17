@@ -4,28 +4,16 @@ on: [push, pull_request]
 
 jobs:
   Windows:
-    name: ${{ matrix.config.name }} (${{ matrix.build-type }})
-    runs-on: ${{ matrix.config.os }}
+    name: Windows ${{ matrix.runs.generator }} (${{ matrix.build-type }})
+    runs-on: ${{ matrix.runs.os }}
     strategy:
       fail-fast: false
       matrix:
         build-type: [Release, Debug]
-        config:
-          - {
-              name: "windows-ninja",
-              os: windows-latest,
-              generators: "Ninja",
-            }
-          - {
-              name: "windows-nmake",
-              os: windows-latest,
-              generators: "NMake Makefiles",
-            }
-          - {
-              name: "windows-msvc",
-              os: windows-2019,
-              generators: "Visual Studio 16 2019",
-            }
+        runs: [
+          {generator: "Ninja", os: windows-latest},
+          {generator: "NMake Makefiles", os: windows-latest},
+          {generator: "Visual Studio 16 2019", os: windows-2019}]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -65,7 +53,7 @@ jobs:
             -S . `
             -B build `
             -D CMAKE_BUILD_TYPE=${{ matrix.build-type }} `
-            -G "${{ matrix.config.generators }}" `
+            -G "${{ matrix.runs.generator }}" `
             -D USE_CCACHE=ON `
             -D CMAKE_VERBOSE_MAKEFILE=ON
 
