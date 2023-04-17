@@ -1243,9 +1243,6 @@ if(CRYPTOPP_BUILD_TESTING)
                                   ${cryptopp_SOURCE_DIR}/validat9.cpp
                               PROPERTIES COMPILE_DEFINITIONS
                                   CRYPTOPP_DATA_DIR="${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/cryptopp/")
-  file(COPY ${CRYPTOPP_PROJECT_DIR}/TestData DESTINATION ${PROJECT_BINARY_DIR})
-  file(COPY ${CRYPTOPP_PROJECT_DIR}/TestVectors
-       DESTINATION ${PROJECT_BINARY_DIR})
 
   add_test(NAME cryptopp-build_cryptest COMMAND "${CMAKE_COMMAND}" --build
                                        ${CMAKE_BINARY_DIR} --target cryptest
@@ -1253,7 +1250,7 @@ if(CRYPTOPP_BUILD_TESTING)
   add_test(
     NAME cryptopp-cryptest
     COMMAND $<TARGET_FILE:cryptest> v
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
+    WORKING_DIRECTORY ${CRYPTOPP_PROJECT_DIR})
   set_tests_properties(cryptopp-cryptest PROPERTIES DEPENDS cryptopp-build_cryptest)
 endif()
 
