@@ -112,6 +112,3 @@ add_test(NAME cryptopp-${test_name}-build
                  --config ${CMAKE_BUILD_TYPE})
 set_tests_properties(cryptopp-${test_name}-build PROPERTIES
                      FIXTURES_REQUIRED ${test_name}-config)
-
-set_tests_properties(cryptopp-int-install-prefix-configure
-                     PROPERTIES DEPENDS "cryptopp-int-find-package-build")
