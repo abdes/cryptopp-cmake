@@ -1249,11 +1249,13 @@ if(CRYPTOPP_BUILD_TESTING)
   add_test(NAME cryptopp-build_cryptest COMMAND "${CMAKE_COMMAND}" --build
                                        ${CMAKE_BINARY_DIR} --target cryptest
                                        --config ${CMAKE_BUILD_TYPE})
+  set_tests_properties(cryptopp-build_cryptest PROPERTIES FIXTURES_SETUP cryptest-build)
+
   add_test(
     NAME cryptopp-cryptest
     COMMAND $<TARGET_FILE:cryptest> v
     WORKING_DIRECTORY ${CRYPTOPP_PROJECT_DIR})
-  set_tests_properties(cryptopp-cryptest PROPERTIES DEPENDS cryptopp-build_cryptest)
+  set_tests_properties(cryptopp-cryptest PROPERTIES FIXTURES_REQUIRED cryptest-build)
 endif()
 
 # ============================================================================
