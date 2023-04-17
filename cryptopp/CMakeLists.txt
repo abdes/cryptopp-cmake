@@ -110,10 +110,6 @@ foreach(
   endif()
 endforeach()
 
-# TODO(abdes) check where this define is used in crypto++ sources
-list(APPEND CRYPTOPP_COMPILE_DEFINITIONS
-     "CRYPTOPP_DATA_DIR=\"${CRYPTOPP_PROJECT_DIR}\"")
-
 # ##############################################################################
 
 # Try to find a Posix compatible grep and sed. Solaris, Digital Unix, Tru64,
@@ -1239,9 +1235,16 @@ if(CRYPTOPP_BUILD_TESTING)
   add_executable(cryptest ${cryptopp_SOURCES_TEST})
   target_link_libraries(cryptest PRIVATE cryptopp::cryptopp)
 
-  file(COPY ${CRYPTOPP_PROJECT_DIR}/TestData DESTINATION ${PROJECT_BINARY_DIR})
-  file(COPY ${CRYPTOPP_PROJECT_DIR}/TestVectors
-       DESTINATION ${PROJECT_BINARY_DIR})
+  set_source_files_properties(${cryptopp_SOURCE_DIR}/bench3.cpp
+                                  ${cryptopp_SOURCE_DIR}/datatest.cpp
+                                  ${cryptopp_SOURCE_DIR}/test.cpp
+                                  ${cryptopp_SOURCE_DIR}/validat0.cpp
+                                  ${cryptopp_SOURCE_DIR}/validat4.cpp
+                                  ${cryptopp_SOURCE_DIR}/validat7.cpp
+                                  ${cryptopp_SOURCE_DIR}/validat8.cpp
+                                  ${cryptopp_SOURCE_DIR}/validat9.cpp
+                              PROPERTIES COMPILE_DEFINITIONS
+                                  CRYPTOPP_DATA_DIR="${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/cryptopp/")
 
   add_test(NAME cryptopp-build_cryptest COMMAND "${CMAKE_COMMAND}" --build
                                        ${CMAKE_BINARY_DIR} --target cryptest
@@ -1249,7 +1252,7 @@ if(CRYPTOPP_BUILD_TESTING)
   add_test(
     NAME cryptopp-cryptest
     COMMAND $<TARGET_FILE:cryptest> v
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
+    WORKING_DIRECTORY ${CRYPTOPP_PROJECT_DIR})
   set_tests_properties(cryptopp-cryptest PROPERTIES DEPENDS cryptopp-build_cryptest)
 endif()
 
