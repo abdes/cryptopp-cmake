@@ -42,14 +42,17 @@ foreach(test ${tests})
       -D CRYPTOPP_MINIMUM_CMAKE_VERSION=${CRYPTOPP_MINIMUM_CMAKE_VERSION}
       # Set the build-type to what we are building
       -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+  set_tests_properties(cryptopp-${test_name}-configure PROPERTIES
+                       FIXTURES_SETUP ${test_name}-config)
 
   # Build
   add_test(NAME cryptopp-${test_name}-build
            COMMAND ${CMAKE_COMMAND} --build
                    "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
                    --config ${CMAKE_BUILD_TYPE})
-  set_tests_properties(cryptopp-${test_name}-build PROPERTIES DEPENDS
-                                                     cryptopp-${test_name}-configure)
+  set_tests_properties(cryptopp-${test_name}-build PROPERTIES
+                       FIXTURES_SETUP ${test_name}-build
+                       FIXTURES_REQUIRED ${test_name}-config)
 
   # Install
   add_test(
@@ -57,8 +60,9 @@ foreach(test ${tests})
     COMMAND ${CMAKE_COMMAND} --build
             "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test" --target install
             --config ${CMAKE_BUILD_TYPE})
-  set_tests_properties(cryptopp-${test_name}-install PROPERTIES DEPENDS
-                                                       cryptopp-${test_name}-build)
+  set_tests_properties(cryptopp-${test_name}-install PROPERTIES
+                       FIXTURES_SETUP ${test_name}-install
+                       FIXTURES_REQUIRED ${test_name}-build)
 
   # Check installed files
   add_test(
@@ -66,8 +70,8 @@ foreach(test ${tests})
     COMMAND ${CMAKE_COMMAND} --build
             "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test" --target do-checks
             --config ${CMAKE_BUILD_TYPE})
-  set_tests_properties(cryptopp-${test_name}-checks PROPERTIES DEPENDS
-                                                      cryptopp-${test_name}-install)
+  set_tests_properties(cryptopp-${test_name}-checks PROPERTIES
+                       FIXTURES_REQUIRED ${test_name}-install)
 endforeach()
 
 # ------------------------------------------------------------------------------
@@ -97,16 +101,17 @@ add_test(
     # Set the build-type to what we are building
     -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
 
-set_tests_properties(cryptopp-${test_name}-configure
-                     PROPERTIES DEPENDS "cryptopp-int-install-default-install")
+set_tests_properties(cryptopp-${test_name}-configure PROPERTIES
+                     FIXTURES_SETUP ${test_name}-config
+                     FIXTURES_REQUIRED "int-install-default-install")
 
 # Build
 add_test(NAME cryptopp-${test_name}-build
          COMMAND ${CMAKE_COMMAND} --build
                  "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
                  --config ${CMAKE_BUILD_TYPE})
-set_tests_properties(cryptopp-${test_name}-build PROPERTIES DEPENDS
-                                                   cryptopp-${test_name}-configure)
+set_tests_properties(cryptopp-${test_name}-build PROPERTIES
+                     FIXTURES_REQUIRED ${test_name}-config)
 
 set_tests_properties(cryptopp-int-install-prefix-configure
                      PROPERTIES DEPENDS "cryptopp-int-find-package-build")
