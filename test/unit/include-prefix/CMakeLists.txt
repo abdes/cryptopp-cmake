@@ -21,7 +21,7 @@ cpmaddpackage(
   NAME
   cryptopp-cmake
   GITHUB_REPOSITORY
-  noloader/cryptopp-cmake
+  abdes/cryptopp-cmake
   VERSION
   master
   OPTIONS
