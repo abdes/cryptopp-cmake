@@ -21,9 +21,9 @@ cpmaddpackage(
   NAME
   cryptopp-cmake
   GITHUB_REPOSITORY
-  noloader/cryptopp-cmake
+  abdes/cryptopp-cmake
   VERSION
-  master
+  ${cryptopp_GIT_BRANCH}
   OPTIONS
   "CRYPTOPP_BUILD_TESTING OFF"
   "DISABLE_ASM ON"

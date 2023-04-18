@@ -192,6 +192,7 @@ include(cmake/FasterBuild.cmake)
 # If CMake is invoked with an explicit option (CRYPTOPP_PROJECT_DIR), setting
 # the location for user-provided sources of crypto++, or if the automatic
 # download fails, we use that option value to find the sources.
+find_package(Git)
 
 if(NOT CRYPTOPP_SOURCES)
   include(GetCryptoppSources)
@@ -213,6 +214,16 @@ else()
     )
   endif()
 endif()
+
+if (Git_FOUND)
+  execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
+                  WORKING_DIRECTORY ${cryptopp-cmake_SOURCE_DIR}
+                  OUTPUT_VARIABLE cryptopp_GIT_BRANCH)
+  string(STRIP ${cryptopp_GIT_BRANCH} cryptopp_GIT_BRANCH)
+else()
+  set(cryptopp_GIT_BRANCH "master")
+endif()
+message(STATUS "Using branch ${cryptopp_GIT_BRANCH} for tests")
 
 # ------------------------------------------------------------------------------
 # Testing

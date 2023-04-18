@@ -21,9 +21,9 @@ cpmaddpackage(
   NAME
   cryptopp-cmake
   GIT_REPOSITORY
-  https://github.com./abdes/cryptopp-cmake
+  abdes/cryptopp-cmake
   GIT_TAG
-  master
+  ${cryptopp_GIT_BRANCH}
   OPTIONS
   "CRYPTOPP_BUILD_TESTING OFF"
   "CRYPTOPP_INSTALL OFF")
