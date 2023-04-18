@@ -73,9 +73,6 @@ jobs:
           # Do not run tests in parallel as we share things between them to
           # speed up the build and enable caching. The benefit of caching is
           # much higher than parallel tests.
-          set CC=${{ matrix.config.cc }}
-          set CXX=${{ matrix.config.cxx }}
-          "${{ matrix.config.environment_script }}"
 
           ctest -E cryptest --output-on-failure --test-dir build -C ${{ matrix.build-type }}
 
