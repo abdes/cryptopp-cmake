@@ -81,7 +81,7 @@ jobs:
 
   MacOS:
     name: ${{ matrix.config.name }} ${{matrix.generator }} (${{ matrix.build-type }})
-    runs-on: ${{ matrix.config.os }}
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
@@ -90,18 +90,15 @@ jobs:
         config:
           - {
               name: "MacOS",
-              os: macos-latest,
               omp: "OFF",
             }
           - {
               name: "MacOS-omp-homebrew",
-              os: macos-latest,
               omp: "ON",
             }
 
           - {
               name: "MacOS-omp-macports",
-              os: macos-latest,
               omp: "ON",
             }
     steps:
