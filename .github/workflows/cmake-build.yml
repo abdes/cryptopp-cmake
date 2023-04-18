@@ -80,19 +80,19 @@ jobs:
           ctest -E cryptest --output-on-failure --test-dir build -C ${{ matrix.build-type }}
 
   MacOS:
-    name: ${{ matrix.config.name }} (${{ matrix.build-type }})
+    name: ${{ matrix.config.name }} ${{matrix.generator }} (${{ matrix.build-type }})
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
       matrix:
         build-type: [Release, Debug]
+        generator: [Ninja, Xcode]
         config:
           - {
               name: "macos-latest",
               os: macos-latest,
               cc: "clang",
               cxx: "clang++",
-              generators: "Ninja",
               omp: "OFF",
             }
           - {
@@ -100,7 +100,6 @@ jobs:
               os: macos-latest,
               cc: "clang",
               cxx: "clang++",
-              generators: "Ninja",
               omp: "ON",
             }
 
@@ -109,7 +108,6 @@ jobs:
               os: macos-latest,
               cc: "clang",
               cxx: "clang++",
-              generators: "Ninja",
               omp: "ON",
             }
     steps:
@@ -158,8 +156,7 @@ jobs:
           cmake \
             -S . \
             -B build \
-            -G Ninja \
-            -D CMAKE_MAKE_PROGRAM=ninja \
+            -G ${{ matrix.generator }} \
             -D USE_CCACHE=ON \
             -D CMAKE_VERBOSE_MAKEFILE=ON \
             -D USE_OPENMP=${{ matrix.config.omp }} \
