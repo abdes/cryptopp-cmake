@@ -23,7 +23,7 @@ cpmaddpackage(
   GIT_REPOSITORY
   abdes/cryptopp-cmake
   GIT_TAG
-  master
+  ${cryptopp_GIT_BRANCH}
   OPTIONS
   "CRYPTOPP_BUILD_TESTING OFF"
   "CRYPTOPP_INSTALL OFF")

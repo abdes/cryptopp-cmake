@@ -23,7 +23,7 @@ cpmaddpackage(
   GITHUB_REPOSITORY
   abdes/cryptopp-cmake
   VERSION
-  master
+  ${cryptopp_GIT_BRANCH}
   OPTIONS
   "CRYPTOPP_BUILD_TESTING OFF"
   "CRYPTOPP_INCLUDE_PREFIX crypto++")

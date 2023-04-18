@@ -55,7 +55,6 @@ endmacro()
 function(get_cryptopp_sources)
   # If we have git on the system, prefer the basic git workflow, which is more
   # predictable and straightforward than the FetchContent.
-  find_package(Git QUIET)
   if(GIT_FOUND)
     use_gitclone()
   else()
