@@ -91,23 +91,17 @@ jobs:
           - {
               name: "MacOS",
               os: macos-latest,
-              cc: "clang",
-              cxx: "clang++",
               omp: "OFF",
             }
           - {
               name: "MacOS-omp-homebrew",
               os: macos-latest,
-              cc: "clang",
-              cxx: "clang++",
               omp: "ON",
             }
 
           - {
               name: "MacOS-omp-macports",
               os: macos-latest,
-              cc: "clang",
-              cxx: "clang++",
               omp: "ON",
             }
     steps:
@@ -150,9 +144,6 @@ jobs:
 
       - name: Configure
         run: |
-          CC=${{ matrix.config.cc }} export CC
-          CXX=${{ matrix.config.cxx }} export CXX
-          PATH=$ENV{GITHUB_WORKSPACE}:${PATH} export PATH
           cmake \
             -S . \
             -B build \
@@ -180,8 +171,6 @@ jobs:
           # Do not run tests in parallel as we share things between them to
           # speed up the build and enable caching. The benefit of caching is
           # much higher than parallel tests.
-          CC=${{ matrix.config.cc }} export CC
-          CXX=${{ matrix.config.cxx }} export CXX
 
           ctest -E "cryptest"  --output-on-failure --test-dir build -C ${{ matrix.build-type }}
 
