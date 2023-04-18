@@ -89,14 +89,14 @@ jobs:
         generator: [Ninja, Xcode]
         config:
           - {
-              name: "macos-latest",
+              name: "MacOS",
               os: macos-latest,
               cc: "clang",
               cxx: "clang++",
               omp: "OFF",
             }
           - {
-              name: "macos-latest-omp-homebrew",
+              name: "MacOS-omp-homebrew",
               os: macos-latest,
               cc: "clang",
               cxx: "clang++",
@@ -104,7 +104,7 @@ jobs:
             }
 
           - {
-              name: "macos-latest-omp-macports",
+              name: "MacOS-omp-macports",
               os: macos-latest,
               cc: "clang",
               cxx: "clang++",
