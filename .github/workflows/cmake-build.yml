@@ -2,26 +2,18 @@ name: CI Matrix
 
 on: [push, pull_request]
 
-env:
-  BUILD_TYPE: Release
-
 jobs:
   Windows:
-    name: ${{ matrix.config.name }} (${{ matrix.build-type }})
-    runs-on: ${{ matrix.config.os }}
+    name: Windows ${{ matrix.runs.generator }} (${{ matrix.build-type }})
+    runs-on: ${{ matrix.runs.os }}
     strategy:
       fail-fast: false
       matrix:
         build-type: [Release, Debug]
-        config:
-          - {
-              name: "windows-latest",
-              os: windows-latest,
-              cc: "cl",
-              cxx: "cl",
-              environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
-              generators: "Visual Studio 17 2022",
-            }
+        runs: [
+          {generator: "Ninja", os: windows-latest},
+          {generator: "NMake Makefiles", os: windows-latest},
+          {generator: "Visual Studio 16 2019", os: windows-2019}]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -55,25 +47,18 @@ jobs:
       - name: Set environment
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Set compiler
-        run: |
-         echo ("CC=${{ matrix.config.cc }}") >> $env:GITHUB_ENV
-         echo ("CXX=${{ matrix.config.cxx }}") >> $env:GITHUB_ENV
-         echo ("PATH=$env:GITHUB_WORKSPACE;$env:PATH") >> $env:GITHUB_ENV
-
       - name: Configure
         run: |
           cmake `
             -S . `
             -B build `
             -D CMAKE_BUILD_TYPE=${{ matrix.build-type }} `
-            -G Ninja `
-            -D CMAKE_MAKE_PROGRAM=ninja `
+            -G "${{ matrix.runs.generator }}" `
             -D USE_CCACHE=ON `
             -D CMAKE_VERBOSE_MAKEFILE=ON
 
       - name: Build
-        run: cmake --build build --target all --config ${{ matrix.build-type }}
+        run: cmake --build build --config ${{ matrix.build-type }}
 
       - name: Run cryptest
         run: |
