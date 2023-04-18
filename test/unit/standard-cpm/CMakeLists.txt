@@ -21,7 +21,7 @@ cpmaddpackage(
   NAME
   cryptopp-cmake
   GIT_REPOSITORY
-  https://github.com./abdes/cryptopp-cmake
+  abdes/cryptopp-cmake
   GIT_TAG
   master
   OPTIONS
