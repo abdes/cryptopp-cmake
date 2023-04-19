@@ -73,43 +73,29 @@ jobs:
           # Do not run tests in parallel as we share things between them to
           # speed up the build and enable caching. The benefit of caching is
           # much higher than parallel tests.
-          set CC=${{ matrix.config.cc }}
-          set CXX=${{ matrix.config.cxx }}
-          "${{ matrix.config.environment_script }}"
 
           ctest -E cryptest --output-on-failure --test-dir build -C ${{ matrix.build-type }}
 
   MacOS:
-    name: ${{ matrix.config.name }} (${{ matrix.build-type }})
-    runs-on: ${{ matrix.config.os }}
+    name: ${{ matrix.config.name }} ${{matrix.generator }} (${{ matrix.build-type }})
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
         build-type: [Release, Debug]
+        generator: [Ninja, Xcode]
         config:
           - {
-              name: "macos-latest",
-              os: macos-latest,
-              cc: "clang",
-              cxx: "clang++",
-              generators: "Ninja",
+              name: "MacOS",
               omp: "OFF",
             }
           - {
-              name: "macos-latest-omp-homebrew",
-              os: macos-latest,
-              cc: "clang",
-              cxx: "clang++",
-              generators: "Ninja",
+              name: "MacOS-omp-homebrew",
               omp: "ON",
             }
 
           - {
-              name: "macos-latest-omp-macports",
-              os: macos-latest,
-              cc: "clang",
-              cxx: "clang++",
-              generators: "Ninja",
+              name: "MacOS-omp-macports",
               omp: "ON",
             }
     steps:
@@ -150,17 +136,18 @@ jobs:
           brew uninstall --ignore-dependencies --zap libomp
         if: endsWith(matrix.config.name, 'macports')
 
+      - name: Setup XCode
+        uses: mobiledevops/xcode-select-version-action@v1
+        with:
+          xcode-select-version: 13.1
+        if: matrix.generator == 'Xcode'
+
       - name: Configure
         run: |
-          CC=${{ matrix.config.cc }} export CC
-          CXX=${{ matrix.config.cxx }} export CXX
-          PATH=$ENV{GITHUB_WORKSPACE}:${PATH} export PATH
           cmake \
             -S . \
             -B build \
-            -D CMAKE_BUILD_TYPE=${{ matrix.config.build-type }} \
-            -G Ninja \
-            -D CMAKE_MAKE_PROGRAM=ninja \
+            -G ${{ matrix.generator }} \
             -D USE_CCACHE=ON \
             -D CMAKE_VERBOSE_MAKEFILE=ON \
             -D USE_OPENMP=${{ matrix.config.omp }} \
@@ -169,7 +156,7 @@ jobs:
       - name: Build
         run: |
           NINJA_STATUS="[%f/%t %o/sec] " export NINJA_STATUS
-          cmake --build build --target all --config ${{ matrix.build-type }}
+          cmake --build build --config ${{ matrix.build-type }}
 
       - name: Run cryptest
         run: |
@@ -184,8 +171,6 @@ jobs:
           # Do not run tests in parallel as we share things between them to
           # speed up the build and enable caching. The benefit of caching is
           # much higher than parallel tests.
-          CC=${{ matrix.config.cc }} export CC
-          CXX=${{ matrix.config.cxx }} export CXX
 
           ctest -E "cryptest"  --output-on-failure --test-dir build -C ${{ matrix.build-type }}
 
