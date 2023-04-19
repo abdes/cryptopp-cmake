@@ -61,20 +61,10 @@ jobs:
         run: cmake --build build --config ${{ matrix.build-type }}
 
       - name: Run cryptest
-        run: |
-          # Do not run tests in parallel as we share things between them to
-          # speed up the build and enable caching. The benefit of caching is
-          # much higher than parallel tests.
-
-          ctest --verbose -R cryptest --test-dir build -C ${{ matrix.build-type }}
+        run: ctest --verbose -j40 -R cryptest --test-dir build -C ${{ matrix.build-type }}
 
       - name: Run build tests
-        run: |
-          # Do not run tests in parallel as we share things between them to
-          # speed up the build and enable caching. The benefit of caching is
-          # much higher than parallel tests.
-
-          ctest -E cryptest --output-on-failure --test-dir build -C ${{ matrix.build-type }}
+        run: ctest -j40 -E cryptest --output-on-failure --test-dir build -C ${{ matrix.build-type }}
 
   MacOS:
     name: ${{ matrix.config.name }} ${{matrix.generator }} (${{ matrix.build-type }})
@@ -159,20 +149,10 @@ jobs:
           cmake --build build --config ${{ matrix.build-type }}
 
       - name: Run cryptest
-        run: |
-          # Do not run tests in parallel as we share things between them to
-          # speed up the build and enable caching. The benefit of caching is
-          # much higher than parallel tests.
-
-          ctest --verbose -R "cryptest" --test-dir build -C ${{ matrix.build-type }}
+        run: ctest -j40 --verbose -R "cryptest" --test-dir build -C ${{ matrix.build-type }}
 
       - name: Run build tests
-        run: |
-          # Do not run tests in parallel as we share things between them to
-          # speed up the build and enable caching. The benefit of caching is
-          # much higher than parallel tests.
-
-          ctest -E "cryptest"  --output-on-failure --test-dir build -C ${{ matrix.build-type }}
+        run: ctest -j40 -E "cryptest"  --output-on-failure --test-dir build -C ${{ matrix.build-type }}
 
   Ubuntu:
     name: ${{ matrix.config.name }} (${{ matrix.build-type }})
@@ -258,19 +238,11 @@ jobs:
           cmake --build build --target all --config ${{ matrix.build-type }}
 
       - name: Run cryptest
-        run: |
-          # Do not run tests in parallel as we share things between them to
-          # speed up the build and enable caching. The benefit of caching is
-          # much higher than parallel tests.
-
-          ctest --verbose -R cryptest --test-dir build -C ${{ matrix.build-type }}
+        run: ctest -j40 --verbose -R cryptest --test-dir build -C ${{ matrix.build-type }}
 
       - name: Run build tests
         run: |
-          # Do not run tests in parallel as we share things between them to
-          # speed up the build and enable caching. The benefit of caching is
-          # much higher than parallel tests.
           export CC=${{ matrix.config.cc }}
           export CXX=${{ matrix.config.cxx }}
 
-          ctest -E cryptest --output-on-failure --test-dir build -C ${{ matrix.build-type }}
+          ctest -j40 -E cryptest --output-on-failure --test-dir build -C ${{ matrix.build-type }}
