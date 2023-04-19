@@ -34,12 +34,16 @@ foreach(test ${tests})
       -D CMAKE_VERBOSE_MAKEFILE=ON
       # Set the build-type to what we are building
       -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+  set_tests_properties(cryptopp-${test_name}-configure PROPERTIES
+                       FIXTURES_SETUP ${test_name}-config
+                       LABELS "cryptopp;cryptopp-unit-tests;cryptopp-${test_name}")
   # Build
   add_test(NAME cryptopp-${test_name}-build
            COMMAND ${CMAKE_COMMAND} --build
                    "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
                    --config ${CMAKE_BUILD_TYPE})
   # Run build test case after the configure test case
-  set_tests_properties(cryptopp-${test_name}-build PROPERTIES DEPENDS
-                                                     cryptopp-${test_name}-configure)
+  set_tests_properties(cryptopp-${test_name}-build PROPERTIES
+                       FIXTURES_REQUIRED ${test_name}-config
+                       LABELS "cryptopp;cryptopp-unit-tests;cryptopp-${test_name}")
 endforeach()
