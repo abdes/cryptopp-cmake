@@ -6,7 +6,10 @@
 
 set(INT_TEST_CMAKE_FILES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set(CRYPTOPP_CMAKE_INSTALL_ROOT
-    "${CMAKE_CURRENT_BINARY_DIR}/cryptopp-cmake-install")
+    "${CMAKE_BINARY_DIR}/test-dirs/install")
+define_property(TEST PROPERTY install_dir
+                BRIEF_DOCS "Install-dir of the test"
+                FULL_DOCS "Just set because not optional (yet)")
 
 file(GLOB tests "${CMAKE_CURRENT_SOURCE_DIR}/int-install-*")
 foreach(test ${tests})
@@ -31,10 +34,10 @@ foreach(test ${tests})
       -D
       "CMAKE_USER_MAKE_RULES_OVERRIDE=${TEST_CMAKE_FILES_DIR}/ResetInitialCompilerOptions.cmake"
       # Set the install prefix
-      -D "CMAKE_INSTALL_PREFIX=${CRYPTOPP_CMAKE_INSTALL_ROOT}"
+      -D "CMAKE_INSTALL_PREFIX=${CRYPTOPP_CMAKE_INSTALL_ROOT}/${test_name}"
       # Setup cmake source/build dirs
       -S "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}" -B
-      "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
+      "${CMAKE_BINARY_DIR}/test-dirs/${test_name}"
       # Use local source code for cryptopp-cmake
       -D "CPM_cryptopp-cmake_SOURCE=${CMAKE_CURRENT_SOURCE_DIR}/../.."
       # Enable verbose makefiles so we can see the full compile command line
@@ -45,12 +48,13 @@ foreach(test ${tests})
       -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
   set_tests_properties(cryptopp-${test_name}-configure PROPERTIES
                        FIXTURES_SETUP ${test_name}-config
+                       install_dir "${CRYPTOPP_CMAKE_INSTALL_ROOT}/${test_name}"
                        LABELS "cryptopp;cryptopp-integration-tests;${short_name}")
 
   # Build
   add_test(NAME cryptopp-${test_name}-build
            COMMAND ${CMAKE_COMMAND} --build
-                   "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
+                   "${CMAKE_BINARY_DIR}/test-dirs/${test_name}"
                    --config ${CMAKE_BUILD_TYPE})
   set_tests_properties(cryptopp-${test_name}-build PROPERTIES
                        FIXTURES_SETUP ${test_name}-build
@@ -61,7 +65,7 @@ foreach(test ${tests})
   add_test(
     NAME cryptopp-${test_name}-install
     COMMAND ${CMAKE_COMMAND} --build
-            "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test" --target install
+            "${CMAKE_BINARY_DIR}/test-dirs/${test_name}" --target install
             --config ${CMAKE_BUILD_TYPE})
   set_tests_properties(cryptopp-${test_name}-install PROPERTIES
                        FIXTURES_SETUP ${test_name}-install
@@ -72,7 +76,7 @@ foreach(test ${tests})
   add_test(
     NAME cryptopp-${test_name}-checks
     COMMAND ${CMAKE_COMMAND} --build
-            "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test" --target do-checks
+            "${CMAKE_BINARY_DIR}/test-dirs/${test_name}" --target do-checks
             --config ${CMAKE_BUILD_TYPE})
   set_tests_properties(cryptopp-${test_name}-checks PROPERTIES
                        FIXTURES_REQUIRED ${test_name}-install
@@ -84,6 +88,8 @@ endforeach()
 # ------------------------------------------------------------------------------
 
 set(test_name "int-find-package")
+get_test_property(cryptopp-int-install-default-configure
+                  install_dir CRYPTOPP_SEARCH_ROOT)
 
 # Configure
 add_test(
@@ -97,13 +103,15 @@ add_test(
     -D "CRYPTOPP_CMAKE_INSTALL_ROOT=${CRYPTOPP_CMAKE_INSTALL_ROOT}"
     # Setup cmake source/build dirs
     -S "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}" -B
-    "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
+    "${CMAKE_BINARY_DIR}/test-dirs/${test_name}"
     # Enable verbose makefiles so we can see the full compile command line
     -D "CMAKE_VERBOSE_MAKEFILE=ON"
     # Throw the version in
     -D CRYPTOPP_MINIMUM_CMAKE_VERSION=${CRYPTOPP_MINIMUM_CMAKE_VERSION}
     # Set the build-type to what we are building
-    -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+    -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+    # Tell the test where to find installed package
+    -D cryptopp_DIR=${CRYPTOPP_SEARCH_ROOT}/share/cmake/cryptopp)
 
 set_tests_properties(cryptopp-${test_name}-configure PROPERTIES
                      FIXTURES_SETUP ${test_name}-config
@@ -113,7 +121,7 @@ set_tests_properties(cryptopp-${test_name}-configure PROPERTIES
 # Build
 add_test(NAME cryptopp-${test_name}-build
          COMMAND ${CMAKE_COMMAND} --build
-                 "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
+                 "${CMAKE_BINARY_DIR}/test-dirs/${test_name}"
                  --config ${CMAKE_BUILD_TYPE})
 set_tests_properties(cryptopp-${test_name}-build PROPERTIES
                      FIXTURES_REQUIRED ${test_name}-config

@@ -27,7 +27,7 @@ foreach(test ${tests})
       -D
       "CMAKE_USER_MAKE_RULES_OVERRIDE=${TEST_CMAKE_FILES_DIR}/ResetInitialCompilerOptions.cmake"
       # Setup cmake source/build dirs
-      -S "${test}" -B "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
+      -S "${test}" -B "${CMAKE_BINARY_DIR}/test-dirs/${test_name}"
       # Use local source code for cryptopp-cmake
       -D "CPM_cryptopp-cmake_SOURCE=${cryptopp-cmake_SOURCE_DIR}"
       # Enable verbose makefiles so we can see the full compile command line
@@ -40,7 +40,7 @@ foreach(test ${tests})
   # Build
   add_test(NAME cryptopp-${test_name}-build
            COMMAND ${CMAKE_COMMAND} --build
-                   "${CMAKE_CURRENT_BINARY_DIR}/${test_name}-test"
+                   "${CMAKE_BINARY_DIR}/test-dirs/${test_name}"
                    --config ${CMAKE_BUILD_TYPE})
   # Run build test case after the configure test case
   set_tests_properties(cryptopp-${test_name}-build PROPERTIES
