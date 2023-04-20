@@ -19,7 +19,6 @@ foreach(test ${tests})
     NAME cryptopp-${test_name}-configure
     COMMAND
       ${CMAKE_COMMAND}
-      # Always use ninja, never the visual studio generator (bugged)
       -G${CMAKE_GENERATOR}
       # Pass the locations for common cmake test files
       -D "TEST_CMAKE_FILES_DIR=${TEST_CMAKE_FILES_DIR}" -D
@@ -91,7 +90,6 @@ add_test(
   NAME cryptopp-${test_name}-configure
   COMMAND
     ${CMAKE_COMMAND}
-    # Always use ninja, never the visual studio generator (bugged)
     -G${CMAKE_GENERATOR}
     # Pass the locations for common test source files
     -D "TEST_EXAMPLE_SOURCES_DIR=${TEST_EXAMPLE_SOURCES_DIR}"
