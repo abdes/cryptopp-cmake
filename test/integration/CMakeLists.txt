@@ -21,8 +21,8 @@ foreach(test ${tests})
       ${CMAKE_COMMAND}
       -G${CMAKE_GENERATOR}
       # Pass the locations for common cmake test files
-      -D "TEST_CMAKE_FILES_DIR=${TEST_CMAKE_FILES_DIR}" -D
-      "INT_TEST_CMAKE_FILES_DIR=${INT_TEST_CMAKE_FILES_DIR}"
+      -D "TEST_CMAKE_FILES_DIR=${TEST_CMAKE_FILES_DIR}"
+      -D "INT_TEST_CMAKE_FILES_DIR=${INT_TEST_CMAKE_FILES_DIR}"
       # Pass the locations for common test source files
       -D "TEST_EXAMPLE_SOURCES_DIR=${TEST_EXAMPLE_SOURCES_DIR}"
       # Use ccache
