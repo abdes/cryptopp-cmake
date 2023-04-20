@@ -39,9 +39,6 @@ jobs:
         # if: runner.os != 'Windows'
         uses: Chocobo1/setup-ccache-action@v1
         with:
-          install_ccache: true
-          update_packager_index: true
-          prepend_symlinks_to_path: true
           windows_compile_environment: msvc # this field is required
 
       - name: Set environment
@@ -110,11 +107,6 @@ jobs:
 
       - name: Setup ccache
         uses: Chocobo1/setup-ccache-action@v1
-        with:
-          install_ccache: true
-          update_packager_index: true
-          prepend_symlinks_to_path: false
-          windows_compile_environment: msvc # this field is required
 
       - name: Install macports
         uses: melusina-org/gha-install-macports@v1
@@ -196,11 +188,6 @@ jobs:
 
       - name: Setup ccache
         uses: Chocobo1/setup-ccache-action@v1
-        with:
-          install_ccache: true
-          update_packager_index: false
-          prepend_symlinks_to_path: false
-          windows_compile_environment: msvc # this field is required
 
       - name: Configure
         run: |
