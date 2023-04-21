@@ -1181,8 +1181,8 @@ list(APPEND cryptopp_LIBRARY_SOURCES ${cryptopp_SOURCES})
 
 add_library(cryptopp ${cryptopp_LIBRARY_SOURCES})
 add_library(cryptopp::cryptopp ALIAS cryptopp)
-set_target_properties(cryptopp PROPERTIES VERSION ${META_VERSION}
-                                          SOVERSION ${META_VERSION_MAJOR})
+set_target_properties(cryptopp PROPERTIES VERSION ${cryptopp-cmake_VERSION}
+                                          SOVERSION ${cryptopp-cmake_VERSION_MAJOR})
 set_target_properties(cryptopp PROPERTIES LINKER_LANGUAGE CXX)
 if(${CRYPTOPP_BUILD_SHARED})
   target_compile_definitions(cryptopp PRIVATE "CRYPTOPP_EXPORTS")
