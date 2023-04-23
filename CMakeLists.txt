@@ -32,8 +32,6 @@ if(NOT GIT_SHA1)
   set(GIT_REV "0")
 endif()
 
-# Meta information about the project
-# cmake-format: off
 set(META_PROJECT_NAME        "cryptopp-cmake")
 set(META_PROJECT_DESCRIPTION "Free C++ class library of cryptographic schemes")
 set(META_GITHUB_REPO         "https://github.com/weidai11/cryptopp")
@@ -43,16 +41,20 @@ set(META_VERSION_PATCH       "0")
 set(META_VERSION_REVISION    "${GIT_REV}")
 set(META_VERSION             "${META_VERSION_MAJOR}.${META_VERSION_MINOR}.${META_VERSION_PATCH}")
 set(META_NAME_VERSION        "${META_PROJECT_NAME} v${META_VERSION} (${META_VERSION_REVISION})")
+# ------------------------------------------------------------------------------
+# Project Declaration
+# ------------------------------------------------------------------------------
+
+# Declare project
+project("${META_PROJECT_NAME}"
+  VERSION "${META_VERSION}"
+  DESCRIPTION "${META_PROJECT_DESCRIPTION}"
+  HOMEPAGE_URL "${META_GITHUB_REPO}"
+  LANGUAGES CXX C ASM)
+
 # cmake-format: on
 
-string(MAKE_C_IDENTIFIER ${META_PROJECT_NAME} META_PROJECT_ID)
-string(TOUPPER ${META_PROJECT_ID} META_PROJECT_ID)
-
-# Set the CRYPTOPP_VERSION to be the same as what was downloaded with CPM,
-# FetchContent, git clone, etc...
-set(CRYPTOPP_VERSION ${META_VERSION})
-
-message("=> Project : ${META_NAME_VERSION}")
+message("=> Project : ${PROJECT_NAME} v${cryptopp-cmake_VERSION}")
 
 # ============================================================================
 # Settable options
@@ -170,17 +172,6 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set (CMAKE_BUILD_TYPE "${CRYPTOPP_DEFAULT_BUILD_TYPE}" CACHE STRING
        "Choose the type of build." FORCE)
 endif()
-# ------------------------------------------------------------------------------
-# Project Declaration
-# ------------------------------------------------------------------------------
-
-# Declare project
-project(
-  ${META_PROJECT_NAME}
-  VERSION "${META_VERSION}"
-  DESCRIPTION "${META_PROJECT_DESCRIPTION}"
-  HOMEPAGE_URL "${META_GITHUB_REPO}"
-  LANGUAGES CXX C ASM)
 
 # ---- Speedup build using ccache (needs CPM) ----
 include(cmake/FasterBuild.cmake)
