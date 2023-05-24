@@ -19,10 +19,6 @@ macro(use_gitclone)
     QUIET
     SOURCE_DIR ${CRYPTOPP_INCLUDE_PREFIX}
   )
-  FetchContent_Populate(cryptopp)
-  set(CRYPTOPP_PROJECT_DIR
-      ${cryptopp_SOURCE_DIR}
-      PARENT_SCOPE)
 endmacro()
 
 macro(use_url_download)
@@ -34,10 +30,6 @@ macro(use_url_download)
       QUIET
       SOURCE_DIR ${CRYPTOPP_INCLUDE_PREFIX}
     )
-    FetchContent_Populate(cryptopp)
-    set(CRYPTOPP_PROJECT_DIR
-        ${cryptopp_SOURCE_DIR}
-        PARENT_SCOPE)
   endif()
 endmacro()
 
@@ -54,4 +46,8 @@ function(get_cryptopp_sources)
     # unzip it.
     use_url_download()
   endif()
+  FetchContent_Populate(cryptopp)
+  set(CRYPTOPP_PROJECT_DIR
+      ${cryptopp_SOURCE_DIR}
+      PARENT_SCOPE)
 endfunction()
