@@ -60,6 +60,14 @@ message("=> Project : ${PROJECT_NAME} v${cryptopp-cmake_VERSION}")
 # Settable options
 # ============================================================================
 
+function (cryptopp_deprecated_option old_name new_name description default)
+	if (DEFINED ${old_name})
+		message (DEPRECATION "${old_name} is a deprecated option and will be ignored after 8.8.x + 3. Use ${new_name} instead")
+		set (default ${${old_name}})
+	endif()
+
+	option (${new_name} ${description} ${default})
+endfunction()
 option(
   CRYPTOPP_USE_INTERMEDIATE_OBJECTS_TARGET
   "Use a common intermediate objects target for the static and shared library targets"
@@ -89,35 +97,36 @@ else()
       CACHE PATH "Use the provided location for crypto++ sources; do not fetch")
 endif()
 
-option(
+cryptopp_deprecated_option(
   USE_OPENMP
+  CRYPTOPP_USE_OPENMP
   "Enable OpenMP to parallelize some of the algorithms. Note that this isn't always faster, see https://www.cryptopp.com/wiki/OpenMP"
   OFF)
 
 # These are IA-32 options.
-option(DISABLE_ASM "Disable ASM" OFF)
-option(DISABLE_SSSE3 "Disable SSSE3" OFF)
-option(DISABLE_SSE4 "Disable SSE4" OFF)
-option(DISABLE_AESNI "Disable AES-NI" OFF)
-option(DISABLE_CLMUL "Disable CLMUL" OFF)
-option(DISABLE_SHA "Disable SHA" OFF)
-option(DISABLE_AVX "Disable AVX" OFF)
-option(DISABLE_AVX2 "Disable AVX2" OFF)
+cryptopp_deprecated_option(DISABLE_ASM CRYPTOPP_DISABLE_ASM "Disable ASM" OFF)
+cryptopp_deprecated_option(DISABLE_SSSE3 CRYPTOPP_DISABLE_SSSE3 "Disable SSSE3" OFF)
+cryptopp_deprecated_option(DISABLE_SSE4 CRYPTOPP_DISABLE_SSE4 "Disable SSE4" OFF)
+cryptopp_deprecated_option(DISABLE_AESNI CRYPTOPP_DISABLE_AESNI "Disable AES-NI" OFF)
+cryptopp_deprecated_option(DISABLE_CLMUL CRYPTOPP_DISABLE_CLMUL "Disable CLMUL" OFF)
+cryptopp_deprecated_option(DISABLE_SHA CRYPTOPP_DISABLE_SHA "Disable SHA" OFF)
+cryptopp_deprecated_option(DISABLE_AVX CRYPTOPP_DISABLE_AVX "Disable AVX" OFF)
+cryptopp_deprecated_option(DISABLE_AVX2 CRYPTOPP_DISABLE_AVX2 "Disable AVX2" OFF)
 
 # These are ARM A-32 options
-option(DISABLE_ARM_NEON "Disable NEON" OFF)
+cryptopp_deprecated_option(DISABLE_ARM_NEON CRYPTOPP_DISABLE_ARM_NEON "Disable NEON" OFF)
 
 # These are Aarch64 options
-option(DISABLE_ARM_AES "Disable ASIMD" OFF)
-option(DISABLE_ARM_AES "Disable AES" OFF)
-option(DISABLE_ARM_PMULL "Disable PMULL" OFF)
-option(DISABLE_ARM_SHA "Disable SHA" OFF)
+cryptopp_deprecated_option(DISABLE_ARM_AES CRYPTOPP_DISABLE_ARM_AES "Disable ASIMD" OFF)
+cryptopp_deprecated_option(DISABLE_ARM_AES CRYPTOPP_DISABLE_ARM_AES "Disable AES" OFF)
+cryptopp_deprecated_option(DISABLE_ARM_PMULL CRYPTOPP_DISABLE_ARM_PMULL "Disable PMULL" OFF)
+cryptopp_deprecated_option(DISABLE_ARM_SHA CRYPTOPP_DISABLE_ARM_SHA "Disable SHA" OFF)
 
 # These are PowerPC options
-option(DISABLE_ALTIVEC "Disable Altivec" OFF)
-option(DISABLE_POWER7 "Disable POWER7" OFF)
-option(DISABLE_POWER8 "Disable POWER8" OFF)
-option(DISABLE_POWER9 "Disable POWER9" OFF)
+cryptopp_deprecated_option(DISABLE_ALTIVEC CRYPTOPP_DISABLE_ALTIVEC "Disable Altivec" OFF)
+cryptopp_deprecated_option(DISABLE_POWER7 CRYPTOPP_DISABLE_POWER7 "Disable POWER7" OFF)
+cryptopp_deprecated_option(DISABLE_POWER8 CRYPTOPP_DISABLE_POWER8 "Disable POWER8" OFF)
+cryptopp_deprecated_option(DISABLE_POWER9 CRYPTOPP_DISABLE_POWER9 "Disable POWER9" OFF)
 
 option(CRYPTOPP_USE_MASTER_BRANCH
        "Get crypto++ from the master branch, not from a release tag" FALSE)
