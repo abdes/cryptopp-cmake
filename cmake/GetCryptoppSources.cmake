@@ -4,30 +4,26 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # ===-----------------------------------------------------------------------===#
 
-macro(use_gitclone)
-  if(${CRYPTOPP_USE_MASTER_BRANCH})
-    set(source_location "master")
-  else()
-    set(source_location
-        "CRYPTOPP_${version_underscore}"
-    )
-  endif()
-  FetchContent_Declare(
-    cryptopp
-    GIT_REPOSITORY ${cryptopp-cmake_HOMEPAGE_URL}
-    GIT_TAG ${source_location}
-    QUIET
-    SOURCE_DIR ${CRYPTOPP_INCLUDE_PREFIX}
-  )
-endmacro()
-
 function(get_cryptopp_sources)
   # If we have git on the system, prefer the basic git workflow, which is more
   # predictable and straightforward than the FetchContent.
   include(FetchContent)
   set (version_underscore "${cryptopp-cmake_VERSION_MAJOR}_${cryptopp-cmake_VERSION_MINOR}_${cryptopp-cmake_VERSION_PATCH}")
   if(GIT_FOUND)
-    use_gitclone()
+    if(${CRYPTOPP_USE_MASTER_BRANCH})
+      set(source_location "master")
+    else()
+      set(source_location
+          "CRYPTOPP_${version_underscore}"
+      )
+    endif()
+    FetchContent_Declare(
+      cryptopp
+      GIT_REPOSITORY ${cryptopp-cmake_HOMEPAGE_URL}
+      GIT_TAG ${source_location}
+      QUIET
+      SOURCE_DIR ${CRYPTOPP_INCLUDE_PREFIX}
+  )
   else()
     message(STATUS "Downloading crypto++ from URL...")
     # We use FetchContent for its ability to download an archive from a URL and
