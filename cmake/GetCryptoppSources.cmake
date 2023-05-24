@@ -5,8 +5,6 @@
 # ===-----------------------------------------------------------------------===#
 
 function(get_cryptopp_sources)
-  # If we have git on the system, prefer the basic git workflow, which is more
-  # predictable and straightforward than the FetchContent.
   include(FetchContent)
   set (version_underscore "${cryptopp-cmake_VERSION_MAJOR}_${cryptopp-cmake_VERSION_MINOR}_${cryptopp-cmake_VERSION_PATCH}")
   if(GIT_FOUND)
@@ -26,8 +24,6 @@ function(get_cryptopp_sources)
   )
   else()
     message(STATUS "Downloading crypto++ from URL...")
-    # We use FetchContent for its ability to download an archive from a URL and
-    # unzip it.
     cmake_policy(SET CMP0135 NEW)
     if(NOT ${CRYPTOPP_USE_MASTER_BRANCH})
       FetchContent_Declare(
