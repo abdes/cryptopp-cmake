@@ -33,5 +33,3 @@ else()
   endif()
 endif()
 FetchContent_Populate(cryptopp)
-set(CRYPTOPP_PROJECT_DIR
-    ${cryptopp_SOURCE_DIR})

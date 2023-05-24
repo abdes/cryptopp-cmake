@@ -189,15 +189,15 @@ include(cmake/FasterBuild.cmake)
 # Fetch / Find crypto++
 # ------------------------------------------------------------------------------
 
-# If CMake is invoked with an explicit option (CRYPTOPP_PROJECT_DIR), setting
+# If CMake is invoked with an explicit option (cryptopp_SOURCE_DIR), setting
 # the location for user-provided sources of crypto++, or if the automatic
 # download fails, we use that option value to find the sources.
 find_package(Git)
 
 if(NOT CRYPTOPP_SOURCES)
   include(GetCryptoppSources)
-  if(EXISTS ${CRYPTOPP_PROJECT_DIR})
-    message(STATUS "Crypto++ auto fetched at: ${CRYPTOPP_PROJECT_DIR}")
+  if(EXISTS ${cryptopp_SOURCE_DIR})
+    message(STATUS "Crypto++ auto fetched at: ${cryptopp_SOURCE_DIR}")
   else()
     message(FATAL_ERROR "Crypto++ auto fetch failed; cannot continue!")
   endif()
@@ -205,7 +205,7 @@ else()
   if(EXISTS ${CRYPTOPP_SOURCES})
     message(
       STATUS "Crypto++ from user-specified location at: ${CRYPTOPP_SOURCES}")
-    set(CRYPTOPP_PROJECT_DIR ${CRYPTOPP_SOURCES})
+    set(cryptopp_SOURCE_DIR ${CRYPTOPP_SOURCES})
   else()
     message(
       FATAL_ERROR
