@@ -33,21 +33,14 @@ endmacro()
 macro(use_url_download)
   cmake_policy(SET CMP0135 NEW)
   if(NOT ${CRYPTOPP_USE_MASTER_BRANCH})
-    if(NOT DEFINED FETCHCONTENT_BASE_DIR)
-      set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/_deps)
-    endif()
     include(FetchContent)
     FetchContent_Declare(
       cryptopp
       URL "${cryptopp-cmake_HOMEPAGE_URL}/releases/download/CRYPTOPP_${version_underscore}/cryptopp${cryptopp-cmake_VERSION_MAJOR}${cryptopp-cmake_VERSION_MINOR}${cryptopp-cmake_VERSION_PATCH}.zip"
       QUIET
-      SOURCE_DIR
-        ${FETCHCONTENT_BASE_DIR}/cryptopp-src/${CRYPTOPP_INCLUDE_PREFIX}
-      BINARY_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-build
-      SUBBUILD_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-subbuild
+      SOURCE_DIR ${CRYPTOPP_INCLUDE_PREFIX}
     )
     FetchContent_Populate(cryptopp)
-    FetchContent_GetProperties(cryptopp SOURCE_DIR)
     set(CRYPTOPP_PROJECT_DIR
         ${cryptopp_SOURCE_DIR}
         PARENT_SCOPE)
