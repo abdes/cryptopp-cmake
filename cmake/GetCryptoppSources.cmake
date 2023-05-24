@@ -37,7 +37,6 @@ macro(use_url_download)
       set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/_deps)
     endif()
     include(FetchContent)
-    file(MAKE_DIRECTORY ${FETCHCONTENT_BASE_DIR})
     FetchContent_Declare(
       cryptopp
       URL "${cryptopp-cmake_HOMEPAGE_URL}/releases/download/CRYPTOPP_${version_underscore}/cryptopp${cryptopp-cmake_VERSION_MAJOR}${cryptopp-cmake_VERSION_MINOR}${cryptopp-cmake_VERSION_PATCH}.zip"
