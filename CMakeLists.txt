@@ -196,7 +196,6 @@ find_package(Git)
 
 if(NOT CRYPTOPP_SOURCES)
   include(GetCryptoppSources)
-  get_cryptopp_sources()
   if(EXISTS ${CRYPTOPP_PROJECT_DIR})
     message(STATUS "Crypto++ auto fetched at: ${CRYPTOPP_PROJECT_DIR}")
   else()
