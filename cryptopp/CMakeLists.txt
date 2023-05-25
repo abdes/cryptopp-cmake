@@ -1260,6 +1260,14 @@ if(CRYPTOPP_BUILD_TESTING)
   set_tests_properties(cryptopp-cryptest PROPERTIES
                        FIXTURES_REQUIRED cryptest-build
                        LABELS "cryptopp;cryptopp-cryptest")
+
+  add_test(
+    NAME cryptopp-cryptest-extensive
+    COMMAND $<TARGET_FILE:cryptest> tv all
+    WORKING_DIRECTORY ${CRYPTOPP_PROJECT_DIR})
+  set_tests_properties(cryptopp-cryptest-extensive PROPERTIES
+                       FIXTURES_CLEANUP cryptest-build
+                       LABELS "cryptopp;cryptopp-cryptest")
 endif()
 
 # ============================================================================
