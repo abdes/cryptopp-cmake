@@ -23,13 +23,18 @@ if(GIT_FOUND)
 else()
   message(STATUS "Downloading crypto++ from URL...")
   cmake_policy(SET CMP0135 NEW)
+  set(source_location "${cryptopp-cmake_HOMEPAGE_URL}/")
   if(NOT ${CRYPTOPP_USE_MASTER_BRANCH})
-    FetchContent_Declare(
-      cryptopp
-        URL "${cryptopp-cmake_HOMEPAGE_URL}/releases/download/CRYPTOPP_${version_underscore}/cryptopp${cryptopp-cmake_VERSION_MAJOR}${cryptopp-cmake_VERSION_MINOR}${cryptopp-cmake_VERSION_PATCH}.zip"
-        QUIET
-        SOURCE_DIR ${CRYPTOPP_INCLUDE_PREFIX}
-    )
+    string(APPEND source_location
+           "releases/download/CRYPTOPP_${version_underscore}/cryptopp${cryptopp-cmake_VERSION_MAJOR}${cryptopp-cmake_VERSION_MINOR}${cryptopp-cmake_VERSION_PATCH}")
+  else()
+    string(APPEND source_location "archive/refs/heads/master")
   endif()
+  FetchContent_Declare(
+    cryptopp
+      URL "${source_location}.zip"
+      QUIET
+      SOURCE_DIR ${CRYPTOPP_INCLUDE_PREFIX}
+  )
 endif()
 FetchContent_Populate(cryptopp)

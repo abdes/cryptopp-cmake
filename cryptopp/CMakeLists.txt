@@ -1083,13 +1083,8 @@ if(MSVC AND NOT CRYPTOPP_DISABLE_ASM)
         "[cryptopp] Disabling ASM because ARM is specified as target platform.")
   else()
     enable_language(ASM_MASM)
-<<<<<<< HEAD
     if(NOT CRYPTOPP_DISABLE_RDRAND)
-      list(APPEND cryptopp_SOURCES_ASM ${CRYPTOPP_PROJECT_DIR}/rdrand.asm)
-=======
-    if(NOT DISABLE_RDRAND)
       list(APPEND cryptopp_SOURCES_ASM ${cryptopp_SOURCE_DIR}/rdrand.asm)
->>>>>>> ae6fbed (chore: use the var fetchcontent already gives us)
       if(${CMAKE_GENERATOR} MATCHES "Visual Studio.*")
         # workaround https://github.com/abdes/cryptopp-cmake/issues/13
         set_source_files_properties(
@@ -1097,13 +1092,8 @@ if(MSVC AND NOT CRYPTOPP_DISABLE_ASM)
           PROPERTIES COMPILE_OPTIONS "/Fo\$(IntDir)rdrand.asm.obj")
       endif()
     endif()
-<<<<<<< HEAD
     if(NOT CRYPTOPP_DISABLE_RDSEED)
-      list(APPEND cryptopp_SOURCES_ASM ${CRYPTOPP_PROJECT_DIR}/rdseed.asm)
-=======
-    if(NOT DISABLE_RDSEED)
       list(APPEND cryptopp_SOURCES_ASM ${cryptopp_SOURCE_DIR}/rdseed.asm)
->>>>>>> ae6fbed (chore: use the var fetchcontent already gives us)
     endif()
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
       list(APPEND cryptopp_SOURCES_ASM ${cryptopp_SOURCE_DIR}/x64dll.asm
@@ -1274,7 +1264,7 @@ if(CRYPTOPP_BUILD_TESTING)
   add_test(
     NAME cryptopp-cryptest-extensive
     COMMAND $<TARGET_FILE:cryptest> tv all
-    WORKING_DIRECTORY ${CRYPTOPP_PROJECT_DIR})
+    WORKING_DIRECTORY ${cryptopp_SOURCE_DIR})
   set_tests_properties(cryptopp-cryptest-extensive PROPERTIES
                        FIXTURES_CLEANUP cryptest-build
                        LABELS "cryptopp;cryptopp-cryptest")
