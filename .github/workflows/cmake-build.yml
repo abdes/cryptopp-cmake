@@ -246,3 +246,47 @@ jobs:
           export CXX=${{ matrix.config.cxx }}
 
           ctest -j40 -E cryptest --output-on-failure --test-dir build -C ${{ matrix.build-type }}
+
+  MSys:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build-type: [Release, Debug]
+        sys: [mingw32, mingw64, ucrt64, clang64]
+        exclude:
+          - sys: mingw32
+            build-type: Debug
+    name: MSys - ${{ matrix.sys }} (${{ matrix.build-type }})
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{ matrix.sys }}
+        update: true
+        install: >-
+          git
+          make
+        pacboy: >-
+          toolchain:p
+          cmake:p
+    - name: Setup ccache
+      uses: Chocobo1/setup-ccache-action@v1
+      with:
+        prepend_symlinks_to_path: false
+        windows_compile_environment: msys2
+    - name: Configure
+      run: cmake -G"Unix Makefiles" -Bbuild -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build-type }}
+    - name: Run cryptest
+      run:  ctest -j40 --verbose -R cryptest --test-dir build -C ${{ matrix.build-type }}
+    - name: Run tests
+      run: ctest -j40 -E cryptest --output-on-failure --test-dir build -C ${{ matrix.build-type }}
