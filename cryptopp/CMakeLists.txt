@@ -104,8 +104,8 @@ foreach(
   POWER7
   POWER8
   POWER9)
-  if(${DISABLE_${feature}})
-    message(STATUS "[cryptopp] -!!- DISABLE_${feature}=${DISABLE_${feature}}")
+  if(${CRYPTOPP_DISABLE_${feature}})
+    message(STATUS "[cryptopp] -!!- CRYPTOPP_DISABLE_${feature}=${CRYPTOPP_DISABLE_${feature}}")
     list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_DISABLE_${feature}=1")
   endif()
 endforeach()
@@ -229,12 +229,12 @@ if(CRYPTOPP_PPC64)
   set(CRYPTOPP_PPC32 0)
 endif()
 
-if (CRYPTOPP_MINGW32 AND NOT DISABLE_ASM)
+if (CRYPTOPP_MINGW32 AND NOT CRYPTOPP_DISABLE_ASM)
     message (STATUS "[cryptopp] Disabling ASM on MinGW32")
     list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_DISABLE_ASM=1")
 endif()
 
-if (CRYPTOPP_CYGWIN AND NOT DISABLE_ASM)
+if (CRYPTOPP_CYGWIN AND NOT CRYPTOPP_DISABLE_ASM)
     message (STATUS "[cryptopp] Disabling ASM on Cygwin")
     list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_DISABLE_ASM=1")
 endif()
@@ -630,7 +630,7 @@ endif()
 # ARM A-32 and NEON                #####
 # ##############################################################################
 
-if(CRYPTOPP_ARM32 AND NOT DISABLE_ARM_NEON)
+if(CRYPTOPP_ARM32 AND NOT CRYPTOPP_DISABLE_ARM_NEON)
   # Clang needs an option to include <arm_neon.h>
   check_compile_link_option(
     "-DCRYPTOPP_ARM_NEON_HEADER=1 -march=armv7-a -mfpu=neon"
@@ -1076,14 +1076,14 @@ set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/sse_simd.cpp
 # ------------------------------------------------------------------------------
 # Compiler: MSVC
 # ------------------------------------------------------------------------------
-if(MSVC AND NOT DISABLE_ASM)
+if(MSVC AND NOT CRYPTOPP_DISABLE_ASM)
   if(${CMAKE_GENERATOR_PLATFORM} MATCHES "ARM")
     message(
       STATUS
         "[cryptopp] Disabling ASM because ARM is specified as target platform.")
   else()
     enable_language(ASM_MASM)
-    if(NOT DISABLE_RDRAND)
+    if(NOT CRYPTOPP_DISABLE_RDRAND)
       list(APPEND cryptopp_SOURCES_ASM ${CRYPTOPP_PROJECT_DIR}/rdrand.asm)
       if(${CMAKE_GENERATOR} MATCHES "Visual Studio.*")
         # workaround https://github.com/abdes/cryptopp-cmake/issues/13
@@ -1092,7 +1092,7 @@ if(MSVC AND NOT DISABLE_ASM)
           PROPERTIES COMPILE_OPTIONS "/Fo\$(IntDir)rdrand.asm.obj")
       endif()
     endif()
-    if(NOT DISABLE_RDSEED)
+    if(NOT CRYPTOPP_DISABLE_RDSEED)
       list(APPEND cryptopp_SOURCES_ASM ${CRYPTOPP_PROJECT_DIR}/rdseed.asm)
     endif()
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
