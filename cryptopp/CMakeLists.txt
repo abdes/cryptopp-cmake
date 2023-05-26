@@ -11,8 +11,8 @@ message(STATUS "[cryptopp] Processor ${CMAKE_SYSTEM_PROCESSOR}")
 
 # Set the location where crypto++ has been setup if not passed to this script
 # from the parent. Assume we are doing the manual build.
-if(NOT DEFINED CRYPTOPP_PROJECT_DIR)
-  set(CRYPTOPP_PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+if(NOT DEFINED cryptopp_SOURCE_DIR)
+  set(cryptopp_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
 # Make RelWithDebInfo the default (it does e.g. add '-O2 -g -DNDEBUG' for GNU)
@@ -30,7 +30,7 @@ include(CheckCXXCompilerFlag)
 
 # We now carry around test programs. test_cxx.cpp is the default C++ one. Also
 # see https://github.com/weidai11/cryptopp/issues/741.
-set(TEST_PROG_DIR ${CRYPTOPP_PROJECT_DIR}/TestPrograms)
+set(TEST_PROG_DIR ${cryptopp_SOURCE_DIR}/TestPrograms)
 set(TEST_CXX_FILE ${TEST_PROG_DIR}/test_cxx.cpp)
 
 # https://github.com/noloader/cryptopp-cmake/issues/56
@@ -668,9 +668,9 @@ if(CRYPTOPP_ARM32
    AND NOT CRYPTOPP_DISABLE_ARM_NEON
    AND NOT CRYPTOPP_DISABLE_ASM)
   list(
-    APPEND cryptopp_SOURCES_ASM ${CRYPTOPP_PROJECT_DIR}/aes_armv4.S
-    ${CRYPTOPP_PROJECT_DIR}/sha1_armv4.S ${CRYPTOPP_PROJECT_DIR}/sha256_armv4.S
-    ${CRYPTOPP_PROJECT_DIR}/sha512_armv4.S)
+    APPEND cryptopp_SOURCES_ASM ${cryptopp_SOURCE_DIR}/aes_armv4.S
+    ${cryptopp_SOURCE_DIR}/sha1_armv4.S ${cryptopp_SOURCE_DIR}/sha256_armv4.S
+    ${cryptopp_SOURCE_DIR}/sha512_armv4.S)
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     list(APPEND CRYPTOGAMS_ARM_FLAG -march=armv7-a)
     list(APPEND CRYPTOGAMS_ARM_THUMB_FLAG -march=armv7-a -mthumb)
@@ -944,133 +944,133 @@ if(NOT has_disable_asm EQUAL -1)
   list(FILTER cryptopp_SOURCES EXCLUDE REGEX
        "arm_|ppc_|neon_|sse_|_sse.cpp|_avx.cpp|_ppc.cpp|_simd.cpp|_armv4.S")
   # But keep sse_simd.cpp or we get undefined symbols at link
-  list(PREPEND cryptopp_SOURCES "${CRYPTOPP_PROJECT_DIR}/sse_simd.cpp")
+  list(PREPEND cryptopp_SOURCES "${cryptopp_SOURCE_DIR}/sse_simd.cpp")
 endif()
 
 # Apply compiler options to SIMD source files
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/aria_simd.cpp
+set_source_files_properties(${cryptopp_SOURCE_DIR}/aria_simd.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_ARIA_FLAGS}")
 
 set_source_files_properties(
-  ${CRYPTOPP_PROJECT_DIR}/blake2s_simd.cpp
+  ${cryptopp_SOURCE_DIR}/blake2s_simd.cpp
   PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_BLAKE2S_FLAGS}")
 
 set_source_files_properties(
-  ${CRYPTOPP_PROJECT_DIR}/blake2b_simd.cpp
+  ${cryptopp_SOURCE_DIR}/blake2b_simd.cpp
   PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_BLAKE2B_FLAGS}")
 
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/aria_simd.cpp
+set_source_files_properties(${cryptopp_SOURCE_DIR}/aria_simd.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_ARIA_FLAGS}")
 
 set_source_files_properties(
-  ${CRYPTOPP_PROJECT_DIR}/chacha_simd.cpp PROPERTIES COMPILE_OPTIONS
+  ${cryptopp_SOURCE_DIR}/chacha_simd.cpp PROPERTIES COMPILE_OPTIONS
                                                      "${CRYPTOPP_CHACHA_FLAGS}")
 
 set_source_files_properties(
-  ${CRYPTOPP_PROJECT_DIR}/chacha_avx.cpp
+  ${cryptopp_SOURCE_DIR}/chacha_avx.cpp
   PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_CHACHA_AVX2_FLAGS}")
 
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/cham_simd.cpp
+set_source_files_properties(${cryptopp_SOURCE_DIR}/cham_simd.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_CHAM_FLAGS}")
 
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/crc_simd.cpp
+set_source_files_properties(${cryptopp_SOURCE_DIR}/crc_simd.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_CRC_FLAGS}")
 
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/darn.cpp
+set_source_files_properties(${cryptopp_SOURCE_DIR}/darn.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_DARN_FLAGS}")
 
 set_source_files_properties(
-  ${CRYPTOPP_PROJECT_DIR}/donna_sse.cpp PROPERTIES COMPILE_OPTIONS
+  ${cryptopp_SOURCE_DIR}/donna_sse.cpp PROPERTIES COMPILE_OPTIONS
                                                    "${CRYPTOPP_DONNA_FLAGS}")
 
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/gcm_simd.cpp
+set_source_files_properties(${cryptopp_SOURCE_DIR}/gcm_simd.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_GCM_FLAGS}")
 
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/gf2n_simd.cpp
+set_source_files_properties(${cryptopp_SOURCE_DIR}/gf2n_simd.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_GF2N_FLAGS}")
 
 set_source_files_properties(
-  ${CRYPTOPP_PROJECT_DIR}/keccak_simd.cpp PROPERTIES COMPILE_OPTIONS
+  ${cryptopp_SOURCE_DIR}/keccak_simd.cpp PROPERTIES COMPILE_OPTIONS
                                                      "${CRYPTOPP_KECCAK_FLAGS}")
 
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/lea_simd.cpp
+set_source_files_properties(${cryptopp_SOURCE_DIR}/lea_simd.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_LEA_FLAGS}")
 
 set_source_files_properties(
-  ${CRYPTOPP_PROJECT_DIR}/lsh256_sse.cpp PROPERTIES COMPILE_OPTIONS
+  ${cryptopp_SOURCE_DIR}/lsh256_sse.cpp PROPERTIES COMPILE_OPTIONS
                                                     "${CRYPTOPP_LSH256_FLAGS}")
 
 set_source_files_properties(
-  ${CRYPTOPP_PROJECT_DIR}/lsh256_avx.cpp
+  ${cryptopp_SOURCE_DIR}/lsh256_avx.cpp
   PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_LSH256_AVX2_FLAGS}")
 
 set_source_files_properties(
-  ${CRYPTOPP_PROJECT_DIR}/lsh512_sse.cpp PROPERTIES COMPILE_OPTIONS
+  ${cryptopp_SOURCE_DIR}/lsh512_sse.cpp PROPERTIES COMPILE_OPTIONS
                                                     "${CRYPTOPP_LSH512_FLAGS}")
 
 set_source_files_properties(
-  ${CRYPTOPP_PROJECT_DIR}/lsh512_avx.cpp
+  ${cryptopp_SOURCE_DIR}/lsh512_avx.cpp
   PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_LSH512_AVX2_FLAGS}")
 
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/neon_simd.cpp
+set_source_files_properties(${cryptopp_SOURCE_DIR}/neon_simd.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_NEON_FLAGS}")
 
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/ppc_simd.cpp
+set_source_files_properties(${cryptopp_SOURCE_DIR}/ppc_simd.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_PPC_FLAGS}")
 
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/rijndael_simd.cpp
+set_source_files_properties(${cryptopp_SOURCE_DIR}/rijndael_simd.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_AES_FLAGS}")
 
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/sha_simd.cpp
+set_source_files_properties(${cryptopp_SOURCE_DIR}/sha_simd.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_SHA_FLAGS}")
 
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/sha3_simd.cpp
+set_source_files_properties(${cryptopp_SOURCE_DIR}/sha3_simd.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_SHA3_FLAGS}")
 
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/shacal2_simd.cpp
+set_source_files_properties(${cryptopp_SOURCE_DIR}/shacal2_simd.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_SHA_FLAGS}")
 
 set_source_files_properties(
-  ${CRYPTOPP_PROJECT_DIR}/simon128_simd.cpp
+  ${cryptopp_SOURCE_DIR}/simon128_simd.cpp
   PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_SIMON128_FLAGS}")
 
 set_source_files_properties(
-  ${CRYPTOPP_PROJECT_DIR}/speck128_simd.cpp
+  ${cryptopp_SOURCE_DIR}/speck128_simd.cpp
   PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_SPECK128_FLAGS}")
 
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/sm3_simd.cpp
+set_source_files_properties(${cryptopp_SOURCE_DIR}/sm3_simd.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_SM3_FLAGS}")
 
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/sm4_simd.cpp
+set_source_files_properties(${cryptopp_SOURCE_DIR}/sm4_simd.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_SM4_FLAGS}")
 
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/${file}
+set_source_files_properties(${cryptopp_SOURCE_DIR}/${file}
                             PROPERTIES COMPILE_OPTIONS "${xlc_compile_options}")
 
 set_source_files_properties(
-  ${CRYPTOPP_PROJECT_DIR}/aes_armv4.S PROPERTIES COMPILE_OPTIONS
+  ${cryptopp_SOURCE_DIR}/aes_armv4.S PROPERTIES COMPILE_OPTIONS
                                                  "${CRYPTOGAMS_ARM_THUMB_FLAG}")
 foreach(file sha1_armv4.S sha256_armv4.S sha512_armv4.S)
   set_source_files_properties(
-    ${CRYPTOPP_PROJECT_DIR}/${file} PROPERTIES COMPILE_OPTIONS
+    ${cryptopp_SOURCE_DIR}/${file} PROPERTIES COMPILE_OPTIONS
                                                "${CRYPTOGAMS_ARM_FLAG}")
 endforeach()
 
 # IBM XLC -O3 optimization bug
 if(CMAKE_CXX_COMPILER MATCHES "xlC")
   foreach(file sm3.cpp donna_32.cpp donna_64.cpp)
-    get_source_file_property(xlc_compile_options ${CRYPTOPP_PROJECT_DIR}/$file
+    get_source_file_property(xlc_compile_options ${cryptopp_SOURCE_DIR}/$file
                              COMPILE_OPTIONS)
     list(REMOVE_ITEM xlc_compile_options "-O3")
     list(APPEND xlc_compile_options "-O2")
     set_source_files_properties(
-      ${CRYPTOPP_PROJECT_DIR}/${file} PROPERTIES COMPILE_OPTIONS
+      ${cryptopp_SOURCE_DIR}/${file} PROPERTIES COMPILE_OPTIONS
                                                  "${xlc_compile_options}")
   endforeach()
 endif()
 
 # SSE2 on i686
-set_source_files_properties(${CRYPTOPP_PROJECT_DIR}/sse_simd.cpp
+set_source_files_properties(${cryptopp_SOURCE_DIR}/sse_simd.cpp
                             PROPERTIES COMPILE_OPTIONS "${CRYPTOPP_SSE2_FLAGS}")
 
 # ------------------------------------------------------------------------------
@@ -1084,20 +1084,20 @@ if(MSVC AND NOT CRYPTOPP_DISABLE_ASM)
   else()
     enable_language(ASM_MASM)
     if(NOT CRYPTOPP_DISABLE_RDRAND)
-      list(APPEND cryptopp_SOURCES_ASM ${CRYPTOPP_PROJECT_DIR}/rdrand.asm)
+      list(APPEND cryptopp_SOURCES_ASM ${cryptopp_SOURCE_DIR}/rdrand.asm)
       if(${CMAKE_GENERATOR} MATCHES "Visual Studio.*")
         # workaround https://github.com/abdes/cryptopp-cmake/issues/13
         set_source_files_properties(
-          ${CRYPTOPP_PROJECT_DIR}/rdrand.asm
+          ${cryptopp_SOURCE_DIR}/rdrand.asm
           PROPERTIES COMPILE_OPTIONS "/Fo\$(IntDir)rdrand.asm.obj")
       endif()
     endif()
     if(NOT CRYPTOPP_DISABLE_RDSEED)
-      list(APPEND cryptopp_SOURCES_ASM ${CRYPTOPP_PROJECT_DIR}/rdseed.asm)
+      list(APPEND cryptopp_SOURCES_ASM ${cryptopp_SOURCE_DIR}/rdseed.asm)
     endif()
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-      list(APPEND cryptopp_SOURCES_ASM ${CRYPTOPP_PROJECT_DIR}/x64dll.asm
-           ${CRYPTOPP_PROJECT_DIR}/x64masm.asm)
+      list(APPEND cryptopp_SOURCES_ASM ${cryptopp_SOURCE_DIR}/x64dll.asm
+           ${cryptopp_SOURCE_DIR}/x64masm.asm)
       set_source_files_properties(${cryptopp_SOURCES_ASM}
                                   PROPERTIES COMPILE_DEFINITIONS "_M_X64")
     else()
@@ -1191,10 +1191,10 @@ target_compile_definitions(
   cryptopp
   INTERFACE
     $<INSTALL_INTERFACE:CRYPTOPP_INCLUDE_PREFIX=${CRYPTOPP_INCLUDE_PREFIX}>)
-cmake_path(GET CRYPTOPP_PROJECT_DIR PARENT_PATH CRYPTOPP_PREFIXED_INCLUDE_DIR)
+cmake_path(GET cryptopp_SOURCE_DIR PARENT_PATH CRYPTOPP_PREFIXED_INCLUDE_DIR)
 target_include_directories(
   cryptopp
-  PUBLIC $<BUILD_INTERFACE:${CRYPTOPP_PROJECT_DIR}>
+  PUBLIC $<BUILD_INTERFACE:${cryptopp_SOURCE_DIR}>
          $<BUILD_INTERFACE:${CRYPTOPP_PREFIXED_INCLUDE_DIR}>
          $<INSTALL_INTERFACE:include>)
 
@@ -1256,7 +1256,7 @@ if(CRYPTOPP_BUILD_TESTING)
   add_test(
     NAME cryptopp-cryptest
     COMMAND $<TARGET_FILE:cryptest> v
-    WORKING_DIRECTORY ${CRYPTOPP_PROJECT_DIR})
+    WORKING_DIRECTORY ${cryptopp_SOURCE_DIR})
   set_tests_properties(cryptopp-cryptest PROPERTIES
                        FIXTURES_REQUIRED cryptest-build
                        LABELS "cryptopp;cryptopp-cryptest")
@@ -1264,7 +1264,7 @@ if(CRYPTOPP_BUILD_TESTING)
   add_test(
     NAME cryptopp-cryptest-extensive
     COMMAND $<TARGET_FILE:cryptest> tv all
-    WORKING_DIRECTORY ${CRYPTOPP_PROJECT_DIR})
+    WORKING_DIRECTORY ${cryptopp_SOURCE_DIR})
   set_tests_properties(cryptopp-cryptest-extensive PROPERTIES
                        FIXTURES_CLEANUP cryptest-build
                        LABELS "cryptopp;cryptopp-cryptest")
@@ -1277,14 +1277,14 @@ endif()
 if(CRYPTOPP_BUILD_DOCUMENTATION)
   find_package(Doxygen REQUIRED)
 
-  set(in_source_DOCS_DIR "${CRYPTOPP_PROJECT_DIR}/html-docs")
+  set(in_source_DOCS_DIR "${cryptopp_SOURCE_DIR}/html-docs")
   set(out_source_DOCS_DIR "${PROJECT_BINARY_DIR}/html-docs")
 
   add_custom_target(
     docs ALL
     COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile -d CRYPTOPP_DOXYGEN_PROCESSING
-    WORKING_DIRECTORY ${CRYPTOPP_PROJECT_DIR}
-    SOURCES ${CRYPTOPP_PROJECT_DIR}/Doxyfile)
+    WORKING_DIRECTORY ${cryptopp_SOURCE_DIR}
+    SOURCES ${cryptopp_SOURCE_DIR}/Doxyfile)
 
   if(NOT ${in_source_DOCS_DIR} STREQUAL ${out_source_DOCS_DIR})
     add_custom_command(
@@ -1350,9 +1350,9 @@ if(CRYPTOPP_INSTALL)
   # Tests
   if(CRYPTOPP_BUILD_TESTING)
     install(TARGETS cryptest DESTINATION ${CMAKE_INSTALL_BINDIR})
-    install(DIRECTORY ${CRYPTOPP_PROJECT_DIR}/TestData
+    install(DIRECTORY ${cryptopp_SOURCE_DIR}/TestData
             DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cryptopp)
-    install(DIRECTORY ${CRYPTOPP_PROJECT_DIR}/TestVectors
+    install(DIRECTORY ${cryptopp_SOURCE_DIR}/TestVectors
             DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cryptopp)
   endif()
 

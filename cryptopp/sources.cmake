@@ -414,19 +414,19 @@ set(cryptopp_SOURCES cryptlib.cpp cpu.cpp integer.cpp ${cryptopp_SOURCES})
 # Build the sources lists with full paths
 set(sources_tmp)
 foreach(src ${cryptopp_SOURCES})
-  list(APPEND sources_tmp "${CRYPTOPP_PROJECT_DIR}/${src}")
+  list(APPEND sources_tmp "${cryptopp_SOURCE_DIR}/${src}")
 endforeach()
 set(cryptopp_SOURCES ${sources_tmp})
 
 set(sources_tmp)
 foreach(src ${cryptopp_SOURCES_TEST})
-  list(APPEND sources_tmp "${CRYPTOPP_PROJECT_DIR}/${src}")
+  list(APPEND sources_tmp "${cryptopp_SOURCE_DIR}/${src}")
 endforeach()
 set(cryptopp_SOURCES_TEST ${sources_tmp})
 
 set(sources_tmp)
 foreach(src ${cryptopp_HEADERS})
-  list(APPEND sources_tmp "${CRYPTOPP_PROJECT_DIR}/${src}")
+  list(APPEND sources_tmp "${cryptopp_SOURCE_DIR}/${src}")
 endforeach()
 set(cryptopp_HEADERS ${sources_tmp})
 
