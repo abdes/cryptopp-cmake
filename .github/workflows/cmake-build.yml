@@ -292,7 +292,14 @@ jobs:
         prepend_symlinks_to_path: false
         windows_compile_environment: msys2
     - name: Configure
-      run: cmake -G"Unix Makefiles" -Bbuild -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DUSE_OPENMP=${{ matrix.config.omp }}
+      run: |
+        cmake -G"Unix Makefiles" \
+          -S . \
+          -B build \
+          -DCMAKE_VERBOSE_MAKEFILE=ON \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} \
+          -DUSE_OPENMP=${{ matrix.config.omp }} \
+          -D USE_CCACHE=ON
     - name: Build
       run: cmake --build build --config ${{ matrix.build-type }}
     - name: Run cryptest
