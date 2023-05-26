@@ -254,10 +254,19 @@ jobs:
       matrix:
         build-type: [Release, Debug]
         sys: [mingw32, mingw64, ucrt64, clang64]
+        config:
+          - {
+              name: "with OMP ",
+              omp: ON,
+            }
+          - {
+              name: "",
+              omp: "OFF",
+            }
         exclude:
           - sys: mingw32
             build-type: Debug
-    name: MSys - ${{ matrix.sys }} (${{ matrix.build-type }})
+    name: MSys - ${{ matrix.sys }} ${{ matrix.config.name }}(${{ matrix.build-type }})
     defaults:
       run:
         shell: msys2 {0}
@@ -283,7 +292,7 @@ jobs:
         prepend_symlinks_to_path: false
         windows_compile_environment: msys2
     - name: Configure
-      run: cmake -G"Unix Makefiles" -Bbuild -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
+      run: cmake -G"Unix Makefiles" -Bbuild -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DUSE_OPENMP=${{ matrix.config.omp }}
     - name: Build
       run: cmake --build build --config ${{ matrix.build-type }}
     - name: Run cryptest
