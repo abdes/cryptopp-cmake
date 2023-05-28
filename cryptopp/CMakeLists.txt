@@ -405,7 +405,7 @@ include(sources)
 # X86/X32/X64 Options               #####
 # ##############################################################################
 
-if((CRYPTOPP_I386 OR CRYPTOPP_AMD64 OR CRYPTOPP_MINGW32 OR CRYPTOPP_MINGW64 OR CRYPTOPP_CYGWIN))
+if((CRYPTOPP_I386 OR CRYPTOPP_AMD64 OR CRYPTOPP_MINGW32 OR CRYPTOPP_MINGW64 OR CRYPTOPP_CYGWIN)
     AND NOT MSVC)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
     set(sse2_flag "-xarch=sse2")
