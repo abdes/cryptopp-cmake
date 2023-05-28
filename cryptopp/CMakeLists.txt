@@ -208,6 +208,7 @@ message(
   STATUS "[cryptopp]      CMAKE_SYSTEM_PROCESSOR : ${CMAKE_SYSTEM_PROCESSOR}")
 
 check_target_architecture(CRYPTOPP_AMD64 "(x86_64|amd64)")
+check_target_architecture(CRYPTOPP_CYGWIN "cygwin")
 check_target_architecture(CRYPTOPP_I386 "^i.86$")
 check_target_architecture(CRYPTOPP_MINGW32 "^mingw32")
 check_target_architecture(CRYPTOPP_MINGW64 "(w64-mingw32|mingw64)")
@@ -227,11 +228,6 @@ endif()
 
 if(CRYPTOPP_PPC64)
   set(CRYPTOPP_PPC32 0)
-endif()
-
-if (CRYPTOPP_CYGWIN AND NOT CRYPTOPP_DISABLE_ASM)
-    message (STATUS "[cryptopp] Disabling ASM on Cygwin")
-    list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_DISABLE_ASM=1")
 endif()
 # ##############################################################################
 
@@ -409,7 +405,7 @@ include(sources)
 # X86/X32/X64 Options               #####
 # ##############################################################################
 
-if((CRYPTOPP_I386 OR CRYPTOPP_AMD64 OR CRYPTOPP_MINGW32 OR CRYPTOPP_MINGW64)
+if((CRYPTOPP_I386 OR CRYPTOPP_AMD64 OR CRYPTOPP_MINGW32 OR CRYPTOPP_MINGW64 OR CRYPTOPP_CYGWIN))
     AND NOT MSVC)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
     set(sse2_flag "-xarch=sse2")
