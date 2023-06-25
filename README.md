@@ -27,7 +27,7 @@ See this
 [announcement](https://groups.google.com/g/cryptopp-users/c/9oDbTm8qWps) from
 crypto++ maintainers.
 
-The emphasis on *Modern* here is very important. In 2022, we have some really
+The emphasis on _Modern_ here is very important. In 2022, we have some really
 good solutions to many of the build problems developers used to waste a lot of
 time on. CMake in particular has made so much progress to become one of the most
 widely used build systems for C++. But, we're not talking about CMake 2.x here.
@@ -37,36 +37,39 @@ For more details on this topic, see down below...
 
 ## Table of Contents
 
-- [Before you ask](#before-you-ask)
-- [Versioning principles](#versioning-principles)
-- [Standard usage](#standard-usage)
-- [Using a local copy of crypto++](#using-a-local-copy-of-crypto)
-- [Requesting the master branch of cryptopp](#requesting-the-master-branch-of-cryptopp)
-- [Other ways](#other-ways)
-- [Why Modern CMake?](#why-modern-cmake)
+- [Crypto++ CMake](#crypto-cmake)
+  - [Introduction](#introduction)
+  - [Table of Contents](#table-of-contents)
+  - [Before you ask](#before-you-ask)
+  - [Versioning principles](#versioning-principles)
+  - [Standard usage](#standard-usage)
+  - [Using a local copy of crypto++](#using-a-local-copy-of-crypto)
+  - [Requesting the master branch of cryptopp](#requesting-the-master-branch-of-cryptopp)
+  - [Other ways](#other-ways)
+  - [Why Modern CMake?](#why-modern-cmake)
 
 ## Before you ask
 
 - **Can you support an older version of CMake? You really don't need 3.21...**
 
   No.
-  
+
   This is an opinionated fork with the main purpose being to stay always on a
   recent version of CMake. We believe that the build system should be the latest
   unlike compilers and Operating Systems. If you want to stay on old versions,
   please take a look at the old repo.
 
 - **Can you fix the shared library build? I really like DLLs...**
-  
+
   Me too, but No.
-  
+
   Crypto++ does not properly export symbols and manage visibility. You can
   request this feature from the crypto++ project maintainers. The old DLL build
   was only for FIPS version, with limited symbol exports. That version is going
   end-of-life and there is no point from supporting it here.
 
-  If you love DLLs, you can make a [*Wrapper
-  DLL*](https://cryptopp.com/wiki/Wrapper_DLL) as explained on crypto++ wiki.
+  If you love DLLs, you can make a [_Wrapper
+  DLL_](https://cryptopp.com/wiki/Wrapper_DLL) as explained on crypto++ wiki.
 
   The CMakeLists.txt in this project are already built for shared and static
   builds, but the shared build is locked until crypto++ is ready for it.
@@ -74,7 +77,7 @@ For more details on this topic, see down below...
 - **Why did you change XXX? It used to work like YYY before...**
 
   I don't know.
-  
+
   I use crypto++ in my project, and I use it in a way that I learnt and
   improved over time through experience, extensive reading of other peoples'
   experiences, and sticking as close as possible to modern cmake practices. I'm
@@ -86,23 +89,23 @@ For more details on this topic, see down below...
 ## Versioning principles
 
 This project releases track the [crypto++](https://github.com/weidai11/cryptopp)
-releases. In other words, every time a new release of *crypto++* happens, this
+releases. In other words, every time a new release of _crypto++_ happens, this
 project gets updated to take into account changes in source files, compiler
-options etc, and will see a new release with the same number than *crypto++*.
+options etc, and will see a new release with the same number than _crypto++_.
 
-At times, bug fixes in this project will happen before a new *crypto++* release
+At times, bug fixes in this project will happen before a new _crypto++_ release
 is published. When a certain number of fixes have been added, and depending on
 the criticality of the defects, an additional release tag may be made. These
-*patch tags* will never introduce any additional changes in `crypto++` itself.
+_patch tags_ will never introduce any additional changes in `crypto++` itself.
 
-Main release tags will have the format: `CRYPTOPP_M_m_p`, while *patch tags*
+Main release tags will have the format: `CRYPTOPP_M_m_p`, while _patch tags_
 will have the format `CRYPTOPP_M_m_p_f`, where `M.m.p` represents the `crypto++`
-version and `f` is a suffix number incremented each time a *patch tag* is
-created. *Patch tags* will keep the same `crypto++` version as the main release
+version and `f` is a suffix number incremented each time a _patch tag_ is
+created. _Patch tags_ will keep the same `crypto++` version as the main release
 tag.
 
 > As always, if you want to get the latest and greatest, always track the
-master branch.
+> master branch.
 
 ## Standard usage
 
@@ -169,8 +172,7 @@ features that will make the maintenance and the use of this project much simpler
 and pleasant. After all, there is no justification for doing free Open Source
 without pleasure :smiley:
 
-[build-matrix]: https://github.com/abdes/cryptopp-cmake/actions/workflows/cmake-build.yml?branch=develop
-[build-status-develop-badge]: https://github.com/abdes/cryptopp-cmake/actions/workflows/cmake-build.yml/badge.svg?branch=develop
+[build-matrix]: https://github.com/abdes/cryptopp-cmake/actions/workflows/cmake-build.yml
 [build-status-master-badge]: https://github.com/abdes/cryptopp-cmake/actions/workflows/cmake-build.yml/badge.svg?branch=master
 [commits]: https://github.com/abdes/cryptopp-cmake/commits
 [last-commit-badge]: https://img.shields.io/github/last-commit/abdes/cryptopp-cmake
