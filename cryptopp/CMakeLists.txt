@@ -1219,6 +1219,7 @@ if(USE_OPENMP)
   find_package(OpenMP REQUIRED)
 endif()
 
+target_link_libraries(cryptopp $<$<BOOL:${CRYPTOPP_USE_OPENMP}>:OpenMP::OpenMP_CXX>)
 # ============================================================================
 # Tests
 # ============================================================================
