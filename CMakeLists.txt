@@ -215,11 +215,18 @@ else()
 endif()
 
 if (Git_FOUND)
-  execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
+  get_filename_component(CRYPTOPP_CMAKE_PARENT_DIR ${cryptopp-cmake_SOURCE_DIR} DIRECTORY)
+  execute_process(COMMAND ${CMAKE_COMMAND} -E env GIT_CEILING_DIRECTORIES="${CRYPTOPP_CMAKE_PARENT_DIR}"
+                            ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
                   WORKING_DIRECTORY ${cryptopp-cmake_SOURCE_DIR}
-                  OUTPUT_VARIABLE cryptopp_GIT_BRANCH)
-  string(STRIP ${cryptopp_GIT_BRANCH} cryptopp_GIT_BRANCH)
-else()
+                  RESULT_VARIABLE cryptopp_CMAKE_GIT_RESULT
+                  OUTPUT_VARIABLE cryptopp_GIT_BRANCH
+                  ERROR_QUIET)
+  if (cryptopp_CMAKE_GIT_RESULT EQUAL 0)
+    string(STRIP ${cryptopp_GIT_BRANCH} cryptopp_GIT_BRANCH)
+  endif()
+endif()
+if (NOT cryptopp_GIT_BRANCH)
   set(cryptopp_GIT_BRANCH "master")
 endif()
 message(STATUS "Using branch ${cryptopp_GIT_BRANCH} for tests")
