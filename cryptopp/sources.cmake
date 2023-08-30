@@ -117,6 +117,7 @@ set(cryptopp_SOURCES
     poly1305.cpp
     polynomi.cpp
     ppc_simd.cpp
+    primetab.cpp
     pssr.cpp
     pubkey.cpp
     queue.cpp
