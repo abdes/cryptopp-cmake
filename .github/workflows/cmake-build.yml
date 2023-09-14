@@ -117,7 +117,7 @@ jobs:
           windows_compile_environment: msvc # this field is required
 
       - name: Install macports
-        uses: melusina-org/gha-install-macports@v1
+        uses: melusina-org/setup-macports@v1
         if: endsWith(matrix.config.name, 'macports')
 
       - name: Install libomp (macports)
