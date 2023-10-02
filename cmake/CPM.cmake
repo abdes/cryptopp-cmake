@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # ===-----------------------------------------------------------------------===#
 
-set(CPM_DOWNLOAD_VERSION 0.35.5)
+set(CPM_DOWNLOAD_VERSION 0.38.5)
 
 if(CPM_SOURCE_CACHE)
     # Expand relative path. This is important if the provided path contains a
