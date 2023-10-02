@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [8.9.0](http://github.com/abdes/asap/compare/v8.8.0...v8.9.0) (2023-10-02)
 
+### Known Issues
+
+- [#101](https://github.com/abdes/cryptopp-cmake/issues/101)
+  When defining `CRYPTOPP_DISABLE_ASM` to a truthful value, the build will fail if
+  the compiler is MSVC on Windows or clang on MSys. A fix has been done on the
+  master branch of crypto++
+  (https://github.com/weidai11/cryptopp/commit/121014baf0e8).
+  cryptopp-cmake tracks the released versions of crypto++ and will be re-released
+  when crypto++ is.
+
 ### Features
 
 - update source files for crypto++ 8.9.0 ([fa72356](http://github.com/abdes/asap/commit/fa72356c0b89b7346292f2e914ee45bbc742d503)), closes [#88](http://github.com/abdes/asap/issues/88)
