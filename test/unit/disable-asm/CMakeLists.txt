@@ -27,8 +27,7 @@ cpmaddpackage(
   OPTIONS
   "CRYPTOPP_BUILD_TESTING OFF"
   "DISABLE_ASM ON"
-  "DISABLE_SSE3 ON"
-  "DISABLE_SSE4 OFF")
+)
 
 # compile and link a test program using crypto++
 add_executable(rng-test ${TEST_EXAMPLE_SOURCES_DIR}/main.cpp)
