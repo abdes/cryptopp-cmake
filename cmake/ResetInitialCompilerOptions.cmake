@@ -19,16 +19,16 @@
 # We use this module to strip compiler options that are not really needed but
 # will cause compatibility issues with `ccache`.
 if(MSVC AND USE_CCACHE)
-  # As of ccache 4.6, /Zi option automatically added by cmake is unsupported.
-  # Given that we are doing ccache only in development environments (USE_CCACHE
-  # controls if ccache is enabled), we can just strip that option.
-  macro(strip_unwanted_options_from cmake_flags)
-    if(${cmake_flags} MATCHES "/Zi")
-      string(REPLACE "/Zi" "/Z7" ${cmake_flags} ${${cmake_flags}})
-    endif()
-  endmacro()
-  strip_unwanted_options_from(CMAKE_CXX_FLAGS_DEBUG_INIT)
-  strip_unwanted_options_from(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT)
-  strip_unwanted_options_from(CMAKE_C_FLAGS_DEBUG_INIT)
-  strip_unwanted_options_from(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT)
+    # As of ccache 4.6, /Zi option automatically added by cmake is unsupported.
+    # Given that we are doing ccache only in development environments (USE_CCACHE
+    # controls if ccache is enabled), we can just strip that option.
+    macro(strip_unwanted_options_from cmake_flags)
+        if(${cmake_flags} MATCHES "/Zi")
+            string(REPLACE "/Zi" "/Z7" ${cmake_flags} ${${cmake_flags}})
+        endif()
+    endmacro()
+    strip_unwanted_options_from(CMAKE_CXX_FLAGS_DEBUG_INIT)
+    strip_unwanted_options_from(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT)
+    strip_unwanted_options_from(CMAKE_C_FLAGS_DEBUG_INIT)
+    strip_unwanted_options_from(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT)
 endif()

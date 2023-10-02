@@ -179,7 +179,8 @@ set(cryptopp_SOURCES
     xts.cpp
     zdeflate.cpp
     zinflate.cpp
-    zlib.cpp)
+    zlib.cpp
+)
 
 # ***** Library headers *****
 set(cryptopp_HEADERS
@@ -370,7 +371,8 @@ set(cryptopp_HEADERS
     xts.h
     zdeflate.h
     zinflate.h
-    zlib.h)
+    zlib.h
+)
 
 # ***** Test sources *****
 set(cryptopp_SOURCES_TEST
@@ -396,37 +398,39 @@ set(cryptopp_SOURCES_TEST
     regtest1.cpp
     regtest2.cpp
     regtest3.cpp
-    regtest4.cpp)
+    regtest4.cpp
+)
 
 # ***** Test headers *****
 set(cryptopp_HEADERS_TEST bench.h factory.h validate.h)
 
 list(
-  REMOVE_ITEM
-  cryptopp_SOURCES
-  cryptlib.cpp
-  cpu.cpp
-  integer.cpp
-  pch.cpp
-  simple.cpp)
+    REMOVE_ITEM
+    cryptopp_SOURCES
+    cryptlib.cpp
+    cpu.cpp
+    integer.cpp
+    pch.cpp
+    simple.cpp
+)
 set(cryptopp_SOURCES cryptlib.cpp cpu.cpp integer.cpp ${cryptopp_SOURCES})
 
 # Build the sources lists with full paths
 set(sources_tmp)
 foreach(src ${cryptopp_SOURCES})
-  list(APPEND sources_tmp "${cryptopp_SOURCE_DIR}/${src}")
+    list(APPEND sources_tmp "${cryptopp_SOURCE_DIR}/${src}")
 endforeach()
 set(cryptopp_SOURCES ${sources_tmp})
 
 set(sources_tmp)
 foreach(src ${cryptopp_SOURCES_TEST})
-  list(APPEND sources_tmp "${cryptopp_SOURCE_DIR}/${src}")
+    list(APPEND sources_tmp "${cryptopp_SOURCE_DIR}/${src}")
 endforeach()
 set(cryptopp_SOURCES_TEST ${sources_tmp})
 
 set(sources_tmp)
 foreach(src ${cryptopp_HEADERS})
-  list(APPEND sources_tmp "${cryptopp_SOURCE_DIR}/${src}")
+    list(APPEND sources_tmp "${cryptopp_SOURCE_DIR}/${src}")
 endforeach()
 set(cryptopp_HEADERS ${sources_tmp})
 
@@ -437,7 +441,10 @@ set(cryptopp_SOURCES_ASM)
 
 # Adjust for Android
 if(ANDROID)
-  include_directories(${ANDROID_NDK}/sources/android/cpufeatures)
-  list(APPEND cryptopp_SOURCES
-       ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c)
+    include_directories(${ANDROID_NDK}/sources/android/cpufeatures)
+    list(
+        APPEND
+        cryptopp_SOURCES
+        ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c
+    )
 endif()
