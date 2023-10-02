@@ -86,8 +86,8 @@ module.exports.writeVersion = function (contents, version) {
   const lines = contents.split(/\r?\n/);
   lines.forEach(line => {
     var newLine = line.replace(major_rex, "set(META_VERSION_MAJOR       \"" + major + "\")")
-      .replace(minor_rex, "set(META_VERSION_MINOR       \"" + minor + "\")")
-      .replace(patch_rex, "set(META_VERSION_PATCH       \"" + patch + "\")");
+      .replace(minor_rex, "set(META_VERSION_MINOR \"" + minor + "\")")
+      .replace(patch_rex, "set(META_VERSION_PATCH \"" + patch + "\")");
     newContents.push(newLine);
   });
 
