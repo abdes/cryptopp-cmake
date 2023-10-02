@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.9.0](http://github.com/abdes/asap/compare/v8.8.0...v8.9.0) (2023-10-02)
+
+### Features
+
+- update source files for crypto++ 8.9.0 ([fa72356](http://github.com/abdes/asap/commit/fa72356c0b89b7346292f2e914ee45bbc742d503)), closes [#88](http://github.com/abdes/asap/issues/88)
+
+### Bug Fixes
+
+- link to omp if requested ([#92](http://github.com/abdes/asap/issues/92)) ([899542f](http://github.com/abdes/asap/commit/899542f1f7f0e55cfa1f41cfb3e9aa9dc157eace))
+- make MacOS $(ARCHS_STANDARD) a valid value for CMAKE_OSX_ARCHITECTURES ([6bb6463](http://github.com/abdes/asap/commit/6bb64630c563937e4263b721755c724c0e1ba6e1)), closes [#99](http://github.com/abdes/asap/issues/99)
+
 ## [8.8.0](http://github.com/abdes/asap/compare/v8.7.0...v8.8.0) (2023-06-25)
 
 ### Features
