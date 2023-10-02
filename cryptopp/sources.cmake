@@ -15,7 +15,6 @@ set(cryptopp_SOURCES
     allocate.cpp
     arc4.cpp
     aria.cpp
-    aria_simd.cpp
     ariatab.cpp
     asn.cpp
     authenc.cpp
@@ -117,6 +116,7 @@ set(cryptopp_SOURCES
     poly1305.cpp
     polynomi.cpp
     ppc_simd.cpp
+    primetab.cpp
     pssr.cpp
     pubkey.cpp
     queue.cpp
