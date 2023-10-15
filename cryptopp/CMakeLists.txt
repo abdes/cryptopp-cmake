@@ -1268,6 +1268,15 @@ if(MSVC AND NOT CRYPTOPP_DISABLE_ASM)
                 ${cryptopp_SOURCE_DIR}/x64dll.asm
                 ${cryptopp_SOURCE_DIR}/x64masm.asm
             )
+            # Add the 'cpuid64.asm' source file only if it exists. 
+            # This file has been added post-8.9.0
+            if(EXISTS "${cryptopp_SOURCE_DIR}/cpuid64.asm")
+                list(
+                    APPEND
+                    cryptopp_SOURCES_ASM
+                    ${cryptopp_SOURCE_DIR}/cpuid64.asm
+                )
+            endif()
             set_source_files_properties(
                 ${cryptopp_SOURCES_ASM}
                 PROPERTIES COMPILE_DEFINITIONS "_M_X64"
