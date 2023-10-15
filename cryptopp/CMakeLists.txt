@@ -1385,9 +1385,13 @@ target_compile_definitions(
         $<INSTALL_INTERFACE:CRYPTOPP_INCLUDE_PREFIX=${CRYPTOPP_INCLUDE_PREFIX}>
 )
 cmake_path(GET cryptopp_SOURCE_DIR PARENT_PATH CRYPTOPP_PREFIXED_INCLUDE_DIR)
-if (cryptopp_SOURCE_DIR STREQUAL CRYPTOPP_PREFIXED_INCLUDE_DIR)
+if(cryptopp_SOURCE_DIR STREQUAL CRYPTOPP_PREFIXED_INCLUDE_DIR)
     # Work around a CMake bug when built using certain toolchains, where cmake_path returns the same path.
-    get_filename_component(CRYPTOPP_PREFIXED_INCLUDE_DIR "${cryptopp_SOURCE_DIR}" DIRECTORY)
+    get_filename_component(
+        CRYPTOPP_PREFIXED_INCLUDE_DIR
+        "${cryptopp_SOURCE_DIR}"
+        DIRECTORY
+    )
 endif()
 target_include_directories(
     cryptopp
