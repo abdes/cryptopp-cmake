@@ -743,7 +743,7 @@ endif()
 # Aach32 and Aarch64               #####
 # ##############################################################################
 
-if(CRYPTOPP_ARMV8)
+if(CRYPTOPP_ARMV8 AND NOT MSVC)
     check_compile_link_option(
       "-DCRYPTOPP_ARM_NEON_HEADER=1"   CRYPTOPP_ARM_NEON_HEADER
       "${TEST_PROG_DIR}/test_arm_neon_header.cpp"
