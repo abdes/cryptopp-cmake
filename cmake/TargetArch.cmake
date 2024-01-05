@@ -10,8 +10,8 @@ set(archdetect_c_code
 /*
     ARM family, known revisions: V5, V6, V7, V8
 */
-#if defined(__arm__) || defined(__TARGET_ARCH_ARM) || defined(_M_ARM) || defined(_M_ARM64) || defined(__aarch64__) || defined(__ARM64__)
-#  if defined(__aarch64__) || defined(__ARM64__) || defined(_M_ARM64)
+#if defined(__arm__) || defined(__TARGET_ARCH_ARM) || defined(_M_ARM) || defined(_M_ARM64) || defined(_M_ARM64EC) || defined(__aarch64__) || defined(__ARM64__)
+#  if defined(__aarch64__) || defined(__ARM64__) || defined(_M_ARM64) || defined(_M_ARM64EC)
 #    error cmake_ARCH arm64
 #  else
 #    error cmake_ARCH arm
