@@ -1241,7 +1241,7 @@ set_source_files_properties(
 # Compiler: MSVC
 # ------------------------------------------------------------------------------
 if(MSVC AND NOT CRYPTOPP_DISABLE_ASM)
-    if(${CMAKE_GENERATOR_PLATFORM} MATCHES "ARM")
+    if(${CMAKE_GENERATOR_PLATFORM} MATCHES "ARM" OR CRYPTOPP_ARM32 OR CRYPTOPP_ARMV8)
         message(
             STATUS
             "[cryptopp] Disabling ASM because ARM is specified as target platform."
