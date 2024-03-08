@@ -69,8 +69,8 @@ message("=> Project : ${PROJECT_NAME} v${cryptopp-cmake_VERSION}")
 function(cryptopp_deprecated_option old_name new_name description default)
     if(DEFINED ${old_name})
         message(
-            DEPRECATION
-            "${old_name} is a deprecated option and will be ignored after 8.8.x + 3. Use ${new_name} instead"
+            AUTHOR_WARNING
+            "${old_name} is a deprecated option and will be ignored after 8.9.x + 2. Use ${new_name} instead"
         )
         set(default ${${old_name}})
     endif()
