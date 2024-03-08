@@ -83,6 +83,11 @@ option(
     ON
 )
 
+option(
+    CRYPTOPP_USE_PEM_PACK
+    "Include the PEM-Pack in compiliation (https://github.com/noloader/cryptopp-pem)"
+)
+
 if(CRYPTOPP_INCLUDE_PREFIX)
     set(CRYPTOPP_INCLUDE_PREFIX
         ${CRYPTOPP_INCLUDE_PREFIX}

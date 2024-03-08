@@ -182,6 +182,14 @@ set(cryptopp_SOURCES
     zlib.cpp
 )
 
+set(cryptopp_SOURCES_PEM
+    "${cryptopp-pem_SOURCE_DIR}/pem_common.cpp"
+    "${cryptopp-pem_SOURCE_DIR}/pem_eol.cxx"
+    "${cryptopp-pem_SOURCE_DIR}/pem_read.cpp"
+    "${cryptopp-pem_SOURCE_DIR}/pem_write.cpp"
+    "${cryptopp-pem_SOURCE_DIR}/x509cert.cpp"
+)
+
 # ***** Library headers *****
 set(cryptopp_HEADERS
     3way.h
@@ -374,6 +382,11 @@ set(cryptopp_HEADERS
     zlib.h
 )
 
+set(cryptopp_HEADERS_PEM
+    "${cryptopp-pem_SOURCE_DIR}/pem_common.h"
+    "${cryptopp-pem_SOURCE_DIR}/x509cert.h"
+)
+
 # ***** Test sources *****
 set(cryptopp_SOURCES_TEST
     # adhoc.cpp
@@ -446,5 +459,18 @@ if(ANDROID)
         APPEND
         cryptopp_SOURCES
         ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c
+    )
+endif()
+
+if(CRYPTOPP_USE_PEM_PACK)
+    list(
+        APPEND
+        cryptopp_SOURCES
+        ${cryptopp_SOURCES_PEM}
+    )
+    list(
+        APPEND
+        cryptopp_HEADERS
+        ${cryptopp_HEADERS_PEM}
     )
 endif()
