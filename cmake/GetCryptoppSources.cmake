@@ -22,6 +22,11 @@ if(GIT_FOUND)
         SOURCE_DIR
         ${CRYPTOPP_INCLUDE_PREFIX}
     )
+    fetchcontent_declare(
+        cryptopp-pem
+        GIT_REPOSITORY "https://github.com/noloader/cryptopp-pem"
+        QUIET
+    )
 else()
     message(STATUS "Downloading crypto++ from URL...")
     cmake_policy(SET CMP0135 NEW)
@@ -39,5 +44,13 @@ else()
         cryptopp
         URL "${source_location}.zip" QUIET SOURCE_DIR ${CRYPTOPP_INCLUDE_PREFIX}
     )
+    fetchcontent_declare(
+        cryptopp-pem
+        URL "https://github.com/noloader/cryptopp-pem/archive/refs/heads/master.zip"
+        QUIET
+    )
 endif()
 fetchcontent_populate(cryptopp)
+if(CRYPTOPP_USE_PEM_PACK)
+    fetchcontent_populate(cryptopp-pem)
+endif()
