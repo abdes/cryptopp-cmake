@@ -183,6 +183,7 @@ set(cryptopp_SOURCES
 )
 
 set(cryptopp_SOURCES_PEM
+    "${cryptopp-pem_SOURCE_DIR}/pem.cpp"
     "${cryptopp-pem_SOURCE_DIR}/pem_common.cpp"
     "${cryptopp-pem_SOURCE_DIR}/pem_eol.cxx"
     "${cryptopp-pem_SOURCE_DIR}/pem_read.cpp"
