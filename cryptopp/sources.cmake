@@ -183,7 +183,6 @@ set(cryptopp_SOURCES
 )
 
 set(cryptopp_SOURCES_PEM
-    "${cryptopp-pem_SOURCE_DIR}/pem.cpp"
     "${cryptopp-pem_SOURCE_DIR}/pem_common.cpp"
     "${cryptopp-pem_SOURCE_DIR}/pem_eol.cxx"
     "${cryptopp-pem_SOURCE_DIR}/pem_read.cpp"
@@ -384,6 +383,7 @@ set(cryptopp_HEADERS
 )
 
 set(cryptopp_HEADERS_PEM
+    "${cryptopp-pem_SOURCE_DIR}/pem.h"
     "${cryptopp-pem_SOURCE_DIR}/pem_common.h"
     "${cryptopp-pem_SOURCE_DIR}/x509cert.h"
 )
