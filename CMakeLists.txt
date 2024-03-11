@@ -247,7 +247,7 @@ else()
     else()
         message(
             FATAL_ERROR
-            "User-provided location (${CRYPTOPP_SOURCES}) for crypto++ sources does not exit!"
+            "User-provided location (${CRYPTOPP_SOURCES}) for crypto++ sources does not exist!"
         )
     endif()
 endif()
