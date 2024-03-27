@@ -1256,7 +1256,7 @@ if(MSVC AND NOT CRYPTOPP_DISABLE_ASM)
         enable_language(ASM_MASM)
         if(NOT CRYPTOPP_DISABLE_RDRAND)
             list(APPEND cryptopp_SOURCES_ASM ${cryptopp_SOURCE_DIR}/rdrand.asm)
-            if(${CMAKE_GENERATOR} MATCHES "Visual Studio.*")
+            if(${CMAKE_GENERATOR} MATCHES "Visual Studio.*" AND ${CMAKE_VERSION} VERSION_LESS "3.28")
                 # workaround https://github.com/abdes/cryptopp-cmake/issues/13
                 set_source_files_properties(
                     ${cryptopp_SOURCE_DIR}/rdrand.asm
