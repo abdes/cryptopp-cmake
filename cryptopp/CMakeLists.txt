@@ -1448,7 +1448,7 @@ if(CRYPTOPP_BUILD_TESTING)
     add_executable(cryptest ${cryptopp_SOURCES_TEST})
     target_link_libraries(cryptest PRIVATE cryptopp::cryptopp)
 
-    set_source_files_properties(
+    set_property(SOURCE
         ${cryptopp_SOURCE_DIR}/bench3.cpp
         ${cryptopp_SOURCE_DIR}/datatest.cpp
         ${cryptopp_SOURCE_DIR}/test.cpp
@@ -1457,7 +1457,7 @@ if(CRYPTOPP_BUILD_TESTING)
         ${cryptopp_SOURCE_DIR}/validat7.cpp
         ${cryptopp_SOURCE_DIR}/validat8.cpp
         ${cryptopp_SOURCE_DIR}/validat9.cpp
-        PROPERTIES
+        APPEND PROPERTY
             COMPILE_DEFINITIONS
                 CRYPTOPP_DATA_DIR="${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/cryptopp/"
     )
