@@ -1483,10 +1483,6 @@ if(CRYPTOPP_USE_OPENMP)
     endif()
 
     if((NOT OPENMP_FOUND) AND (NOT OPENMP_CXX_FOUND))
-        execute_process(
-            COMMAND bash -c "find / -name libomp.dylib"
-            OUTPUT_VARIABLE outVar
-        )
         message(FATAL_ERROR "OpenMP: Didn't find libomp.\nFind output:\n${outVar}")
     endif()
 endif()
