@@ -64,7 +64,6 @@ set(cryptopp_SOURCES
     files.cpp
     filters.cpp
     fips140.cpp
-    fipstest.cpp
     gcm.cpp
     gcm_simd.cpp
     gf256.cpp
@@ -184,6 +183,14 @@ set(cryptopp_SOURCES
     zinflate.cpp
     zlib.cpp
 )
+
+if(CRYPTOPP_BUILD_SHARED)
+    list(
+        APPEND 
+        cryptopp_SOURCES
+        fipstest.cpp
+    )
+endif()
 
 set(cryptopp_SOURCES_PEM
     "${cryptopp-pem_SOURCE_DIR}/pem_common.cpp"
