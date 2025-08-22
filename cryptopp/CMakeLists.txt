@@ -72,7 +72,7 @@ endif()
 set(CRYPTOPP_COMPILE_DEFINITIONS)
 set(CRYPTOPP_COMPILE_OPTIONS)
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
     list(
         APPEND
         CRYPTOPP_COMPILE_OPTIONS
@@ -164,6 +164,9 @@ function(check_compile_link_option opt var prog)
 
     message(STATUS "[cryptopp] Performing Test ${var}")
     set(definitions ${CRYPTOPP_COMPILE_DEFINITIONS})
+    if(MSVC)
+        list(APPEND definitions ${CRYPTOPP_MSVC_COMPILE_DEFINITIONS})
+    endif()
     list(TRANSFORM definitions PREPEND "-D")
     list(APPEND definitions ${opt})
     try_compile(
@@ -323,12 +326,13 @@ endif()
 
 if(MSVC)
     set(CRYPTOPP_MSVC_COMPILE_OPTIONS)
+    set(CRYPTOPP_MSVC_COMPILE_DEFINITIONS)
 
     # TODO: what about ICC and LLVM on Windows?
 
     if(CMAKE_SYSTEM_VERSION MATCHES "10\\.0.*")
         # https://docs.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt
-        list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "_WIN32_WINNT=0x0A00")
+        list(APPEND CRYPTOPP_MSVC_COMPILE_DEFINITIONS "_WIN32_WINNT=0x0A00")
     endif()
     # winapifamily.h is missing on AppVeyor machines
     include(CheckIncludeFileCXX)
@@ -338,7 +342,9 @@ if(MSVC)
     endif()
 
     list(APPEND CRYPTOPP_MSVC_COMPILE_OPTIONS "/GR")
-    list(APPEND CRYPTOPP_MSVC_COMPILE_OPTIONS "/MP")
+    if (NOT (CMAKE_CXX_COMPILER_ID MATCHES "IntelLLVM"))
+        list(APPEND CRYPTOPP_MSVC_COMPILE_OPTIONS "/MP")
+    endif ()
     list(APPEND CRYPTOPP_MSVC_COMPILE_OPTIONS "/EHsc")
 endif()
 
@@ -1334,7 +1340,7 @@ function(cryptopp_set_compile_properties)
         set_property(
             SOURCE ${cxx_file}
             APPEND
-            PROPERTY COMPILE_DEFINITIONS ${CRYPTOPP_COMPILE_DEFINITIONS}
+            PROPERTY COMPILE_DEFINITIONS ${CRYPTOPP_COMPILE_DEFINITIONS} ${CRYPTOPP_MSVC_COMPILE_DEFINITIONS}
         )
     endforeach()
 endfunction()
@@ -1395,6 +1401,7 @@ target_compile_definitions(
     cryptopp
     INTERFACE
         $<INSTALL_INTERFACE:CRYPTOPP_INCLUDE_PREFIX=${CRYPTOPP_INCLUDE_PREFIX}>
+        ${CRYPTOPP_COMPILE_DEFINITIONS}
 )
 cmake_path(GET cryptopp_SOURCE_DIR PARENT_PATH CRYPTOPP_PREFIXED_INCLUDE_DIR)
 if(cryptopp_SOURCE_DIR STREQUAL CRYPTOPP_PREFIXED_INCLUDE_DIR)
