@@ -151,7 +151,7 @@ cryptopp_deprecated_option(DISABLE_POWER9 CRYPTOPP_DISABLE_POWER9 "Disable POWER
 option(
     CRYPTOPP_USE_MASTER_BRANCH
     "Get crypto++ from the master branch, not from a release tag"
-    FALSE
+    ON
 )
 option(CRYPTOPP_BUILD_TESTING "Build library tests" ON)
 option(
