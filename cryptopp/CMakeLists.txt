@@ -1268,13 +1268,6 @@ if(MSVC AND NOT CRYPTOPP_DISABLE_ASM)
         enable_language(ASM_MASM)
         if(NOT CRYPTOPP_DISABLE_RDRAND)
             list(APPEND cryptopp_SOURCES_ASM ${cryptopp_SOURCE_DIR}/rdrand.asm)
-            if(${CMAKE_GENERATOR} MATCHES "Visual Studio.*")
-                # workaround https://github.com/abdes/cryptopp-cmake/issues/13
-                set_source_files_properties(
-                    ${cryptopp_SOURCE_DIR}/rdrand.asm
-                    PROPERTIES COMPILE_OPTIONS "/Fo\$(IntDir)rdrand.asm.obj"
-                )
-            endif()
         endif()
         if(NOT CRYPTOPP_DISABLE_RDSEED)
             list(APPEND cryptopp_SOURCES_ASM ${cryptopp_SOURCE_DIR}/rdseed.asm)
@@ -1382,7 +1375,14 @@ endif()
 
 # Build the complete list of library sources, including CXX, ASM and
 # intermediary object files.
-set(cryptopp_LIBRARY_SOURCES ${cryptopp_SOURCES_ASM})
+# The ASM sources are built as a separate OBJECT library so that their object
+# files cannot collide with same-named C++ sources (issue #13).
+set(cryptopp_LIBRARY_SOURCES)
+if(cryptopp_SOURCES_ASM)
+    add_library(cryptopp_asm OBJECT ${cryptopp_SOURCES_ASM})
+    target_include_directories(cryptopp_asm PRIVATE ${cryptopp_SOURCE_DIR})
+    list(APPEND cryptopp_LIBRARY_SOURCES $<TARGET_OBJECTS:cryptopp_asm>)
+endif()
 list(APPEND cryptopp_LIBRARY_SOURCES ${cryptopp_SOURCES})
 
 add_library(cryptopp ${cryptopp_LIBRARY_SOURCES})
