@@ -44,8 +44,10 @@ jobs:
           prepend_symlinks_to_path: true
           windows_compile_environment: msvc # this field is required
 
-      - name: Set environment
-        uses: ilammy/msvc-dev-cmd@v1
+      - name: Set MSVC environment
+        uses: TheMrMilchmann/setup-msvc-dev@v4
+        with:
+          arch: x64
 
       - name: Configure
         run: |
