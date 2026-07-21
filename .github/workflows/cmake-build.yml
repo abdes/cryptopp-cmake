@@ -19,7 +19,7 @@ jobs:
           - {generator: "NMake Makefiles", os: windows-2022}
           - {generator: "Visual Studio 17 2022", os: windows-2022}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -92,7 +92,7 @@ jobs:
               omp: "ON",
             }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -178,7 +178,7 @@ jobs:
               generators: "Ninja",
             }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -274,7 +274,7 @@ jobs:
         shell: msys2 {0}
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0
     - name: Setup MSYS2
@@ -330,7 +330,7 @@ jobs:
     name: Cygwin  ${{ matrix.config.name }}(${{ matrix.build-type }})
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0
     - name: Setup cygwin
