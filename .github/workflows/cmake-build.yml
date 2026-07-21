@@ -113,12 +113,19 @@ jobs:
         uses: Chocobo1/setup-ccache-action@v1
         with:
           install_ccache: true
-          update_packager_index: true
+          # Not needed to install ccache (a bottle), and a failing brew
+          # update makes the action abort, silently skipping ccache.
+          update_packager_index: false
           prepend_symlinks_to_path: false
           windows_compile_environment: msvc # this field is required
 
       - name: Install libomp (homebrew)
-        run: brew install libomp
+        run: |
+          # The preinstalled aws/tap is untrusted and makes every brew call warn.
+          if brew tap | grep -q "^aws/tap$"; then
+            brew untap aws/tap
+          fi
+          brew install libomp
         if: endsWith(matrix.config.name, 'homebrew')
 
       - name: Install macports
@@ -128,9 +135,10 @@ jobs:
       - name: Install libomp (macports)
         run: |
           port install libomp
-          # Homebrew's libomp would shadow the MacPorts one; drop it if present
-          # (current runner images do not preinstall it).
-          brew uninstall --ignore-dependencies --zap libomp || true
+          # Homebrew's libomp would shadow the MacPorts one; drop it if present.
+          if brew list libomp &>/dev/null; then
+            brew uninstall --ignore-dependencies --zap libomp
+          fi
         if: endsWith(matrix.config.name, 'macports')
 
       - name: Configure
