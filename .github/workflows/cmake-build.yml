@@ -64,7 +64,10 @@ jobs:
         run: ctest --verbose -j40 -R cryptest --test-dir build -C ${{ matrix.build-type }}
 
       - name: Run build tests
-        run: ctest -j40 -E cryptest --output-on-failure --test-dir build -C ${{ matrix.build-type }}
+        # disable-asm is excluded: CRYPTOPP_DISABLE_ASM with MSVC is broken in
+        # crypto++ 8.9.0 (#101, weidai11/cryptopp#1240); re-include the test
+        # when a crypto++ release with the fix lands here.
+        run: ctest -j40 -E "cryptest|disable-asm" --output-on-failure --test-dir build -C ${{ matrix.build-type }}
 
   MacOS:
     name: ${{ matrix.config.name }} ${{matrix.generator }} (${{ matrix.build-type }})
