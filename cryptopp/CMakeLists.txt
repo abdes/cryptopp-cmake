@@ -72,7 +72,7 @@ endif()
 set(CRYPTOPP_COMPILE_DEFINITIONS)
 set(CRYPTOPP_COMPILE_OPTIONS)
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
     list(
         APPEND
         CRYPTOPP_COMPILE_OPTIONS
@@ -164,9 +164,6 @@ function(check_compile_link_option opt var prog)
 
     message(STATUS "[cryptopp] Performing Test ${var}")
     set(definitions ${CRYPTOPP_COMPILE_DEFINITIONS})
-    if(MSVC)
-        list(APPEND definitions ${CRYPTOPP_MSVC_COMPILE_DEFINITIONS})
-    endif()
     list(TRANSFORM definitions PREPEND "-D")
     list(APPEND definitions ${opt})
     try_compile(
@@ -326,13 +323,12 @@ endif()
 
 if(MSVC)
     set(CRYPTOPP_MSVC_COMPILE_OPTIONS)
-    set(CRYPTOPP_MSVC_COMPILE_DEFINITIONS)
 
     # TODO: what about ICC and LLVM on Windows?
 
     if(CMAKE_SYSTEM_VERSION MATCHES "10\\.0.*")
         # https://docs.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt
-        list(APPEND CRYPTOPP_MSVC_COMPILE_DEFINITIONS "_WIN32_WINNT=0x0A00")
+        list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "_WIN32_WINNT=0x0A00")
     endif()
     # winapifamily.h is missing on AppVeyor machines
     include(CheckIncludeFileCXX)
@@ -342,9 +338,7 @@ if(MSVC)
     endif()
 
     list(APPEND CRYPTOPP_MSVC_COMPILE_OPTIONS "/GR")
-    if (NOT (CMAKE_CXX_COMPILER_ID MATCHES "IntelLLVM"))
         list(APPEND CRYPTOPP_MSVC_COMPILE_OPTIONS "/MP")
-    endif ()
     list(APPEND CRYPTOPP_MSVC_COMPILE_OPTIONS "/EHsc")
 endif()
 
@@ -749,12 +743,7 @@ endif()
 # Aach32 and Aarch64               #####
 # ##############################################################################
 
-if(CRYPTOPP_ARMV8)
-    if (MSVC)
-        # MSVC doesn't provide the ACLE header
-        list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_ARM_NEON_HEADER=1")
-        list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_ARM_ACLE_HEADER=0")
-    else()
+if(CRYPTOPP_ARMV8 AND NOT MSVC)
         check_compile_link_option(
           "-DCRYPTOPP_ARM_NEON_HEADER=1"   CRYPTOPP_ARM_NEON_HEADER
           "${TEST_PROG_DIR}/test_arm_neon_header.cpp"
@@ -887,7 +876,6 @@ if(CRYPTOPP_ARMV8)
             list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "CRYPTOPP_DISABLE_ASM=1")
         endif()
     endif()
-endif()
 
 # ##############################################################################
 # PowerPC                     #####
@@ -1268,6 +1256,13 @@ if(MSVC AND NOT CRYPTOPP_DISABLE_ASM)
         enable_language(ASM_MASM)
         if(NOT CRYPTOPP_DISABLE_RDRAND)
             list(APPEND cryptopp_SOURCES_ASM ${cryptopp_SOURCE_DIR}/rdrand.asm)
+            if(${CMAKE_GENERATOR} MATCHES "Visual Studio.*")
+                # workaround https://github.com/abdes/cryptopp-cmake/issues/13
+                set_source_files_properties(
+                    ${cryptopp_SOURCE_DIR}/rdrand.asm
+                    PROPERTIES COMPILE_OPTIONS "/Fo\$(IntDir)rdrand.asm.obj"
+                )
+            endif()
         endif()
         if(NOT CRYPTOPP_DISABLE_RDSEED)
             list(APPEND cryptopp_SOURCES_ASM ${cryptopp_SOURCE_DIR}/rdseed.asm)
@@ -1333,7 +1328,7 @@ function(cryptopp_set_compile_properties)
         set_property(
             SOURCE ${cxx_file}
             APPEND
-            PROPERTY COMPILE_DEFINITIONS ${CRYPTOPP_COMPILE_DEFINITIONS} ${CRYPTOPP_MSVC_COMPILE_DEFINITIONS}
+            PROPERTY COMPILE_DEFINITIONS ${CRYPTOPP_COMPILE_DEFINITIONS}
         )
     endforeach()
 endfunction()
@@ -1375,14 +1370,7 @@ endif()
 
 # Build the complete list of library sources, including CXX, ASM and
 # intermediary object files.
-# The ASM sources are built as a separate OBJECT library so that their object
-# files cannot collide with same-named C++ sources (issue #13).
-set(cryptopp_LIBRARY_SOURCES)
-if(cryptopp_SOURCES_ASM)
-    add_library(cryptopp_asm OBJECT ${cryptopp_SOURCES_ASM})
-    target_include_directories(cryptopp_asm PRIVATE ${cryptopp_SOURCE_DIR})
-    list(APPEND cryptopp_LIBRARY_SOURCES $<TARGET_OBJECTS:cryptopp_asm>)
-endif()
+set(cryptopp_LIBRARY_SOURCES ${cryptopp_SOURCES_ASM})
 list(APPEND cryptopp_LIBRARY_SOURCES ${cryptopp_SOURCES})
 
 add_library(cryptopp ${cryptopp_LIBRARY_SOURCES})
@@ -1401,7 +1389,6 @@ target_compile_definitions(
     cryptopp
     INTERFACE
         $<INSTALL_INTERFACE:CRYPTOPP_INCLUDE_PREFIX=${CRYPTOPP_INCLUDE_PREFIX}>
-        ${CRYPTOPP_COMPILE_DEFINITIONS}
 )
 cmake_path(GET cryptopp_SOURCE_DIR PARENT_PATH CRYPTOPP_PREFIXED_INCLUDE_DIR)
 if(cryptopp_SOURCE_DIR STREQUAL CRYPTOPP_PREFIXED_INCLUDE_DIR)
@@ -1432,7 +1419,7 @@ endif()
 # gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib
 # comdlg32.lib
 if(WIN32)
-    target_link_libraries(cryptopp kernel32)
+    target_link_libraries(cryptopp kernel32 bcrypt.lib)
 endif()
 
 find_package(Threads)
@@ -1461,7 +1448,7 @@ if(CRYPTOPP_BUILD_TESTING)
     add_executable(cryptest ${cryptopp_SOURCES_TEST})
     target_link_libraries(cryptest PRIVATE cryptopp::cryptopp)
 
-    set_property(SOURCE
+    set_source_files_properties(
         ${cryptopp_SOURCE_DIR}/bench3.cpp
         ${cryptopp_SOURCE_DIR}/datatest.cpp
         ${cryptopp_SOURCE_DIR}/test.cpp
@@ -1470,7 +1457,7 @@ if(CRYPTOPP_BUILD_TESTING)
         ${cryptopp_SOURCE_DIR}/validat7.cpp
         ${cryptopp_SOURCE_DIR}/validat8.cpp
         ${cryptopp_SOURCE_DIR}/validat9.cpp
-        APPEND PROPERTY
+        PROPERTIES
             COMPILE_DEFINITIONS
                 CRYPTOPP_DATA_DIR="${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/cryptopp/"
     )

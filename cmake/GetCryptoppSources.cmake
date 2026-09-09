@@ -11,6 +11,8 @@ set(version_underscore
 if(GIT_FOUND)
     if(${CRYPTOPP_USE_MASTER_BRANCH})
         set(source_location "master")
+    elseif(CRYPTOPP_USE_REV)
+        set(source_location ${CRYPTOPP_REV})
     else()
         set(source_location "CRYPTOPP_${version_underscore}")
     endif()
@@ -24,7 +26,7 @@ if(GIT_FOUND)
     )
     fetchcontent_declare(
         cryptopp-pem
-        GIT_REPOSITORY "https://github.com/noloader/cryptopp-pem"
+        GIT_REPOSITORY "https://github.com/jochenmuell/cryptopp-pem"
         QUIET
     )
 else()
@@ -50,7 +52,7 @@ else()
         QUIET
     )
 endif()
-FetchContent_MakeAvailable(cryptopp)
+fetchcontent_populate(cryptopp)
 if(CRYPTOPP_USE_PEM_PACK)
-    FetchContent_MakeAvailable(cryptopp-pem)
+    fetchcontent_populate(cryptopp-pem)
 endif()

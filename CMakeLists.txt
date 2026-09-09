@@ -4,6 +4,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # ===-----------------------------------------------------------------------===#
 
+set(CRYPTOPP_USE_REV True)
+set(CRYPTOPP_REV f6a50da6323ae703a54904cc3e7163888d32c8c1)
+
 # ------------------------------------------------------------------------------
 # CMake basic options
 # ------------------------------------------------------------------------------
@@ -20,6 +23,8 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 # options, based on what we are doing.
 set(CMAKE_USER_MAKE_RULES_OVERRIDE "ResetInitialCompilerOptions")
 
+add_compile_options(-mssse3 -mavx2 -msse4.2 -mpclmul -maes -msha)
+
 # ------------------------------------------------------------------------------
 # Project description and (meta) information
 # ------------------------------------------------------------------------------
@@ -34,7 +39,7 @@ endif()
 
 set(META_PROJECT_NAME "cryptopp-cmake")
 set(META_PROJECT_DESCRIPTION "Free C++ class library of cryptographic schemes")
-set(META_GITHUB_REPO "https://github.com/weidai11/cryptopp")
+set(META_GITHUB_REPO "https://github.com/rohmann/cryptopp")
 set(META_VERSION_MAJOR "8")
 set(META_VERSION_MINOR "9")
 set(META_VERSION_PATCH "0")
@@ -60,7 +65,7 @@ project(
 
 # cmake-format: on
 
-message(STATUS "=> Project : ${PROJECT_NAME} v${cryptopp-cmake_VERSION}")
+message("=> Project : ${PROJECT_NAME} v${cryptopp-cmake_VERSION}")
 
 # ============================================================================
 # Settable options
@@ -290,5 +295,5 @@ endif()
 # Add cryptopp CMake subdirectory
 # ------------------------------------------------------------------------------
 
-message(STATUS "=> Module : cryptopp")
+message("=> Module : cryptopp")
 add_subdirectory(cryptopp)

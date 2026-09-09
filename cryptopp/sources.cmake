@@ -64,6 +64,7 @@ set(cryptopp_SOURCES
     files.cpp
     filters.cpp
     fips140.cpp
+    fipstest.cpp
     gcm.cpp
     gcm_simd.cpp
     gf256.cpp
@@ -183,14 +184,6 @@ set(cryptopp_SOURCES
     zinflate.cpp
     zlib.cpp
 )
-
-if(CRYPTOPP_BUILD_SHARED)
-    list(
-        APPEND 
-        cryptopp_SOURCES
-        fipstest.cpp
-    )
-endif()
 
 set(cryptopp_SOURCES_PEM
     "${cryptopp-pem_SOURCE_DIR}/pem_common.cpp"
@@ -423,13 +416,6 @@ set(cryptopp_SOURCES_TEST
     regtest3.cpp
     regtest4.cpp
 )
-
-if(NOT CRYPTOPP_BUILD_SHARED)
-    # The static library omits fipstest.cpp (to stay DllMain-free), but the
-    # test sources call its functions, so cryptest compiles it directly.
-    # Revert once a crypto++ release ships weidai11/cryptopp#1314.
-    list(APPEND cryptopp_SOURCES_TEST fipstest.cpp)
-endif()
 
 # ***** Test headers *****
 set(cryptopp_HEADERS_TEST bench.h factory.h validate.h)

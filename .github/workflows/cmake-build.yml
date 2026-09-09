@@ -10,16 +10,12 @@ jobs:
       fail-fast: false
       matrix:
         build-type: [Release, Debug]
-        runs:
-          # windows-2022 rather than -latest: crypto++ 8.9.0 uses
-          # stdext::make_checked_array_iterator, removed from the MSVC STL in
-          # VS 18. Return to windows-latest when a crypto++ release ships
-          # https://github.com/weidai11/cryptopp/pull/1339.
-          - {generator: "Ninja", os: windows-2022}
-          - {generator: "NMake Makefiles", os: windows-2022}
-          - {generator: "Visual Studio 17 2022", os: windows-2022}
+        runs: [
+          {generator: "Ninja", os: windows-latest},
+          {generator: "NMake Makefiles", os: windows-latest},
+          {generator: "Visual Studio 16 2019", os: windows-2019}]
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -28,11 +24,15 @@ jobs:
           echo github.event.action: ${{ github.event.action }}
           echo github.event_name: ${{ github.event_name }}
 
-      - name: Setup CMake and Ninja
-        uses: lukka/get-cmake@latest
+      - name: Setup Ninja
+        uses: abdes/gha-setup-ninja@master
         with:
-          cmakeVersion: "~3.21.0"
-          ninjaVersion: "1.11.0"
+          version: 1.11.0
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v2.0.1
+        with:
+          cmake-version: 3.21.x
 
       - name: Setup ccache
         # If ccache behaves badly on windows, skip this step
@@ -44,10 +44,8 @@ jobs:
           prepend_symlinks_to_path: true
           windows_compile_environment: msvc # this field is required
 
-      - name: Set MSVC environment
-        uses: TheMrMilchmann/setup-msvc-dev@v4
-        with:
-          arch: x64
+      - name: Set environment
+        uses: ilammy/msvc-dev-cmd@v1
 
       - name: Configure
         run: |
@@ -66,10 +64,7 @@ jobs:
         run: ctest --verbose -j40 -R cryptest --test-dir build -C ${{ matrix.build-type }}
 
       - name: Run build tests
-        # disable-asm is excluded: CRYPTOPP_DISABLE_ASM with MSVC is broken in
-        # crypto++ 8.9.0 (#101, weidai11/cryptopp#1240); re-include the test
-        # when a crypto++ release with the fix lands here.
-        run: ctest -j40 -E "cryptest|disable-asm" --output-on-failure --test-dir build -C ${{ matrix.build-type }}
+        run: ctest -j40 -E cryptest --output-on-failure --test-dir build -C ${{ matrix.build-type }}
 
   MacOS:
     name: ${{ matrix.config.name }} ${{matrix.generator }} (${{ matrix.build-type }})
@@ -94,7 +89,7 @@ jobs:
               omp: "ON",
             }
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -103,32 +98,23 @@ jobs:
           echo github.event.action: ${{ github.event.action }}
           echo github.event_name: ${{ github.event_name }}
 
-      - name: Setup CMake and Ninja
-        uses: lukka/get-cmake@latest
+      - name: Setup Ninja
+        uses: abdes/gha-setup-ninja@master
         with:
-          # CMake 3.21 cannot drive the Xcode versions present on current
-          # runner images; the 3.21 floor stays covered by the Ninja jobs.
-          cmakeVersion: "${{ matrix.generator == 'Xcode' && 'latest' || '~3.21.0' }}"
-          ninjaVersion: "1.11.0"
+          version: 1.11.0
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v2.0.1
+        with:
+          cmake-version: 3.21.x
 
       - name: Setup ccache
         uses: Chocobo1/setup-ccache-action@v1
         with:
           install_ccache: true
-          # Not needed to install ccache (a bottle), and a failing brew
-          # update makes the action abort, silently skipping ccache.
-          update_packager_index: false
+          update_packager_index: true
           prepend_symlinks_to_path: false
           windows_compile_environment: msvc # this field is required
-
-      - name: Install libomp (homebrew)
-        run: |
-          # The preinstalled aws/tap is untrusted and makes every brew call warn.
-          if brew tap | grep -q "^aws/tap$"; then
-            brew untap aws/tap
-          fi
-          brew install libomp
-        if: endsWith(matrix.config.name, 'homebrew')
 
       - name: Install macports
         uses: melusina-org/setup-macports@v1
@@ -137,11 +123,14 @@ jobs:
       - name: Install libomp (macports)
         run: |
           port install libomp
-          # Homebrew's libomp would shadow the MacPorts one; drop it if present.
-          if brew list libomp &>/dev/null; then
             brew uninstall --ignore-dependencies --zap libomp
-          fi
         if: endsWith(matrix.config.name, 'macports')
+
+      - name: Setup XCode
+        uses: mobiledevops/xcode-select-version-action@v1
+        with:
+          xcode-select-version: 13.1
+        if: matrix.generator == 'Xcode'
 
       - name: Configure
         run: |
@@ -167,9 +156,7 @@ jobs:
 
   Ubuntu:
     name: ${{ matrix.config.name }} (${{ matrix.build-type }})
-    # The newest image that provides gcc-10 for the oldest-supported-compiler
-    # configuration below.
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -188,7 +175,7 @@ jobs:
               generators: "Ninja",
             }
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -197,11 +184,15 @@ jobs:
           echo github.event.action: ${{ github.event.action }}
           echo github.event_name: ${{ github.event_name }}
 
-      - name: Setup CMake and Ninja
-        uses: lukka/get-cmake@latest
+      - name: Setup Ninja
+        uses: abdes/gha-setup-ninja@master
         with:
-          cmakeVersion: "~3.21.0"
-          ninjaVersion: "1.11.0"
+          version: 1.11.0
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v2.0.1
+        with:
+          cmake-version: 3.21.x
 
       - name: Install ccache
         shell: cmake -P {0}
@@ -262,10 +253,7 @@ jobs:
       fail-fast: false
       matrix:
         build-type: [Release, Debug]
-        # clang64 is not listed: linking fails with XGETBV64/CPUID64 unresolved
-        # in crypto++ 8.9.0 (#103, weidai11/cryptopp#1241); re-add it when a
-        # crypto++ release with the fix lands here.
-        sys: [mingw32, mingw64, ucrt64]
+        sys: [mingw32, mingw64, ucrt64, clang64]
         config:
           - {
               name: "with OMP ",
@@ -284,7 +272,7 @@ jobs:
         shell: msys2 {0}
     steps:
     - name: Checkout
-      uses: actions/checkout@v7
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: Setup MSYS2
@@ -340,7 +328,7 @@ jobs:
     name: Cygwin  ${{ matrix.config.name }}(${{ matrix.build-type }})
     steps:
     - name: Checkout
-      uses: actions/checkout@v7
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: Setup cygwin
